@@ -1,0 +1,282 @@
+<!--
+@license
+Copyright 2016 The Advanced REST client authors <arc@mulesoft.com>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../url-input-editor/url-input-editor.html">
+<link rel="import" href="../headers-editor/headers-editor.html">
+<link rel="import" href="../http-method-selector/http-method-selector.html">
+<link rel="import" href="../payload-editor/payload-editor.html">
+<link rel="import" href="../variables-editor/variables-editor.html">
+<link rel="import" href="../authorization-panel/authorization-panel.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+<link rel="import" href="../paper-tabs/paper-tab.html">
+<link rel="import" href="../iron-pages/iron-pages.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../iron-collapse/iron-collapse.html">
+<link rel="import" href="../paper-progress/paper-progress.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
+<link rel="import" href="../iron-media-query/iron-media-query.html">
+<link rel="import" href="../arc-icons/arc-icons.html">
+<link rel="import" href="../events-target-behavior/events-target-behavior.html">
+<!--
+`<request-editor>` A request complete HTTP request editor
+
+### Example
+```
+<request-editor></request-editor>
+```
+
+### Styling
+`<request-editor>` provides the following custom properties and mixins for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--request-editor` | Mixin applied to the element | `{}`
+
+@group UI Elements
+@element request-editor
+@demo demo/index.html
+-->
+<dom-module id="request-editor">
+  <template>
+    <style>
+     :host {
+      display: block;
+    }
+
+    .url-editor {
+      @apply(--layout-horizontal);
+    }
+
+    url-input-editor {
+      @apply(--layout-flex);
+    }
+
+    .main-action-buttons {
+      margin-top: 20px;
+    }
+
+    h2 {
+      @apply --arc-font-subhead;
+    }
+
+    .params-header {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      padding: 0 12px;
+    }
+
+    .action-button {
+      @apply --action-button;
+    }
+
+    http-method-selector {
+      margin-bottom: 12px;
+    }
+
+    .toggle-button {
+      color: rgba(0, 0, 0, 0.54);
+      transition: color 0.25s linear;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .toggle-icon {
+      transform: rotateZ(0deg);
+      transition: transform 0.3s linear;
+    }
+
+    .toggle-icon.opened {
+      transform: rotateZ(-180deg);
+    }
+
+    .toggle-button:hover {
+      color: rgba(0, 0, 0, 0.78);
+    }
+    </style>
+    <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
+    <div class="content">
+      <div class="url-editor" hidden$="[[noUrlEditor]]">
+        <url-input-editor auto-validate required value="{{url}}" invalid="{{urlInvalid}}"></url-input-editor>
+        <div class="main-action-buttons">
+          <paper-button raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
+          <paper-button raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
+        </div>
+      </div>
+      <http-method-selector method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+      <section class="params-section">
+        <header class="params-header">
+          <h2>Parameters</h2>
+          <paper-icon-button icon="arc:expand-more" id="toggleParameters" on-tap="toggle" class="toggle-button" class$="[[_computeToggleIconClass(collapseOpened)]]"></paper-icon-button>
+          <paper-tooltip for="toggleParameters" animation-delay="100" position="right" offset="0">[[_computeToggleLabel(collapseOpened)]]</paper-tooltip>
+        </header>
+        <iron-collapse opened="[[collapseOpened]]">
+          <paper-tabs selected="{{selectedTab}}" hidden$="[[!collapseOpened]]">
+            <paper-tab>Headers</paper-tab>
+            <paper-tab>Authorization</paper-tab>
+            <paper-tab hidden$="[[!isPayload]]">Body</paper-tab>
+            <paper-tab>Variables</paper-tab>
+          </paper-tabs>
+          <iron-pages selected="[[selectedTab]]" selected-attribute="opened">
+            <headers-editor is-payload="{{isPayload}}" content-type="[[contentType]]" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
+            <authorization-panel narrow="[[narrow]]" request-url="[[url]]" request-method="[[method]]" redirect-url="[[authRedirectUrl]]"></authorization-panel>
+            <payload-editor content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>
+            <variables-editor></variables-editor>
+          </iron-pages>
+        </iron-collapse>
+      </section>
+      <div class="action-panel">
+        <div class="status">[[statusMessage]]</div>
+        <paper-progress indeterminate hidden$="[[!loadingRequest]]"></paper-progress>
+      </div>
+    </div>
+  </template>
+  <script>
+  Polymer({
+    is: 'request-editor',
+
+    behaviors: [ArcBehaviors.EventsTargetBehavior],
+
+    properties: {
+      // Selected request tab.
+      selectedTab: {
+        type: Number,
+        value: 0
+      },
+      // Current content type.
+      contentType: {
+        type: String
+      },
+      // Computed value if the method can carry a payload
+      isPayload: {
+        type: Boolean,
+        notify: true
+      },
+      // Headers for the request.
+      headers: {
+        type: String,
+        notify: true
+      },
+      // Body for the request
+      payload: {
+        type: String,
+        notify: true
+      },
+      // Current URL
+      url: {
+        type: String,
+        notify: true
+      },
+      // Current HTTP method
+      method: {
+        type: String,
+        notify: true
+      },
+      /**
+       * If set it will renders the view in the narrow layout.
+       */
+      narrow: {
+        type: Boolean,
+        reflectToAttribute: true
+      },
+      // A widith below which the `narrow` property will be set to true.
+      narrowWidth: {
+        type: String,
+        value: '768px'
+      },
+      /**
+       * Computed value when the URL change.
+       * If not valid form submission won't be possible.
+       */
+      urlInvalid: {
+        type: Boolean,
+        notify: true
+      },
+      /**
+       * Hides the URL editor from the view.
+       * The editor is still in the DOM and the `urlInvalid` property still will be set.
+       */
+      noUrlEditor: Boolean,
+      // If true then the request is currently loaded.
+      loadingRequest: {
+        type: Boolean,
+        notify: true,
+        readOnly: true,
+        value: false
+      },
+      // True if the editor panel is opened
+      collapseOpened: {
+        type: Boolean,
+        value: true
+      },
+      /**
+       * Redirect URL for the OAuth2 authorization.
+       * If can be also set by dispatching `oauth2-redirect-url-changed`
+       * with `value` property on the `detail` object.
+       */
+      oauth2RedirectUrl: String
+    },
+
+    observers: [
+      '_requestChanged(request, request.*)',
+      '_isPayloadChanged(isPayload)',
+      '_refreshPayload(selectedTab)'
+    ],
+
+    _attachListeners: function(node) {
+      this.listen(node, 'oauth2-redirect-url-changed',
+        '_authRedirectChanged');
+    },
+
+    _detachListeners: function(node) {
+      this.unlisten(node, 'oauth2-redirect-url-changed',
+        '_authRedirectChanged');
+    },
+
+    // Toggles body panel.
+    toggle: function() {
+      this.collapseOpened = !this.collapseOpened;
+    },
+
+    // Computes class for the toggle's button icon.
+    _computeToggleIconClass: function(opened) {
+      var clazz = 'toggle-icon';
+      if (opened) {
+        clazz += ' opened';
+      }
+      return clazz;
+    },
+
+    _computeToggleLabel: function(opened) {
+      return opened ? 'Hide panel' : 'Show panel';
+    },
+
+    _isPayloadChanged: function(isPayload) {
+      if (!isPayload && this.selectedTab === 2) {
+        this.selectedTab = 0;
+      }
+      this.$$('paper-tabs').notifyResize();
+    },
+
+    _refreshPayload: function(selectedTab) {
+      if (selectedTab === 2) {
+        this.$$('payload-editor').refresh();
+      }
+    }
+  });
+  </script>
+</dom-module>
