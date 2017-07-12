@@ -77,7 +77,6 @@ Custom property | Description | Default
     .params-header {
       @apply(--layout-horizontal);
       @apply(--layout-center);
-      padding: 0 12px;
     }
 
     .action-button {
@@ -88,28 +87,22 @@ Custom property | Description | Default
       margin-bottom: 12px;
     }
 
-    .toggle-button {
-      color: rgba(0, 0, 0, 0.54);
-      transition: color 0.25s linear;
-      font-size: 12px;
-      font-weight: 400;
+    http-method-selector-mini {
+      margin-right: 8px;
     }
 
     .toggle-icon {
+      color: var(--content-action-button-color, rgba(0, 0, 0, 0.74));
       transform: rotateZ(0deg);
-      transition: transform 0.3s linear;
+      transition: transform 0.3s linear, color 0.25s linear;
     }
 
     .toggle-icon.opened {
       transform: rotateZ(-180deg);
     }
 
-    .toggle-button:hover {
-      color: rgba(0, 0, 0, 0.78);
-    }
-
-    http-method-selector-mini {
-      margin-right: 8px;
+    .toggle-icon:hover {
+      color: var(--content-action-button-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
     }
     </style>
     <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
@@ -135,7 +128,7 @@ Custom property | Description | Default
       <section class="params-section">
         <header class="params-header">
           <h2>Parameters</h2>
-          <paper-icon-button icon="arc:expand-more" id="toggleParameters" on-tap="toggle" class="toggle-button" class$="[[_computeToggleIconClass(collapseOpened)]]"></paper-icon-button>
+          <paper-icon-button icon="arc:expand-more" id="toggleParameters" on-tap="toggle" class$="[[_computeToggleIconClass(collapseOpened)]]"></paper-icon-button>
           <paper-tooltip for="toggleParameters" animation-delay="100" position="right" offset="0">[[_computeToggleLabel(collapseOpened)]]</paper-tooltip>
         </header>
         <iron-collapse opened="[[collapseOpened]]">
