@@ -29,7 +29,6 @@ the License.
 <link rel="import" href="../paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../paper-progress/paper-progress.html">
-<link rel="import" href="../paper-toast/paper-toast.html">
 <link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../events-target-behavior/events-target-behavior.html">
@@ -147,15 +146,14 @@ Custom property | Description | Default
             <paper-tab>Variables</paper-tab>
           </paper-tabs>
           <iron-pages selected="[[selectedTab]]" selected-attribute="opened">
-            <headers-editor is-payload="{{isPayload}}" content-type="[[contentType]]" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
-            <authorization-panel narrow="[[narrow]]" request-url="[[url]]" request-method="[[method]]" redirect-url="[[authRedirectUrl]]"></authorization-panel>
+            <headers-editor is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
+            <authorization-panel redirect-url="[[oauth2RedirectUrl]]"></authorization-panel>
             <payload-editor content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>
             <variables-editor></variables-editor>
           </iron-pages>
         </iron-collapse>
       </section>
       <div class="action-panel">
-        <div class="status">[[statusMessage]]</div>
         <paper-progress indeterminate hidden$="[[!loadingRequest]]"></paper-progress>
       </div>
     </div>
@@ -166,6 +164,16 @@ Custom property | Description | Default
 
     behaviors: [ArcBehaviors.EventsTargetBehavior],
 
+    /**
+     * Fired when the user request to send current request.
+     *
+     * @event send-request
+     */
+    /**
+     * Fired when the user request to abort current request.
+     *
+     * @event abort-request
+     */
     properties: {
       // Selected request tab.
       selectedTab: {
@@ -174,7 +182,8 @@ Custom property | Description | Default
       },
       // Current content type.
       contentType: {
-        type: String
+        type: String,
+        notify: true
       },
       // Computed value if the method can carry a payload
       isPayload: {
@@ -204,10 +213,7 @@ Custom property | Description | Default
       /**
        * If set it will renders the view in the narrow layout.
        */
-      narrow: {
-        type: Boolean,
-        reflectToAttribute: true
-      },
+      narrow: Boolean,
       // A widith below which the `narrow` property will be set to true.
       narrowWidth: {
         type: String,
@@ -232,8 +238,6 @@ Custom property | Description | Default
       // If true then the request is currently loaded.
       loadingRequest: {
         type: Boolean,
-        notify: true,
-        readOnly: true,
         value: false
       },
       // True if the editor panel is opened
@@ -294,6 +298,14 @@ Custom property | Description | Default
       if (selectedTab === 2) {
         this.$$('payload-editor').refresh();
       }
+    },
+
+    _sendRequest: function() {
+      this.fire('send-request');
+    },
+
+    _abortRequest: function() {
+      this.fire('abort-request');
     }
   });
   </script>

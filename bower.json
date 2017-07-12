@@ -28,7 +28,6 @@
     "paper-button": "PolymerElements/paper-button#^1.0.14",
     "paper-progress": "PolymerElements/paper-progress#^1.0.11",
     "authorization-panel": "advanced-rest-client/authorization-panel#^0.5.1",
-    "paper-toast": "PolymerElements/paper-toast#^1.3.0",
     "url-input-editor": "advanced-rest-client/url-input-editor#^0.1.1",
     "variables-editor": "advanced-rest-client/variables-editor#^0.1.1",
     "payload-editor": "advanced-rest-client/payload-editor#^0.1.3",
@@ -51,7 +50,8 @@
     "oauth-authorization": "advanced-rest-client/oauth-authorization#^0.1.7",
     "variables-manager": "advanced-rest-client/variables-manager#^0.1.6",
     "variables-evaluator": "advanced-rest-client/variables-evaluator#^0.1.1",
-    "url-history-saver": "advanced-rest-client/url-history-saver#^0.1.1"
+    "url-history-saver": "advanced-rest-client/url-history-saver#^0.1.1",
+    "paper-toast": "PolymerElements/paper-toast#<2"
   },
   "ignore": [
     "**/.*",
