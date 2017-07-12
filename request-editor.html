@@ -15,6 +15,7 @@ the License.
 <link rel="import" href="../url-input-editor/url-input-editor.html">
 <link rel="import" href="../headers-editor/headers-editor.html">
 <link rel="import" href="../http-method-selector/http-method-selector.html">
+<link rel="import" href="../http-method-selector/http-method-selector-mini.html">
 <link rel="import" href="../payload-editor/payload-editor.html">
 <link rel="import" href="../variables-editor/variables-editor.html">
 <link rel="import" href="../authorization-panel/authorization-panel.html">
@@ -107,17 +108,31 @@ Custom property | Description | Default
     .toggle-button:hover {
       color: rgba(0, 0, 0, 0.78);
     }
+
+    http-method-selector-mini {
+      margin-right: 8px;
+    }
     </style>
     <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
     <div class="content">
-      <div class="url-editor" hidden$="[[noUrlEditor]]">
-        <url-input-editor auto-validate required value="{{url}}" invalid="{{urlInvalid}}"></url-input-editor>
-        <div class="main-action-buttons">
-          <paper-button raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
-          <paper-button raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
+      <template is="dom-if" if="[[!noUrlEditor]]">
+        <template is="dom-if" if="[[narrow]]">
+          <http-method-selector method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+        </template>
+        <div class="url-editor">
+          <template is="dom-if" if="[[!narrow]]">
+            <http-method-selector-mini method="{{method}}" is-payload="{{isPayload}}"></http-method-selector-mini>
+          </template>
+          <url-input-editor auto-validate required value="{{url}}" invalid="{{urlInvalid}}"></url-input-editor>
+          <div class="main-action-buttons">
+            <paper-button raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
+            <paper-button raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
+          </div>
         </div>
-      </div>
-      <http-method-selector method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+      </template>
+      <template is="dom-if" if="[[noUrlEditor]]">
+        <http-method-selector method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+      </template>
       <section class="params-section">
         <header class="params-header">
           <h2>Parameters</h2>
@@ -210,7 +225,10 @@ Custom property | Description | Default
        * Hides the URL editor from the view.
        * The editor is still in the DOM and the `urlInvalid` property still will be set.
        */
-      noUrlEditor: Boolean,
+      noUrlEditor: {
+        type: Boolean,
+        value: false
+      },
       // If true then the request is currently loaded.
       loadingRequest: {
         type: Boolean,
