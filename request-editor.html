@@ -18,7 +18,7 @@ the License.
 <link rel="import" href="../http-method-selector/http-method-selector-mini.html">
 <link rel="import" href="../payload-editor/payload-editor.html">
 <link rel="import" href="../variables-editor/variables-editor.html">
-<link rel="import" href="../authorization-panel/authorization-panel.html">
+<!-- <link rel="import" href="../authorization-panel/authorization-panel.html"> -->
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-tabs/paper-tabs.html">
 <link rel="import" href="../paper-tabs/paper-tab.html">
@@ -33,11 +33,52 @@ the License.
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../events-target-behavior/events-target-behavior.html">
 <!--
-`<request-editor>` A request complete HTTP request editor
+An element that renders the UI to create a HTTP request.
+
+It produces the following values (as element's properties):
+- url - the request URL
+- method - HTTP method
+- headers - HTTP headers string
+- payload - Request body. It can be either [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String), [File](https://developer.mozilla.org/en-US/docs/Web/API/File) ([Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob)) or [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
+
+## Variables
+
+Output of abt of this properties can contain a variables in format `${varName}`.
+Use [variables-evaluator](https://github.com/advanced-rest-client/variables-evaluator)
+to evaluate variables to the final output.
+
+This element works with [variables-manager](https://github.com/advanced-rest-client/variables-manager)
+that stores variables in the local datastore. It should be placed anywhere in the DOM. The elements
+uses browser's events system to communicate.
+
+## Events retargeting
+
+The editors listens to varous events related to the request state. By default
+all of the editors listens on a window object. To limit this, set `eventsTarget`
+on this element to point an element that will be used as events target.
+This way it is possible to enclose the request panel in a "tab".
+
+The `eventsTarget` property is propagated to the editors.
+
+Event fired by this or any of the editors will not stop on the `eventsTarget`
+element and you are responsible to cancel them if nescesary.
+
+## Accessing request data
+
+You can access request data by either accessing corresponding property of the
+element, by listening for `property-changed` event or by listening for
+`request-data-changed` custom event.
+Only the last one bubbles through the DOM.
 
 ### Example
 ```
-<request-editor></request-editor>
+<request-editor url="{{requestUrl}}" on-headers-changed="_headersChangedEvent"></request-editor>
+```
+or
+```
+document.body.addEventListener('request-data-changed', e => {
+  console.log(e.detail);
+});
 ```
 
 ### Styling
@@ -46,6 +87,24 @@ the License.
 Custom property | Description | Default
 ----------------|-------------|----------
 `--request-editor` | Mixin applied to the element | `{}`
+`--request-editor-url-editor` | Mixin applied to a line with the URL editor | `{}`
+`--arc-font-subhead` | Theme mixin, applied to the section name title | `{}`
+`--action-button` | Theme mixin, applied to the acction buttons | `{}`
+
+To style edtors use variables defined in the following elements:
+- [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)
+- [headers-editor](https://github.com/advanced-rest-client/headers-editor)
+- [http-method-selector](https://github.com/advanced-rest-client/http-method-selector)
+- [payload-editor](https://github.com/advanced-rest-client/payload-editor)
+- [variables-editor](https://github.com/advanced-rest-client/variables-editor)
+
+Also paper elements: `paper-button`, `paper-tab`, `paper-tabs`, `paper-tooltip`
+
+## RAML support
+
+At the moment the element support RAML types with payload editor.
+Set the `ramlType` property to a JSON representation of the RAML type and
+it will be passed down to the editor.
 
 @group UI Elements
 @element request-editor
@@ -54,16 +113,19 @@ Custom property | Description | Default
 <dom-module id="request-editor">
   <template>
     <style>
-     :host {
+    :host {
       display: block;
+
+      @apply --request-editor;
     }
 
     .url-editor {
-      @apply(--layout-horizontal);
+      @apply --layout-horizontal;
+      @apply --request-editor-url-editor;
     }
 
     url-input-editor {
-      @apply(--layout-flex);
+      @apply --layout-flex;
     }
 
     .main-action-buttons {
@@ -107,23 +169,23 @@ Custom property | Description | Default
     </style>
     <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
     <div class="content">
-      <template is="dom-if" if="[[!noUrlEditor]]">
-        <template is="dom-if" if="[[narrow]]">
-          <http-method-selector method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+      <template is="dom-if" if="[[!noUrlEditor]]" restamp>
+        <template is="dom-if" if="[[narrow]]" restamp>
+          <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
         </template>
         <div class="url-editor">
-          <template is="dom-if" if="[[!narrow]]">
-            <http-method-selector-mini method="{{method}}" is-payload="{{isPayload}}"></http-method-selector-mini>
+          <template is="dom-if" if="[[!narrow]]" restamp>
+            <http-method-selector-mini events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector-mini>
           </template>
-          <url-input-editor auto-validate required value="{{url}}" invalid="{{urlInvalid}}"></url-input-editor>
+          <url-input-editor events-target="[[eventsTarget]]" auto-validate required value="{{url}}" invalid="{{urlInvalid}}"></url-input-editor>
           <div class="main-action-buttons">
             <paper-button raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
             <paper-button raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
           </div>
         </div>
       </template>
-      <template is="dom-if" if="[[noUrlEditor]]">
-        <http-method-selector method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+      <template is="dom-if" if="[[noUrlEditor]]" restamp>
+        <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
       </template>
       <section class="params-section">
         <header class="params-header">
@@ -134,14 +196,14 @@ Custom property | Description | Default
         <iron-collapse opened="[[collapseOpened]]">
           <paper-tabs selected="{{selectedTab}}" hidden$="[[!collapseOpened]]">
             <paper-tab>Headers</paper-tab>
-            <paper-tab>Authorization</paper-tab>
+            <!-- <paper-tab>Authorization</paper-tab> -->
             <paper-tab hidden$="[[!isPayload]]">Body</paper-tab>
             <paper-tab>Variables</paper-tab>
           </paper-tabs>
           <iron-pages selected="[[selectedTab]]" selected-attribute="opened">
-            <headers-editor is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
-            <authorization-panel redirect-url="[[oauth2RedirectUrl]]"></authorization-panel>
-            <payload-editor content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>
+            <headers-editor events-target="[[eventsTarget]]" is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
+            <!-- <authorization-panel redirect-url="[[oauth2RedirectUrl]]"></authorization-panel> -->
+            <payload-editor events-target="[[eventsTarget]]" raml-type="[[ramlType]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>
             <variables-editor></variables-editor>
           </iron-pages>
         </iron-collapse>
@@ -160,12 +222,34 @@ Custom property | Description | Default
     /**
      * Fired when the user request to send current request.
      *
+     * This event can be cancelled.
+     *
      * @event send-request
+     * @param {String} url The request URL. Can be empty string.
+     * @param {String} method HTTP method name. Can be empty.
+     * @param {String} headers HTTP headers string. Can be empty.
+     * @param {String|File|FormData} payload Message body. Can be undefined.
+     * @param {Object} auth Always undefined. For future use.
      */
     /**
      * Fired when the user request to abort current request.
      *
+     * This event can be cancelled.
+     *
      * @event abort-request
+     * @param {String} url The request URL. Can be empty string. Also uit may be
+     * different URL that the one used to send the request if the user changed
+     * it in between.
+     */
+    /**
+     * Event fired when any part of the request data change.
+     *
+     * @event request-data-changed
+     * @param {String} url The request URL. Can be empty string.
+     * @param {String} method HTTP method name. Can be empty.
+     * @param {String} headers HTTP headers string. Can be empty.
+     * @param {String|File|FormData} payload Message body. Can be undefined.
+     * @param {Object} auth Always undefined. For future use.
      */
     properties: {
       // Selected request tab.
@@ -186,22 +270,26 @@ Custom property | Description | Default
       // Headers for the request.
       headers: {
         type: String,
-        notify: true
+        notify: true,
+        observer: 'notifyRequestChanged'
       },
       // Body for the request
       payload: {
         type: String,
-        notify: true
+        notify: true,
+        observer: 'notifyRequestChanged'
       },
       // Current URL
       url: {
         type: String,
-        notify: true
+        notify: true,
+        observer: 'notifyRequestChanged'
       },
       // Current HTTP method
       method: {
         type: String,
-        notify: true
+        notify: true,
+        observer: 'notifyRequestChanged'
       },
       /**
        * If set it will renders the view in the narrow layout.
@@ -221,14 +309,19 @@ Custom property | Description | Default
         notify: true
       },
       /**
-       * Hides the URL editor from the view.
-       * The editor is still in the DOM and the `urlInvalid` property still will be set.
+       * Removes the URL editor from the DOM.
+       * It will also cause that the `url` property will be empty and
+       * on events fired by this element.
        */
       noUrlEditor: {
         type: Boolean,
-        value: false
+        value: false,
+        observer: '_noUrlEditorChanged'
       },
-      // If true then the request is currently loaded.
+      /**
+       * When set it will display the UI to indicate that the request is being
+       * send.
+       */
       loadingRequest: {
         type: Boolean,
         value: false
@@ -239,15 +332,19 @@ Custom property | Description | Default
         value: true
       },
       /**
-       * Redirect URL for the OAuth2 authorization.
-       * If can be also set by dispatching `oauth2-redirect-url-changed`
-       * with `value` property on the `detail` object.
+       * A JavaScript representation of RAML data type object.
+       * It will be passed to the editors that support RAML types.
        */
-      oauth2RedirectUrl: String
+      ramlType: Object
+      // /**
+      //  * Redirect URL for the OAuth2 authorization.
+      //  * If can be also set by dispatching `oauth2-redirect-url-changed`
+      //  * with `value` property on the `detail` object.
+      //  */
+      // oauth2RedirectUrl: String
     },
 
     observers: [
-      '_requestChanged(request, request.*)',
       '_isPayloadChanged(isPayload)',
       '_refreshPayload(selectedTab)'
     ],
@@ -266,6 +363,38 @@ Custom property | Description | Default
     toggle: function() {
       this.collapseOpened = !this.collapseOpened;
     },
+    /**
+     * Called each time if any of `method`, `url`, 'payload' or `headers` filed
+     * change. Fires the `request-data-changed` custom event with current values
+     * of the request.
+     */
+    notifyRequestChanged: function() {
+      var request = this.serializeRequest();
+      this.fire('request-data-changed', request, {
+        cancelable: true,
+        composite: true
+      });
+    },
+    /**
+     * Serializes current request data into an object.
+     *
+     * @return {Object} Request data object with the following keys:
+     * - url (can be empty)
+     * - method (can be empty)
+     * - headers (can be empty)
+     * - payload (can be undefined)
+     * - auth (for future use, currently always undefined)
+     */
+    serializeRequest: function() {
+      var result = {
+        url: this.url || '',
+        method: this.method || '',
+        headers: this.headers || '',
+        payload: this.payload,
+        auth: this.authData
+      };
+      return result;
+    },
 
     // Computes class for the toggle's button icon.
     _computeToggleIconClass: function(opened) {
@@ -279,26 +408,53 @@ Custom property | Description | Default
     _computeToggleLabel: function(opened) {
       return opened ? 'Hide panel' : 'Show panel';
     },
-
+    /**
+     * Handles change to `isPayload` property. Restores payload editor tab
+     * if needed.
+     */
     _isPayloadChanged: function(isPayload) {
       if (!isPayload && this.selectedTab === 2) {
         this.selectedTab = 0;
       }
       this.$$('paper-tabs').notifyResize();
     },
-
+    /**
+     * Called when the selected tab changes. Refreshes payload editor state
+     * (for code mirror) if currently selected.
+     */
     _refreshPayload: function(selectedTab) {
       if (selectedTab === 2) {
         this.$$('payload-editor').refresh();
       }
     },
-
+    /**
+     * Sends the `send-request` custom event to send the request.
+     */
     _sendRequest: function() {
-      this.fire('send-request');
+      var request = this.serializeRequest();
+      this.fire('send-request', request, {
+        cancelable: true,
+        composite: true
+      });
     },
-
+    /**
+     * Sends the `abort-request` custom event to cancel the request.
+     */
     _abortRequest: function() {
-      this.fire('abort-request');
+      this.fire('abort-request', {
+        url: this.url
+      }, {
+        cancelable: true,
+        composite: true
+      });
+    },
+    /**
+     * Clears the URL value if the URL editor is removed.
+     */
+    _noUrlEditorChanged: function(value) {
+      if (value) {
+        this.set('url', undefined);
+      }
     }
   });
   </script>

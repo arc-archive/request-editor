@@ -17,8 +17,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../web-component-tester/browser.js"></script>
     <script src="../../iron-test-helpers/test-helpers.js"></script>
     <script src="../../iron-test-helpers/mock-interactions.js"></script>
-
-    <!-- Step 1: import the element to test -->
     <link rel="import" href="../request-editor.html">
   </head>
   <body>
@@ -30,14 +28,78 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
-    /* global suite, test, fixture, assert */
+    /* global fixture, assert, TestHelpers, sinon */
     suite('basic', function() {
       var element;
       setup(function() {
         element = fixture('basic');
       });
-      test('`request-editor` should be initialized', function() {
-        assert.equal(element.isAttached, true, 'element.isAttached equals true');
+
+      test('Body is hidden for GET', function() {
+        element.method = 'GET';
+        TestHelpers.forceXIfStamp(element);
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
+        assert.isTrue(tab.hasAttribute('hidden'));
+      });
+
+      test('Body is hidden for HEAD', function() {
+        element.method = 'HEAD';
+        TestHelpers.forceXIfStamp(element);
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
+        assert.isTrue(tab.hasAttribute('hidden'));
+      });
+
+      test('Body is visible for POST', function() {
+        element.method = 'POST';
+        TestHelpers.forceXIfStamp(element);
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
+        assert.isFalse(tab.hasAttribute('hidden'));
+      });
+
+      test('Setting content-type property sets headers', function() {
+        element.contentType = 'application/json';
+        assert.equal(element.headers, 'Content-Type: application/json');
+      });
+
+      test('URL editor is visible by default', function() {
+        TestHelpers.forceXIfStamp(element);
+        var editor = Polymer.dom(element.root).querySelector('url-input-editor');
+        assert.ok(editor);
+      });
+
+      test('URL editor is removed when noUrlEditor is set', function() {
+        TestHelpers.forceXIfStamp(element);
+        element.noUrlEditor = true;
+        TestHelpers.forceXIfStamp(element);
+        var editor = Polymer.dom(element.root).querySelector('url-input-editor');
+        assert.notOk(editor);
+      });
+
+      test('Hiding URL editor removes the URL value', function() {
+        element.url = 'https://mulesoft.com';
+        element.noUrlEditor = true;
+        assert.isUndefined(element.url);
+      });
+
+      test('Fires request-data-changed custom event', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-data-changed', spy);
+        element.url = 'https://mulesoft.com';
+        assert.isTrue(spy.calledOnce);
+      });
+
+      test('The request-data-changed custom event contains request data', function(done) {
+        var URL = element.url = 'https://mulesoft.com';
+        var HEADERS = element.headers = 'content-type: test';
+        var METHOD = 'HEAD';
+        element.addEventListener('request-data-changed', function(e) {
+          assert.equal(e.detail.url, URL);
+          assert.equal(e.detail.headers, HEADERS);
+          assert.equal(e.detail.method, METHOD);
+          assert.equal(e.detail.payload, '');
+          done();
+        });
+        element.method = METHOD;
       });
     });
     </script>
