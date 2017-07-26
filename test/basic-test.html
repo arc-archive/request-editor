@@ -55,11 +55,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
         assert.isFalse(tab.hasAttribute('hidden'));
       });
-
-      test('Setting content-type property sets headers', function() {
-        element.contentType = 'application/json';
-        assert.equal(element.headers, 'Content-Type: application/json');
-      });
+      // This is not up to this element
+      // test('Setting content-type property sets headers', function() {
+      //   element.contentType = 'application/json';
+      //   TestHelpers.forceXIfStamp(element);
+      //   assert.equal(element.headers, 'Content-Type: application/json');
+      // });
 
       test('URL editor is visible by default', function() {
         TestHelpers.forceXIfStamp(element);
@@ -96,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(e.detail.url, URL);
           assert.equal(e.detail.headers, HEADERS);
           assert.equal(e.detail.method, METHOD);
-          assert.equal(e.detail.payload, '');
+          assert.notOk(e.detail.payload, '');
           done();
         });
         element.method = METHOD;
