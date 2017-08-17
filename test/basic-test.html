@@ -93,13 +93,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var URL = element.url = 'https://mulesoft.com';
         var HEADERS = element.headers = 'content-type: test';
         var METHOD = 'HEAD';
-        element.addEventListener('request-data-changed', function(e) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
           assert.equal(e.detail.url, URL);
           assert.equal(e.detail.headers, HEADERS);
           assert.equal(e.detail.method, METHOD);
           assert.notOk(e.detail.payload, '');
           done();
-        });
+        };
+        element.addEventListener('request-data-changed', callback);
         element.method = METHOD;
       });
     });
