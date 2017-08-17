@@ -36,10 +36,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Serializes request with empty values', function() {
         var data = element.serializeRequest();
-        assert.equal(data.url, '');
-        assert.equal(data.method, '');
-        assert.equal(data.headers, '');
-        assert.equal(data.payload, '');
+        assert.equal(data.url, '', 'URL is empty');
+        assert.equal(data.method, '', 'Method is empty');
+        assert.equal(data.headers, '', 'Headers are empty');
+        assert.isFalse(!!data.payload, 'Payload is falsy');
         assert.isUndefined(data.authData);
       });
 
@@ -50,10 +50,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.payload = 'test-payload';
 
         var data = element.serializeRequest();
-        assert.equal(data.url, 'test-url');
-        assert.equal(data.method, 'test-method');
-        assert.equal(data.headers, 'test-headers');
-        assert.equal(data.payload, 'test-payload');
+        assert.equal(data.url, 'test-url', 'Url is set');
+        assert.equal(data.method, 'test-method', 'Method is set');
+        assert.equal(data.headers, 'test-headers', 'Headers are set');
+        assert.equal(data.payload, 'test-payload', 'Payload is set');
         assert.isUndefined(data.authData);
       });
 
