@@ -41,39 +41,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         TestHelpers.forceXIfStamp(element);
       });
 
-      test('request-data-changed custom event fires when method changes', function(done) {
-        element.addEventListener('request-data-changed', function(e) {
+      test('Fires event when method changes', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
           assert.equal(e.detail.method, METHOD);
           done();
-        });
+        };
+        element.addEventListener('request-data-changed', callback);
         element.method = METHOD;
       });
 
-      test('request-data-changed custom event fires when URL changes', function(done) {
-        element.addEventListener('request-data-changed', function(e) {
+      test('Fires event when URL changes', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
           assert.equal(e.detail.url, URL);
           done();
-        });
+        };
+        element.addEventListener('request-data-changed', callback);
         element.url = URL;
       });
 
-      test('request-data-changed custom event fires when headers changes', function(done) {
-        element.addEventListener('request-data-changed', function(e) {
+      test('Fires event when headers changes', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
           assert.equal(e.detail.headers, HEADERS);
           done();
-        });
+        };
+        element.addEventListener('request-data-changed', callback);
         element.headers = HEADERS;
       });
 
-      test('request-data-changed custom event fires when payload changes', function(done) {
-        element.addEventListener('request-data-changed', function(e) {
+      test('Fires event when payload changes', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
           assert.equal(e.detail.payload, PAYLOAD);
           done();
-        });
+        };
+        element.addEventListener('request-data-changed', callback);
         element.payload = PAYLOAD;
       });
 
-      test('fires event when payload as FormData changes', function() {
+      test('Fires event when payload as FormData changes', function() {
         var spy = sinon.spy();
         element.addEventListener('request-data-changed', spy);
         element.payload = new FormData();
