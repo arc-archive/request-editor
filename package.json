@@ -13,10 +13,9 @@
   ],
   "author": "The Advanced REST client authors <arc@mulesoft.com>",
   "scripts": {
-    "serve": "node_modules/.bin/polymer serve",
-    "lint": "node_modules/.bin/polymer lint request-editor.html",
-    "test-sauce": "node_modules/.bin/polymer test --plugin sauce --job-name \"request-editor:local-test\"",
-    "test": "node_modules/.bin/polymer test --plugin local",
+    "lint": "polymer lint request-editor.html -r dom-module-invalid-attrs -r style-into-template -r undefined-elements -r behaviors-spelling -r databinding-calls-must-be-functions -r element-before-dom-module -r unbalanced-polymer-delimiters",
+    "test-sauce": "polymer test --plugin sauce --job-name \"request-editor:local-test\"",
+    "test": "polymer test --plugin local",
     "deps": "npm install --quiet && bower install --quiet",
     "update-deps": "npm update --quiet && bower update --quiet"
   },
