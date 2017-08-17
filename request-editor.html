@@ -179,8 +179,8 @@ it will be passed down to the editor.
           </template>
           <url-input-editor events-target="[[eventsTarget]]" auto-validate required value="{{url}}" invalid="{{urlInvalid}}"></url-input-editor>
           <div class="main-action-buttons">
-            <paper-button raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
-            <paper-button raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
+            <paper-button id="sendButton" raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
+            <paper-button id="abortButton" raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
           </div>
         </div>
       </template>

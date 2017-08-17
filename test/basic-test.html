@@ -103,6 +103,85 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.method = METHOD;
       });
     });
+
+    suite('_computeToggleIconClass()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Always returns string', function() {
+        var result = element._computeToggleIconClass();
+        assert.typeOf(result, 'string');
+      });
+
+      test('Returns toggle-icon for falsy argument', function() {
+        var result = element._computeToggleIconClass();
+        assert.equal(result, 'toggle-icon');
+      });
+
+      test('Adds opened name for truily argument', function() {
+        var result = element._computeToggleIconClass(1);
+        assert.equal(result, 'toggle-icon opened');
+      });
+    });
+
+    suite('_computeToggleLabel()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Always returns string', function() {
+        var result = element._computeToggleLabel();
+        assert.typeOf(result, 'string');
+      });
+
+      test('Returns \'show\' label for falsy argument', function() {
+        var result = element._computeToggleLabel();
+        assert.equal(result, 'Show panel');
+      });
+
+      test('Returns \'hide\' label for truily argument', function() {
+        var result = element._computeToggleLabel(1);
+        assert.equal(result, 'Hide panel');
+      });
+    });
+
+    suite('_isPayloadChanged()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Changes selected tab', function() {
+        element.method = 'PUT';
+        element.selectedTab = 2;
+        TestHelpers.forceXIfStamp(element);
+
+        element._isPayloadChanged(false);
+        assert.equal(element.selectedTab, 0);
+      });
+
+      test('Do not changes selected tab if is payload', function() {
+        element.method = 'PUT';
+        element.selectedTab = 3;
+        TestHelpers.forceXIfStamp(element);
+
+        element._isPayloadChanged(true);
+        assert.equal(element.selectedTab, 3);
+      });
+
+      test('Do not changes selected tab if other tab is selected', function() {
+        element.method = 'PUT';
+        element.selectedTab = 3;
+        TestHelpers.forceXIfStamp(element);
+
+        element._isPayloadChanged(false);
+        assert.equal(element.selectedTab, 3);
+      });
+    });
+
     </script>
 
   </body>

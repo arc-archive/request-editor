@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <link rel="import" href="../request-editor.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <request-editor></request-editor>
+      </template>
+    </test-fixture>
+
+    <script>
+    /* global fixture, assert */
+    suite('serializeRequest()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Serializes request with empty values', function() {
+        var data = element.serializeRequest();
+        assert.equal(data.url, '');
+        assert.equal(data.method, '');
+        assert.equal(data.headers, '');
+        assert.equal(data.payload, '');
+        assert.isUndefined(data.authData);
+      });
+
+      test('Serializes request data', function() {
+        element.url = 'test-url';
+        element.method = 'test-method';
+        element.headers = 'test-headers';
+        element.payload = 'test-payload';
+
+        var data = element.serializeRequest();
+        assert.equal(data.url, 'test-url');
+        assert.equal(data.method, 'test-method');
+        assert.equal(data.headers, 'test-headers');
+        assert.equal(data.payload, 'test-payload');
+        assert.isUndefined(data.authData);
+      });
+
+    });
+    </script>
+  </body>
+</html>

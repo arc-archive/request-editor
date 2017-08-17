@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../request-editor.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <request-editor></request-editor>
+      </template>
+    </test-fixture>
+
+    <script>
+    /* global fixture, assert, TestHelpers, sinon, MockInteractions */
+    suite('send-request event', function() {
+      var element;
+      var HEADERS = 'content-type: test';
+      var URL = 'https://mulesoft.com';
+      var METHOD = 'PUT';
+      var PAYLOAD = 'test-payload';
+      setup(function() {
+        element = fixture('basic');
+        element.headers = HEADERS;
+        element.method = METHOD;
+        element.url = URL;
+        element.payload = PAYLOAD;
+        TestHelpers.forceXIfStamp(element);
+      });
+
+      test('Fires when send button pressed', function() {
+        var spy = sinon.spy();
+        element.addEventListener('send-request', spy);
+        var button = Polymer.dom(element.root).querySelector('#sendButton');
+        MockInteractions.tap(button);
+        assert.isTrue(spy.calledOnce);
+      });
+
+      test('Event contains the request data', function(done) {
+        element.addEventListener('send-request', function(e) {
+          assert.equal(e.detail.url, URL, 'URL is set');
+          assert.equal(e.detail.method, METHOD, 'Method is set');
+          assert.equal(e.detail.headers, HEADERS, 'Headers are set');
+          assert.equal(e.detail.payload, PAYLOAD, 'Payload is set');
+          done();
+        });
+        element._sendRequest();
+      });
+    });
+    </script>
+
+  </body>
+</html>

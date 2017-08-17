@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../request-editor.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <request-editor></request-editor>
+      </template>
+    </test-fixture>
+
+    <script>
+    /* global fixture, assert, TestHelpers, sinon */
+    suite('request-data-changed event', function() {
+      var element;
+      var HEADERS = 'content-type: test';
+      var URL = 'https://mulesoft.com';
+      var METHOD = 'HEAD';
+      var PAYLOAD = 'test-payload';
+      setup(function() {
+        element = fixture('basic');
+        // This ensures that the tests runs after the element is initialized.
+        TestHelpers.forceXIfStamp(element);
+      });
+
+      test('request-data-changed custom event fires when method changes', function(done) {
+        element.addEventListener('request-data-changed', function(e) {
+          assert.equal(e.detail.method, METHOD);
+          done();
+        });
+        element.method = METHOD;
+      });
+
+      test('request-data-changed custom event fires when URL changes', function(done) {
+        element.addEventListener('request-data-changed', function(e) {
+          assert.equal(e.detail.url, URL);
+          done();
+        });
+        element.url = URL;
+      });
+
+      test('request-data-changed custom event fires when headers changes', function(done) {
+        element.addEventListener('request-data-changed', function(e) {
+          assert.equal(e.detail.headers, HEADERS);
+          done();
+        });
+        element.headers = HEADERS;
+      });
+
+      test('request-data-changed custom event fires when payload changes', function(done) {
+        element.addEventListener('request-data-changed', function(e) {
+          assert.equal(e.detail.payload, PAYLOAD);
+          done();
+        });
+        element.payload = PAYLOAD;
+      });
+
+      test('fires event when payload as FormData changes', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-data-changed', spy);
+        element.payload = new FormData();
+        assert.isTrue(spy.called);
+      });
+
+      test('fires event when payload as Blob changes', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-data-changed', spy);
+        element.payload = new Blob(['']);
+        assert.isTrue(spy.called);
+      });
+    });
+    </script>
+
+  </body>
+</html>
