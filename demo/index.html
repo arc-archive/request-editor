@@ -86,6 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <url-history-saver></url-history-saver>
   </template>
   <paper-toast id="requestSend" text="Request send event detected"></paper-toast>
+  <paper-toast id="requestAbort" text="Request abort event detected"></paper-toast>
   <paper-toast id="clearToast" text="Clear request state detected"></paper-toast>
   <paper-toast id="saveToast" text="Save request state detected"></paper-toast>
   <paper-toast id="xhrToast" text="Toggle XHR request state changed"></paper-toast>
@@ -95,6 +96,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
   window.addEventListener('send-request', function() {
     openToast('requestSend');
+    document.querySelector('request-editor').loadingRequest = true;
+  });
+  window.addEventListener('abort-request', function() {
+    openToast('requestAbort');
+    document.querySelector('request-editor').loadingRequest = false;
   });
   window.addEventListener('request-clear-state', function() {
     openToast('clearToast');
