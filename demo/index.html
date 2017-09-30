@@ -50,7 +50,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved>
   <template is="dom-bind">
     <div class="vertical-section-container centered">
-      <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}"></request-editor>
+      <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" xhr-extension></request-editor>
     </div>
 
     <div class="vertical-section-container centered">
@@ -85,12 +85,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- <oauth2-authorization></oauth2-authorization> -->
     <url-history-saver></url-history-saver>
   </template>
-  <paper-toast id="toast"></paper-toast>
+  <paper-toast id="requestSend" text="Request send event detected"></paper-toast>
+  <paper-toast id="requestAbort" text="Request abort event detected"></paper-toast>
+  <paper-toast id="clearToast" text="Clear request state detected"></paper-toast>
+  <paper-toast id="saveToast" text="Save request state detected"></paper-toast>
+  <paper-toast id="xhrToast" text="Toggle XHR request state changed"></paper-toast>
   <script>
+  function openToast(id) {
+    document.getElementById(id).opened = true;
+  }
   window.addEventListener('send-request', function() {
-    var toast = document.querySelector('#toast');
-    toast.text = 'Request send event detected';
-    toast.opened = true;
+    openToast('requestSend');
+    document.querySelector('request-editor').loadingRequest = true;
+  });
+  window.addEventListener('abort-request', function() {
+    openToast('requestAbort');
+    document.querySelector('request-editor').loadingRequest = false;
+  });
+  window.addEventListener('request-clear-state', function() {
+    openToast('clearToast');
+  });
+  window.addEventListener('request-save-state', function() {
+    openToast('saveToast');
+  });
+  window.addEventListener('request-use-xhr-changed', function() {
+    openToast('xhrToast');
   });
   </script>
 </body>

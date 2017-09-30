@@ -1,0 +1,94 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../request-editor.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <request-editor xhr-extension></request-editor>
+      </template>
+    </test-fixture>
+
+    <script>
+    /* global fixture, assert, sinon, TestHelpers */
+    suite('basic', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+        TestHelpers.forceXIfStamp(element);
+      });
+
+      test('_useXhrExtension is false by default', function() {
+        assert.isFalse(element._useXhrExtension);
+      });
+
+      test('Fires request-use-xhr-changed custom event', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-use-xhr-changed', spy);
+        element._useXhrExtension = true;
+        assert.isTrue(spy.calledOnce);
+      });
+
+      test('request-use-xhr-changed custom event has state', function(done) {
+        element._useXhrExtension = false;
+        element.addEventListener('request-use-xhr-changed', function clb(e) {
+          element.removeEventListener('request-use-xhr-changed', clb);
+          assert.isTrue(e.detail.value);
+          done();
+        });
+        element._useXhrExtension = true;
+      });
+
+      test('Fires request-save-state custom event', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-save-state', spy);
+        element.saveRequestState();
+        assert.isTrue(spy.calledOnce);
+      });
+
+      test('Fires request-clear-state custom event', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-clear-state', spy);
+        element.clearRequest();
+        assert.isTrue(spy.calledOnce);
+      });
+
+      test('clearRequest clears the state', function() {
+        element.url = 'http://test.com';
+        element.method = 'PUT';
+        element.selectedTab = 1;
+        element.headers = 'test';
+        element.payload = 'test';
+
+        element.clearRequest();
+
+        assert.equal(element.method, 'GET');
+        assert.equal(element.url, '');
+        assert.equal(element.selectedTab, 0);
+        assert.equal(element.headers, '');
+        assert.equal(element.payload, '');
+      });
+
+    });
+    </script>
+
+  </body>
+</html>
