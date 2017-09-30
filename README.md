@@ -59,6 +59,8 @@ Custom property | Description | Default
 `--request-editor-url-editor` | Mixin applied to a line with the URL editor | `{}`
 `--arc-font-subhead` | Theme mixin, applied to the section name title | `{}`
 `--action-button` | Theme mixin, applied to the acction buttons | `{}`
+`--request-editor-context-menu-icon-color` | Color of an icon in the context menu | `--primary-color`
+`--request-editor-context-menu-icon` | Mixin applied to an icon in the context menu | `{}`
 
 To style edtors use variables defined in the following elements:
 - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)
@@ -81,11 +83,14 @@ it will be passed down to the editor.
 | Name | Description | Params |
 | --- | --- | --- |
 | abort-request | Fired when the user request to abort current request.  This event can be cancelled. | url **String** - The request URL. Can be empty string. Also uit may be different URL that the one used to send the request if the user changed it in between. |
+| request-clear-state | Fired when clear request state option has been selected from the menu. | __none__ |
 | request-data-changed | Event fired when any part of the request data change. | url **String** - The request URL. Can be empty string. |
 method **String** - HTTP method name. Can be empty. |
 headers **String** - HTTP headers string. Can be empty. |
 payload **(String&#124;File&#124;FormData)** - Message body. Can be undefined. |
 auth **Object** - Always undefined. For future use. |
+| request-save-state | Fired when the save action has been requested in the UI. This event is cancelable. | __none__ |
+| request-use-xhr-changed | Fired when the state of the toggle XHR button change. It is fired to inform request controlling element to switch to the XHR extension. `xhrExtension` must be set to display the toggle button. | value **Boolean** - Current state of the toggle button |
 | send-request | Fired when the user request to send current request.  This event can be cancelled. | url **String** - The request URL. Can be empty string. |
 method **String** - HTTP method name. Can be empty. |
 headers **String** - HTTP headers string. Can be empty. |
