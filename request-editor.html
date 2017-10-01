@@ -35,7 +35,7 @@ the License.
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-item/paper-icon-item.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
-
+<link rel="import" href="../uuid-generator/uuid-generator.html">
 <!--
 An element that renders the UI to create a HTTP request.
 
@@ -257,6 +257,7 @@ it will be passed down to the editor.
         </iron-collapse>
       </section>
     </div>
+    <uuid-generator id="uuid"></uuid-generator>
   </template>
   <script>
   Polymer({
@@ -275,6 +276,7 @@ it will be passed down to the editor.
      * @param {String} headers HTTP headers string. Can be empty.
      * @param {String|File|FormData} payload Message body. Can be undefined.
      * @param {Object} auth Always undefined. For future use.
+     * @param {String} id Generated UUID for the request.
      */
     /**
      * Fired when the user request to abort current request.
@@ -285,6 +287,8 @@ it will be passed down to the editor.
      * @param {String} url The request URL. Can be empty string. Also uit may be
      * different URL that the one used to send the request if the user changed
      * it in between.
+     * @param {String} id Generated UUID of the request with `send-request`
+     * event.
      */
     /**
      * Event fired when any part of the request data change.
@@ -419,7 +423,12 @@ it will be passed down to the editor.
       _useXhrExtension: {
         type: Boolean,
         observer: '_useXhrExtensionChanged'
-      }
+      },
+      /**
+       * Generated request ID when the request is sent. This value is reported
+       * in send and abort events
+       */
+      requestId: String
     },
 
     observers: [
@@ -510,6 +519,8 @@ it will be passed down to the editor.
      */
     _sendRequest: function() {
       var request = this.serializeRequest();
+      this.requestId = this.$.uuid.generate();
+      request.id = this.requestId;
       this.fire('send-request', request, {
         cancelable: true,
         composite: true
@@ -520,7 +531,8 @@ it will be passed down to the editor.
      */
     _abortRequest: function() {
       this.fire('abort-request', {
-        url: this.url
+        url: this.url,
+        id: this.requestId
       }, {
         cancelable: true,
         composite: true

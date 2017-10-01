@@ -35,12 +35,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var URL = 'https://mulesoft.com';
       var METHOD = 'PUT';
       var PAYLOAD = 'test-payload';
+      var ID = 'test-id';
       setup(function() {
         element = fixture('basic');
         element.headers = HEADERS;
         element.method = METHOD;
         element.url = URL;
         element.payload = PAYLOAD;
+        element.requestId = ID;
         TestHelpers.forceXIfStamp(element);
       });
 
@@ -52,9 +54,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(spy.calledOnce);
       });
 
-      test('Event contains the URL', function(done) {
-        element.addEventListener('abort-request', function(e) {
+      test('Event contains the URL and the ID', function(done) {
+        element.addEventListener('abort-request', function clb(e) {
+          element.removeEventListener('abort-request', clb);
           assert.equal(e.detail.url, URL, 'URL is set');
+          assert.equal(e.detail.id, ID, 'id is set');
           done();
         });
         element._abortRequest();
