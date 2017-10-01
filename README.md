@@ -83,6 +83,7 @@ it will be passed down to the editor.
 | Name | Description | Params |
 | --- | --- | --- |
 | abort-request | Fired when the user request to abort current request.  This event can be cancelled. | url **String** - The request URL. Can be empty string. Also uit may be different URL that the one used to send the request if the user changed it in between. |
+id **String** - Generated UUID of the request with `send-request` event. |
 | request-clear-state | Fired when clear request state option has been selected from the menu. | __none__ |
 | request-data-changed | Event fired when any part of the request data change. | url **String** - The request URL. Can be empty string. |
 method **String** - HTTP method name. Can be empty. |
@@ -96,3 +97,4 @@ method **String** - HTTP method name. Can be empty. |
 headers **String** - HTTP headers string. Can be empty. |
 payload **(String&#124;File&#124;FormData)** - Message body. Can be undefined. |
 auth **Object** - Always undefined. For future use. |
+id **String** - Generated UUID for the request. |

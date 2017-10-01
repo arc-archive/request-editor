@@ -1,7 +1,7 @@
 {
   "name": "request-editor",
   "description": "A request complete HTTP request editor",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "Apache-2.0 OR CC-BY-4.0",
   "authors": [
     "The Advanced REST client authors <arc@mulesoft.com>"
@@ -43,7 +43,8 @@
     "paper-menu-button": "PolymerElements/paper-menu-button#<2",
     "paper-menu": "PolymerElements/paper-menu#<2",
     "paper-item": "PolymerElements/paper-item#<2",
-    "iron-icon": "PolymerElements/iron-icon#<2"
+    "iron-icon": "PolymerElements/iron-icon#<2",
+    "uuid-generator": "advanced-rest-client/uuid-generator#^1.0.4"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#1.0.0",
