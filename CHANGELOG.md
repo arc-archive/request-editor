@@ -1,3 +1,9 @@
+<a name="0.2.3"></a>
+## [0.2.3](https://github.com/advanced-rest-client/request-editor/compare/0.2.2...0.2.3) (2017-10-01)
+
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/advanced-rest-client/request-editor/compare/0.2.1...0.2.2) (2017-10-01)
 
