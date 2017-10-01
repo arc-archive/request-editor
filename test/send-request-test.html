@@ -58,6 +58,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(e.detail.method, METHOD, 'Method is set');
           assert.equal(e.detail.headers, HEADERS, 'Headers are set');
           assert.equal(e.detail.payload, PAYLOAD, 'Payload is set');
+          assert.typeOf(e.detail.id, 'string', 'id is set');
           done();
         });
         element._sendRequest();
