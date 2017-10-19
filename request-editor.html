@@ -560,7 +560,10 @@ it will be passed down to the editor.
      * Toggles state of the use XHR extension toggle button.
      */
     toggleXhr: function(e) {
-      this._useXhrExtension = !this._useXhrExtension;
+      var node = e ? Polymer.dom(e).localTarget.nodeName.toLowerCase() : '';
+      if (node !== 'paper-toggle-button') {
+        this._useXhrExtension = !this._useXhrExtension;
+      }
       if (e && e.preventDefault) {
         e.preventDefault();
         e.stopPropagation();
