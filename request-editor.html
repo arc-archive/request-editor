@@ -523,6 +523,9 @@ it will be passed down to the editor.
      * It cancels the even and stops it's propagation and the sends the request
      */
     _sendRequestInner: function(e) {
+      if (e.target === this) {
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       this._sendRequest();
