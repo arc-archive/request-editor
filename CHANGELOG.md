@@ -1,3 +1,14 @@
+<a name="0.2.8"></a>
+## [0.2.8](https://github.com/advanced-rest-client/request-editor/compare/0.2.7...0.2.8) (2017-12-15)
+
+
+### Fix
+
+* Fixes https://github.com/advanced-rest-client/arc-electron/issues/18 ([73ac6927d2fc0db234027c0b69ebac9acd0814a2](https://github.com/advanced-rest-client/request-editor/commit/73ac6927d2fc0db234027c0b69ebac9acd0814a2))
+* Fixing event firing and handling loop ([9463331d9a60a183626aa8a2e56717fb9ecc2ef4](https://github.com/advanced-rest-client/request-editor/commit/9463331d9a60a183626aa8a2e56717fb9ecc2ef4))
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/advanced-rest-client/request-editor/compare/0.2.6...0.2.7) (2017-10-19)
 
