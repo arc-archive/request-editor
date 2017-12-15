@@ -436,6 +436,10 @@ it will be passed down to the editor.
       '_refreshPayload(selectedTab)'
     ],
 
+    listeners: {
+      'send-request': '_sendRequestInner'
+    },
+
     _attachListeners: function(node) {
       this.listen(node, 'oauth2-redirect-url-changed',
         '_authRedirectChanged');
@@ -513,6 +517,18 @@ it will be passed down to the editor.
       if (selectedTab === 2) {
         this.$$('payload-editor').refresh();
       }
+    },
+    /**
+     * Handles an event dispatched by eny of the child elements.
+     * It cancels the even and stops it's propagation and the sends the request
+     */
+    _sendRequestInner: function(e) {
+      if (e.target === this) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      this._sendRequest();
     },
     /**
      * Sends the `send-request` custom event to send the request.
