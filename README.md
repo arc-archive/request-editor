@@ -61,6 +61,12 @@ Custom property | Description | Default
 `--action-button` | Theme mixin, applied to the acction buttons | `{}`
 `--request-editor-context-menu-icon-color` | Color of an icon in the context menu | `--primary-color`
 `--request-editor-context-menu-icon` | Mixin applied to an icon in the context menu | `{}`
+`--request-editor-main-action-buttons` | Mixin applied to the action buttons next to the URL editor | `{}`
+`--request-editor-url-input-editor` | Mixin applied to the URL editor | `{}`
+`--request-editor-method-selector` | Mixin applied to the methos selector in narrow view | `{}`
+`--request-editor-method-selector-mini` | Mixin applied to the methos selector in wide view | `{}`
+`--request-editor-context-menu-dropdown` | Mixin applied to the main action context menu dropdown container | `{}`
+`--request-editor-main-action-button` | Mixin applied to the send / abort buttons | `{}`
 
 To style edtors use variables defined in the following elements:
 - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)

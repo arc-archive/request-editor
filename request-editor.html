@@ -96,6 +96,12 @@ Custom property | Description | Default
 `--action-button` | Theme mixin, applied to the acction buttons | `{}`
 `--request-editor-context-menu-icon-color` | Color of an icon in the context menu | `--primary-color`
 `--request-editor-context-menu-icon` | Mixin applied to an icon in the context menu | `{}`
+`--request-editor-main-action-buttons` | Mixin applied to the action buttons next to the URL editor | `{}`
+`--request-editor-url-input-editor` | Mixin applied to the URL editor | `{}`
+`--request-editor-method-selector` | Mixin applied to the methos selector in narrow view | `{}`
+`--request-editor-method-selector-mini` | Mixin applied to the methos selector in wide view | `{}`
+`--request-editor-context-menu-dropdown` | Mixin applied to the main action context menu dropdown container | `{}`
+`--request-editor-main-action-button` | Mixin applied to the send / abort buttons | `{}`
 
 To style edtors use variables defined in the following elements:
 - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)
@@ -132,11 +138,13 @@ it will be passed down to the editor.
 
     url-input-editor {
       @apply --layout-flex;
+      @apply --request-editor-url-input-editor;
     }
 
     .main-action-buttons {
       margin-top: 20px;
       margin-left: 16px;
+      @apply --request-editor-main-action-buttons;
     }
 
     h2 {
@@ -150,14 +158,17 @@ it will be passed down to the editor.
 
     .action-button {
       @apply --action-button;
+      @apply --request-editor-main-action-button;
     }
 
     http-method-selector {
       margin-bottom: 12px;
+      @apply --request-editor-method-selector;
     }
 
     http-method-selector-mini {
       margin-right: 8px;
+      @apply --request-editor-method-selector-mini;
     }
 
     .toggle-icon {
@@ -186,6 +197,10 @@ it will be passed down to the editor.
       color: var(--request-editor-context-menu-icon-color, --primary-color);
       @apply --request-editor-context-menu-icon;
     }
+
+    .options-menu {
+      @apply --request-editor-context-menu-dropdown;
+    }
     </style>
     <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
     <div class="content">
@@ -204,7 +219,7 @@ it will be passed down to the editor.
           </div>
           <paper-menu-button horizontal-align="right" class="request-menu">
             <paper-icon-button icon="arc:more-vert" class="dropdown-trigger"></paper-icon-button>
-            <paper-menu class="dropdown-content" id="requestMenu">
+            <paper-menu class="dropdown-content options-menu" id="requestMenu">
               <template is="dom-if" if="[[xhrExtension]]">
                 <paper-icon-item on-tap="toggleXhr">
                   <span item-icon>
