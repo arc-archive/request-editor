@@ -1,3 +1,13 @@
+<a name="0.2.11"></a>
+## [0.2.11](https://github.com/advanced-rest-client/request-editor/compare/0.2.10...0.2.11) (2018-01-30)
+
+
+### Update
+
+* Adding CSS mixin for context menu ([83af42d07f1376f39a1e126e15dec11ef436c75e](https://github.com/advanced-rest-client/request-editor/commit/83af42d07f1376f39a1e126e15dec11ef436c75e))
+
+
+
 <a name="0.2.10"></a>
 ## [0.2.10](https://github.com/advanced-rest-client/request-editor/compare/0.2.9...0.2.10) (2018-01-30)
 

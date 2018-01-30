@@ -65,6 +65,7 @@ Custom property | Description | Default
 `--request-editor-url-input-editor` | Mixin applied to the URL editor | `{}`
 `--request-editor-method-selector` | Mixin applied to the methos selector in narrow view | `{}`
 `--request-editor-method-selector-mini` | Mixin applied to the methos selector in wide view | `{}`
+`--request-editor-context-menu` | Mixin applied to the main action context menu dropdown | `{}`
 `--request-editor-context-menu-dropdown` | Mixin applied to the main action context menu dropdown container | `{}`
 `--request-editor-main-action-button` | Mixin applied to the send / abort buttons | `{}`
 
