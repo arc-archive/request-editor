@@ -103,6 +103,8 @@ Custom property | Description | Default
 `--request-editor-context-menu` | Mixin applied to the main action context menu dropdown | `{}`
 `--request-editor-context-menu-dropdown` | Mixin applied to the main action context menu dropdown container | `{}`
 `--request-editor-main-action-button` | Mixin applied to the send / abort buttons | `{}`
+`--request-editor-tabs-container` | Mixin applied to the headers and body editors container | `{}`
+`--request-editor-tab-selected` | Mixin applied to selected tab | `{}`
 
 To style edtors use variables defined in the following elements:
 - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)
@@ -203,6 +205,14 @@ it will be passed down to the editor.
     .options-menu {
       @apply --request-editor-context-menu-dropdown;
     }
+
+    .editors-container {
+      @apply --request-editor-tabs-container;
+    }
+
+    paper-tab.iron-selected {
+      @apply --request-editor-tab-selected;
+    }
     </style>
     <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
     <div class="content">
@@ -265,7 +275,7 @@ it will be passed down to the editor.
             <paper-tab hidden$="[[!isPayload]]">Body</paper-tab>
             <paper-tab>Variables</paper-tab>
           </paper-tabs>
-          <iron-pages selected="[[selectedTab]]" selected-attribute="opened">
+          <iron-pages selected="[[selectedTab]]" selected-attribute="opened" class="editors-container">
             <headers-editor events-target="[[eventsTarget]]" is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
             <!-- <authorization-panel redirect-url="[[oauth2RedirectUrl]]"></authorization-panel> -->
             <payload-editor events-target="[[eventsTarget]]" raml-type="[[ramlType]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>

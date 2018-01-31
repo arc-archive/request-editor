@@ -68,6 +68,8 @@ Custom property | Description | Default
 `--request-editor-context-menu` | Mixin applied to the main action context menu dropdown | `{}`
 `--request-editor-context-menu-dropdown` | Mixin applied to the main action context menu dropdown container | `{}`
 `--request-editor-main-action-button` | Mixin applied to the send / abort buttons | `{}`
+`--request-editor-tabs-container` | Mixin applied to the headers and body editors container | `{}`
+`--request-editor-tab-selected` | Mixin applied to selected tab | `{}`
 
 To style edtors use variables defined in the following elements:
 - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)

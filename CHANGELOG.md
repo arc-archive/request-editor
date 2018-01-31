@@ -1,3 +1,13 @@
+<a name="0.2.14"></a>
+## [0.2.14](https://github.com/advanced-rest-client/request-editor/compare/0.2.13...0.2.14) (2018-01-31)
+
+
+### Update
+
+* Added new styling options. ([38bd816a1eeff03380d24801e1a7e0aa0f171298](https://github.com/advanced-rest-client/request-editor/commit/38bd816a1eeff03380d24801e1a7e0aa0f171298))
+
+
+
 <a name="0.2.13"></a>
 ## [0.2.13](https://github.com/advanced-rest-client/request-editor/compare/0.2.12...0.2.13) (2018-01-30)
 
