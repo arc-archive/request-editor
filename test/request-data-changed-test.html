@@ -35,6 +35,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var URL = 'https://mulesoft.com';
       var METHOD = 'HEAD';
       var PAYLOAD = 'test-payload';
+      var ACTIONS = [{
+        'source': 'request.body',
+        'action': 'assign-variable',
+        'enabled': true
+      }];
       setup(function() {
         element = fixture('basic');
         // This ensures that the tests runs after the element is initialized.
@@ -79,6 +84,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
         element.addEventListener('request-data-changed', callback);
         element.payload = PAYLOAD;
+      });
+
+      test('Fires event when request actions list changes', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
+          assert.isTrue(e.detail.actions === ACTIONS);
+          done();
+        };
+        element.addEventListener('request-data-changed', callback);
+        element.requestActions = ACTIONS;
       });
 
       test('Fires event when payload as FormData changes', function() {
