@@ -1,3 +1,13 @@
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/advanced-rest-client/request-editor/compare/0.2.15...0.3.1) (2018-02-09)
+
+
+### New
+
+* Added request actions editor. ([ba91be22b1c68313425f8601028e5b53f5234699](https://github.com/advanced-rest-client/request-editor/commit/ba91be22b1c68313425f8601028e5b53f5234699))
+
+
+
 <a name="0.2.15"></a>
 ## [0.2.15](https://github.com/advanced-rest-client/request-editor/compare/0.2.14...0.2.15) (2018-01-31)
 
