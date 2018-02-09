@@ -44,7 +44,8 @@
     "paper-menu": "PolymerElements/paper-menu#<2",
     "paper-item": "PolymerElements/paper-item#<2",
     "iron-icon": "PolymerElements/iron-icon#<2",
-    "uuid-generator": "advanced-rest-client/uuid-generator#^1.0.4"
+    "uuid-generator": "advanced-rest-client/uuid-generator#^1.0.4",
+    "request-actions-panel": "advanced-rest-client/request-actions-panel#^0.1.1"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#1.0.0",

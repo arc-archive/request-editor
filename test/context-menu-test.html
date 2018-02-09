@@ -77,6 +77,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.selectedTab = 1;
         element.headers = 'test';
         element.payload = 'test';
+        element.requestActions = [{
+          'source': 'request.body',
+          'action': 'assign-variable',
+          'enabled': true
+        }];
 
         element.clearRequest();
 
@@ -85,6 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(element.selectedTab, 0);
         assert.equal(element.headers, '');
         assert.equal(element.payload, '');
+        assert.isUndefined(element.requestActions);
       });
 
     });
