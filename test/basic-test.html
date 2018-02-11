@@ -104,6 +104,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.addEventListener('request-data-changed', callback);
         element.method = METHOD;
       });
+
+      test('Computes query model property', function() {
+        TestHelpers.forceXIfStamp(element);
+        element.$$('url-input-editor').detailsOpened = true;
+        element.url = 'https://mulesoft.com?param=value&test=true';
+        assert.typeOf(element.queryModel, 'array');
+        assert.lengthOf(element.queryModel, 2);
+      });
     });
 
     suite('_computeToggleIconClass()', function() {

@@ -32,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     suite('request-data-changed event', function() {
       var element;
       var HEADERS = 'content-type: test';
-      var URL = 'https://mulesoft.com';
+      var URL = 'https://mulesoft.com?param=value';
       var METHOD = 'HEAD';
       var PAYLOAD = 'test-payload';
       var ACTIONS = [{
@@ -63,6 +63,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         };
         element.addEventListener('request-data-changed', callback);
+        element.url = URL;
+      });
+
+      test('Contains query parameters model', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
+          assert.typeOf(e.detail.queryModel, 'array');
+          assert.lengthOf(e.detail.queryModel, 1);
+          done();
+        };
+        element.addEventListener('request-data-changed', callback);
+        element.$$('url-input-editor').detailsOpened = true;
         element.url = URL;
       });
 
