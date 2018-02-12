@@ -71,6 +71,150 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element._sendRequest();
       });
     });
+
+    suite('Authorization settings', function() {
+      var element;
+      var HEADERS = '';
+      var URL = 'https://mulesoft.com';
+      var METHOD = 'GET';
+      var panel;
+      var authPanel;
+      function setupElement() {
+        element = fixture('basic');
+        element.headers = HEADERS;
+        element.method = METHOD;
+        element.url = URL;
+        TestHelpers.forceXIfStamp(element);
+        panel = element.$$('authorization-panel');
+      }
+
+      suite('Basic auth', function() {
+        setup(function() {
+          setupElement();
+          panel.selected = 'basic';
+          authPanel = panel.$$('auth-method-basic');
+          authPanel.username = 'test';
+          authPanel.password = 'test';
+        });
+
+        test('Has headers data', function(done) {
+          element.addEventListener('send-request', function(e) {
+            assert.equal(e.detail.headers, 'authorization: Basic dGVzdDp0ZXN0');
+            done();
+          });
+          element._sendRequest();
+        });
+
+        test('Accepts settings', function(done) {
+          element.addEventListener('send-request', function(e) {
+            var settings = e.detail.auth;
+            assert.typeOf(settings, 'object');
+            assert.equal(settings.type, 'basic');
+            assert.equal(settings.settings.password, 'test');
+            assert.equal(settings.settings.username, 'test');
+            assert.equal(settings.settings.hash, 'dGVzdDp0ZXN0');
+            done();
+          });
+          element._sendRequest();
+        });
+      });
+
+      suite('NTLM auth', function() {
+        setup(function() {
+          setupElement();
+          panel.selected = 'ntlm';
+          authPanel = panel.$$('auth-method-ntlm');
+          authPanel.username = 'test';
+          authPanel.password = 'test';
+          authPanel.domain = 'mulesoft.com';
+        });
+
+        test('Headers are not altered', function(done) {
+          element.addEventListener('send-request', function(e) {
+            assert.equal(e.detail.headers, HEADERS);
+            done();
+          });
+          element._sendRequest();
+        });
+
+        test('Accepts settings', function(done) {
+          element.addEventListener('send-request', function(e) {
+            var settings = e.detail.auth;
+            assert.typeOf(settings, 'object');
+            assert.equal(settings.type, 'ntlm');
+            assert.equal(settings.settings.password, 'test');
+            assert.equal(settings.settings.username, 'test');
+            assert.equal(settings.settings.domain, 'mulesoft.com');
+            done();
+          });
+          element._sendRequest();
+        });
+      });
+
+      suite('Digest auth', function() {
+        setup(function() {
+          setupElement();
+          panel.selected = 'digest';
+          authPanel = panel.$$('auth-method-digest');
+          authPanel.username = 'test';
+          authPanel.password = 'test';
+        });
+
+        test('Headers are not altered', function(done) {
+          element.addEventListener('send-request', function(e) {
+            assert.equal(e.detail.headers, 'authorization: Digest password="test", username="test"');
+            done();
+          });
+          element._sendRequest();
+        });
+
+        test('Accepts settings', function(done) {
+          element.addEventListener('send-request', function(e) {
+            var settings = e.detail.auth;
+            assert.typeOf(settings, 'object');
+            assert.equal(settings.type, 'digest');
+            assert.equal(settings.settings.password, 'test');
+            assert.equal(settings.settings.username, 'test');
+            done();
+          });
+          element._sendRequest();
+        });
+      });
+
+      suite('OAuth2 auth', function() {
+        setup(function() {
+          setupElement();
+          panel.selected = 'oauth2';
+          authPanel = panel.$$('auth-method-oauth2');
+          authPanel.grantType = 'implicit';
+          authPanel.clientId = 'test-clinet';
+          authPanel.authUrl = 'https://domain.com';
+        });
+
+        test('Headers are not altered', function(done) {
+          element.addEventListener('send-request', function(e) {
+            assert.equal(e.detail.headers, HEADERS);
+            done();
+          });
+          element._sendRequest();
+        });
+
+        test('Accepts settings', function(done) {
+          TestHelpers.forceXIfStamp(element);
+          element.addEventListener('send-request', function(e) {
+            var settings = e.detail.auth;
+            console.log(settings.settings);
+            assert.typeOf(settings, 'object');
+            assert.equal(settings.type, 'oauth2');
+            assert.equal(settings.settings.type, 'implicit');
+            assert.equal(settings.settings.clientId, 'test-clinet');
+            assert.equal(settings.settings.authorizationUrl, 'https://domain.com');
+            done();
+          });
+          element._sendRequest();
+        });
+      });
+    });
     </script>
 
   </body>
