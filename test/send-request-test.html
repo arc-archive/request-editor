@@ -79,17 +79,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var METHOD = 'GET';
       var panel;
       var authPanel;
-      setup(function() {
+      function setupElement() {
         element = fixture('basic');
         element.headers = HEADERS;
         element.method = METHOD;
         element.url = URL;
         TestHelpers.forceXIfStamp(element);
         panel = element.$$('authorization-panel');
-      });
+      }
 
       suite('Basic auth', function() {
         setup(function() {
+          setupElement();
           panel.selected = 'basic';
           authPanel = panel.$$('auth-method-basic');
           authPanel.username = 'test';
@@ -120,6 +121,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       suite('NTLM auth', function() {
         setup(function() {
+          setupElement();
           panel.selected = 'ntlm';
           authPanel = panel.$$('auth-method-ntlm');
           authPanel.username = 'test';
@@ -151,6 +153,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       suite('Digest auth', function() {
         setup(function() {
+          setupElement();
           panel.selected = 'digest';
           authPanel = panel.$$('auth-method-digest');
           authPanel.username = 'test';
@@ -180,6 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       suite('OAuth2 auth', function() {
         setup(function() {
+          setupElement();
           panel.selected = 'oauth2';
           authPanel = panel.$$('auth-method-oauth2');
           authPanel.grantType = 'implicit';
