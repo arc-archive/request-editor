@@ -15,14 +15,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
   <title>request-editor demo</title>
-
+  <script>
+  if (location.search.indexOf('response_type') !== -1 && location.search.indexOf('redirect_uri') !== -1) {
+    // OAUTH DEMO
+    var p = new URLSearchParams(location.search);
+    var state = p.get('state');
+    var type = p.get('response_type');
+    var red = p.get('redirect_uri');
+    red += '?state=' + state;
+    if (type === 'token') {
+      red += '&access_token=ya.12345.asdfghh';
+    } else {
+      red += '&code=12345Zasdfghh';
+    }
+    location.href = red;
+  }
+  </script>
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   <link rel="import" href="../../variables-evaluator/variables-evaluator.html">
   <link rel="import" href="../../variables-manager/variables-manager.html">
-  <!-- <link rel="import" href="../../oauth-authorization/oauth2-authorization.html"> -->
+  <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
+  <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
   <link rel="import" href="../../url-history-saver/url-history-saver.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
   <link rel="import" href="../request-editor.html">
@@ -48,9 +64,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
 </head>
 <body unresolved>
-  <template is="dom-bind">
+  <template is="dom-bind" id="demo">
     <div class="vertical-section-container centered">
-      <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" xhr-extension></request-editor>
+      <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" oauth2-redirect-uri="[[oauth2RedirectUri]]"></request-editor>
     </div>
 
     <div class="vertical-section-container centered">
@@ -78,11 +94,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
       <li><a href="https://github.com/advanced-rest-client/variables-manager">variables-manager</a></li>
       <li><a href="https://github.com/advanced-rest-client/url-history-saver">url-history-saver</a></li>
-      <!-- <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li> -->
+      <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li>
     </ul>
     <variables-evaluator></variables-evaluator>
     <variables-manager></variables-manager>
-    <!-- <oauth2-authorization></oauth2-authorization> -->
+    <oauth2-authorization></oauth2-authorization>
+    <oauth1-authorization></oauth1-authorization>
     <url-history-saver></url-history-saver>
   </template>
   <paper-toast id="requestSend" text="Request send event detected"></paper-toast>
@@ -111,6 +128,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   window.addEventListener('request-use-xhr-changed', function() {
     openToast('xhrToast');
   });
+
+  (function(scope) {
+    var redirectUrl = location.href.replace(/request-editor\/demo\/(index\.html)?/,
+        'oauth-authorization/oauth-popup.html');
+    scope.oauth2RedirectUri = redirectUrl;
+  })(document.getElementById('demo'));
   </script>
 </body>
 </html>
