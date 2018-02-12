@@ -38,29 +38,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('Body is hidden for GET', function() {
         element.method = 'GET';
         TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
         assert.isTrue(tab.hasAttribute('hidden'));
       });
 
       test('Body is hidden for HEAD', function() {
         element.method = 'HEAD';
         TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
         assert.isTrue(tab.hasAttribute('hidden'));
       });
 
       test('Body is visible for POST', function() {
         element.method = 'POST';
         TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[1];
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
         assert.isFalse(tab.hasAttribute('hidden'));
       });
-      // This is not up to this element
-      // test('Setting content-type property sets headers', function() {
-      //   element.contentType = 'application/json';
-      //   TestHelpers.forceXIfStamp(element);
-      //   assert.equal(element.headers, 'Content-Type: application/json');
-      // });
 
       test('URL editor is visible by default', function() {
         TestHelpers.forceXIfStamp(element);

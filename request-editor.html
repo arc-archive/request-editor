@@ -18,7 +18,7 @@ the License.
 <link rel="import" href="../http-method-selector/http-method-selector-mini.html">
 <link rel="import" href="../payload-editor/payload-editor.html">
 <link rel="import" href="../variables-editor/variables-editor.html">
-<!-- <link rel="import" href="../authorization-panel/authorization-panel.html"> -->
+<link rel="import" href="../authorization-panel/authorization-panel.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-tabs/paper-tabs.html">
 <link rel="import" href="../paper-tabs/paper-tab.html">
@@ -87,6 +87,14 @@ document.body.addEventListener('request-data-changed', e => {
   console.log(e.detail);
 });
 ```
+
+## Authorization panel
+
+Authorization panel renders methods to authorize the user using varius methods.
+Detailed documentation for authorization is at https://github.com/advanced-rest-client/authorization-panel
+
+To make OAuth2 work properly set `oauth2RedirectUri` property to application
+redirect URI. User should set this value in in provider's settings.
 
 ## Request actions
 
@@ -279,14 +287,14 @@ it will be passed down to the editor.
         <iron-collapse opened="[[collapseOpened]]">
           <paper-tabs selected="{{selectedTab}}" hidden$="[[!collapseOpened]]">
             <paper-tab>Headers</paper-tab>
-            <!-- <paper-tab>Authorization</paper-tab> -->
+            <paper-tab>Authorization</paper-tab>
             <paper-tab hidden$="[[!isPayload]]">Body</paper-tab>
             <paper-tab>Variables</paper-tab>
             <paper-tab>Actions</paper-tab>
           </paper-tabs>
           <iron-pages selected="[[selectedTab]]" selected-attribute="opened" class="editors-container">
             <headers-editor events-target="[[eventsTarget]]" is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
-            <!-- <authorization-panel redirect-url="[[oauth2RedirectUrl]]"></authorization-panel> -->
+            <authorization-panel redirect-url="[[oauth2RedirectUri]]" settings="{{authSettings}}" http-method="[[method]]" request-url="[[url]]" request-body="[[payload]]"></authorization-panel>
             <payload-editor events-target="[[eventsTarget]]" raml-type="[[ramlType]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>
             <variables-editor></variables-editor>
             <request-actions-panel actions="{{requestActions}}" attr-for-opened="opened"></request-actions-panel>
@@ -457,12 +465,12 @@ it will be passed down to the editor.
        * It will be passed to the editors that support RAML types.
        */
       ramlType: Object,
-      // /**
-      //  * Redirect URL for the OAuth2 authorization.
-      //  * If can be also set by dispatching `oauth2-redirect-url-changed`
-      //  * with `value` property on the `detail` object.
-      //  */
-      // oauth2RedirectUrl: String
+      /**
+       * Redirect URL for the OAuth2 authorization.
+       * If can be also set by dispatching `oauth2-redirect-url-changed`
+       * with `value` property on the `detail` object.
+       */
+      oauth2RedirectUri: String,
       /**
        * If set then it renders an option in request context menu to
        * toggle to XHR request via the extension.
@@ -480,7 +488,12 @@ it will be passed down to the editor.
        * Generated request ID when the request is sent. This value is reported
        * in send and abort events
        */
-      requestId: String
+      requestId: String,
+      // Current authorization panel settings.
+      authSettings: {
+        type: Object,
+        notify: true
+      }
     },
 
     observers: [
@@ -493,12 +506,12 @@ it will be passed down to the editor.
     },
 
     _attachListeners: function(node) {
-      this.listen(node, 'oauth2-redirect-url-changed',
+      this.listen(node, 'oauth2-redirect-uri-changed',
         '_authRedirectChanged');
     },
 
     _detachListeners: function(node) {
-      this.unlisten(node, 'oauth2-redirect-url-changed',
+      this.unlisten(node, 'oauth2-redirect-uri-changed',
         '_authRedirectChanged');
     },
 
@@ -526,8 +539,9 @@ it will be passed down to the editor.
      * - method (can be empty)
      * - headers (can be empty)
      * - payload (can be undefined)
-     * - auth (for future use, currently always undefined)
+     * - auth (can be undefined)
      * - actions (can be undefined)
+     * - queryModel (Array)
      */
     serializeRequest: function() {
       var result = {
@@ -535,7 +549,7 @@ it will be passed down to the editor.
         method: this.method || '',
         headers: this.headers || '',
         payload: this.payload,
-        auth: this.authData,
+        auth: this.authSettings,
         actions: this.requestActions,
         queryModel: this.queryModel
       };
@@ -673,11 +687,16 @@ it will be passed down to the editor.
       this.set('payload', '');
       this.set('method', 'GET');
       this.set('requestActions', undefined);
+      this.$$('authorization-panel').clear();
       this.selectedTab = 0;
       this.fire('request-clear-state', undefined, {
         cancelable: true
       });
       this._unselectRequestMenu();
+    },
+
+    _authRedirectChanged: function(e) {
+      this.oauth2RedirectUri = e.detail.value;
     }
   });
   </script>
