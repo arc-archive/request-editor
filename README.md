@@ -52,6 +52,14 @@ document.body.addEventListener('request-data-changed', e => {
 });
 ```
 
+## Authorization panel
+
+Authorization panel renders methods to authorize the user using varius methods.
+Detailed documentation for authorization is at https://github.com/advanced-rest-client/authorization-panel
+
+To make OAuth2 work properly set `oauth2RedirectUri` property to application
+redirect URI. User should set this value in in provider's settings.
+
 ## Request actions
 
 Request actions allow to perform a user defined action when the response is ready.

@@ -1,3 +1,22 @@
+<a name="0.4.1"></a>
+## [0.4.1](https://github.com/advanced-rest-client/request-editor/compare/0.3.2...0.4.1) (2018-02-12)
+
+
+### Fix
+
+* Fixed tests. ([de99eae81f3e7b290905fba4d5dfcfc3bc962fd9](https://github.com/advanced-rest-client/request-editor/commit/de99eae81f3e7b290905fba4d5dfcfc3bc962fd9))
+
+### New
+
+* Added authorization panel. ([359820976d66380e3d7ddc527d5e9278fcfc395b](https://github.com/advanced-rest-client/request-editor/commit/359820976d66380e3d7ddc527d5e9278fcfc395b))
+* Added support for queryModel. ([e3b12fadfe90f16763a3bb3787673b076e04abca](https://github.com/advanced-rest-client/request-editor/commit/e3b12fadfe90f16763a3bb3787673b076e04abca))
+
+### Update
+
+* Bumped version for major release. ([c4c9ebffe623d7d5b9bc035ee01ff8a1f2d929d3](https://github.com/advanced-rest-client/request-editor/commit/c4c9ebffe623d7d5b9bc035ee01ff8a1f2d929d3))
+
+
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://github.com/advanced-rest-client/request-editor/compare/0.3.1...0.3.2) (2018-02-09)
 
