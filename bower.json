@@ -1,7 +1,7 @@
 {
   "name": "request-editor",
   "description": "A request complete HTTP request editor",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "license": "Apache-2.0 OR CC-BY-4.0",
   "authors": [
     "The Advanced REST client authors <arc@mulesoft.com>"
@@ -57,7 +57,7 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "oauth-authorization": "advanced-rest-client/oauth-authorization#^0.2.9",
     "variables-manager": "advanced-rest-client/variables-manager#^0.1.6",
-    "variables-evaluator": "advanced-rest-client/variables-evaluator#^0.1.1",
+    "variables-evaluator": "advanced-rest-client/variables-evaluator#^0.2.1",
     "url-history-saver": "advanced-rest-client/url-history-saver#^0.1.1",
     "paper-toast": "PolymerElements/paper-toast#<2"
   },
