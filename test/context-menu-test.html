@@ -31,9 +31,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /* global fixture, assert, sinon, TestHelpers */
     suite('basic', function() {
       var element;
+      var authPanel;
       setup(function() {
         element = fixture('basic');
         TestHelpers.forceXIfStamp(element);
+        var panel = element.$$('authorization-panel');
+        authPanel = panel.$$('auth-method-basic');
       });
 
       test('_useXhrExtension is false by default', function() {
@@ -78,11 +81,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.headers = 'test';
         element.payload = 'test';
         element.requestActions = [{
+          variables: [{
+            enabled: true,
+            value: 'test-value',
+            variable: 'test-var'
+          }]
+        }];
+        element.responseActions = [{
           'source': 'request.body',
           'action': 'assign-variable',
           'enabled': true
         }];
 
+        authPanel.username = 'test';
+        authPanel.password = 'test';
         element.clearRequest();
 
         assert.equal(element.method, 'GET');
@@ -91,6 +103,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(element.headers, '');
         assert.equal(element.payload, '');
         assert.isUndefined(element.requestActions);
+        assert.isUndefined(element.responseActions);
+        assert.deepEqual(element.authSettings, {});
       });
 
     });

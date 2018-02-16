@@ -46,7 +46,8 @@ It produces the following values (as element's properties):
 - method - HTTP method
 - headers - HTTP headers string
 - payload - Request body. It can be either [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String), [File](https://developer.mozilla.org/en-US/docs/Web/API/File) ([Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob)) or [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
-- actions - List of request actions as defined in `request-actions-panel` element.
+- requestActions - List of request actions as defined in `request-actions-panel` element.
+- responseActions - List of response actions as defined in `request-actions-panel` element.
 
 ## Variables
 
@@ -96,9 +97,10 @@ Detailed documentation for authorization is at https://github.com/advanced-rest-
 To make OAuth2 work properly set `oauth2RedirectUri` property to application
 redirect URI. User should set this value in in provider's settings.
 
-## Request actions
+## Request and response actions
 
-Request actions allow to perform a user defined action when the response is ready.
+Request actions allows to (re)set variables before the request is made.
+Response actions allows to perform a user defined action when the response is ready.
 More information can be found here: https://github.com/advanced-rest-client/request-actions-panel
 
 ### Styling
@@ -296,8 +298,8 @@ it will be passed down to the editor.
             <headers-editor events-target="[[eventsTarget]]" is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></headers-editor>
             <authorization-panel redirect-url="[[oauth2RedirectUri]]" settings="{{authSettings}}" http-method="[[method]]" request-url="[[url]]" request-body="[[payload]]"></authorization-panel>
             <payload-editor events-target="[[eventsTarget]]" raml-type="[[ramlType]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></payload-editor>
-            <variables-editor></variables-editor>
-            <request-actions-panel actions="{{requestActions}}" attr-for-opened="opened"></request-actions-panel>
+            <variables-editor attr-for-opened="opened"></variables-editor>
+            <request-actions-panel after-actions="{{responseActions}}" before-actions="{{requestActions}}" attr-for-opened="opened"></request-actions-panel>
           </iron-pages>
         </iron-collapse>
       </section>
@@ -322,7 +324,8 @@ it will be passed down to the editor.
      * @param {String|File|FormData} payload Message body. Can be undefined.
      * @param {Object} auth Always undefined. For future use.
      * @param {String} id Generated UUID for the request.
-     * @param {Array<Object>} actions - List of request actions
+     * @param {Array<Object>} responseActions - List of response actions
+     * @param {Array<Object>} requestActions - List of request actions
      */
     /**
      * Fired when the user request to abort current request.
@@ -345,7 +348,8 @@ it will be passed down to the editor.
      * @param {String} headers HTTP headers string. Can be empty.
      * @param {String|File|FormData} payload Message body. Can be undefined.
      * @param {Object} auth Always undefined. For future use.
-     * @param {Array<Object>} actions - List of request actions
+     * @param {Array<Object>} responseActions - List of response actions
+     * @param {Array<Object>} requestActions - List of request actions
      */
     /**
      * Fired when the state of the toggle XHR button change.
@@ -414,6 +418,14 @@ it will be passed down to the editor.
       },
       /**
        * List of request actions to be performed when the response is received
+       */
+      responseActions: {
+        type: Array,
+        notify: true,
+        observer: 'notifyRequestChanged'
+      },
+      /**
+       * List of request actions to be performed before request is send
        */
       requestActions: {
         type: Array,
@@ -550,7 +562,8 @@ it will be passed down to the editor.
         headers: this.headers || '',
         payload: this.payload,
         auth: this.authSettings,
-        actions: this.requestActions,
+        responseActions: this.responseActions,
+        requestActions: this.requestActions,
         queryModel: this.queryModel
       };
       return result;
@@ -686,6 +699,7 @@ it will be passed down to the editor.
       this.set('headers', '');
       this.set('payload', '');
       this.set('method', 'GET');
+      this.set('responseActions', undefined);
       this.set('requestActions', undefined);
       this.$$('authorization-panel').clear();
       this.selectedTab = 0;

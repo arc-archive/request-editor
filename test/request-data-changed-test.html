@@ -35,11 +35,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var URL = 'https://mulesoft.com?param=value';
       var METHOD = 'HEAD';
       var PAYLOAD = 'test-payload';
-      var ACTIONS = [{
+      var POSTACTIONS = [{
         'source': 'request.body',
         'action': 'assign-variable',
         'enabled': true
       }];
+      var PREACTIONS = {
+        variables: [{
+          enabled: true,
+          value: 'test-value',
+          variable: 'test-var'
+        }]
+      };
       setup(function() {
         element = fixture('basic');
         // This ensures that the tests runs after the element is initialized.
@@ -98,14 +105,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.payload = PAYLOAD;
       });
 
-      test('Fires event when request actions list changes', function(done) {
+      test('Fires event when request pre-actions list changes', function(done) {
         var callback = function(e) {
           element.removeEventListener('request-data-changed', callback);
-          assert.isTrue(e.detail.actions === ACTIONS);
+          assert.isTrue(e.detail.requestActions === PREACTIONS);
           done();
         };
         element.addEventListener('request-data-changed', callback);
-        element.requestActions = ACTIONS;
+        element.requestActions = PREACTIONS;
+      });
+
+      test('Fires event when request post-actions list changes', function(done) {
+        var callback = function(e) {
+          element.removeEventListener('request-data-changed', callback);
+          assert.isTrue(e.detail.responseActions === POSTACTIONS);
+          done();
+        };
+        element.addEventListener('request-data-changed', callback);
+        element.responseActions = POSTACTIONS;
       });
 
       test('Fires event when payload as FormData changes', function() {
