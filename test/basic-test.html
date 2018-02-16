@@ -186,6 +186,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
+    suite('Method change', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Changing method to POST sets up default content type', function() {
+        element.method = 'PUT';
+        assert.equal(element.headers, 'Content-Type: application/json');
+      });
+
+      test('Leaves header value when switching back to GET', function() {
+        element.method = 'PUT';
+        TestHelpers.forceXIfStamp(element);
+        element.method = 'GET';
+        assert.equal(element.headers, 'Content-Type: application/json');
+      });
+
+      test('Do not multiply headers', function() {
+        element.method = 'PUT';
+        TestHelpers.forceXIfStamp(element);
+        element.method = 'GET';
+        TestHelpers.forceXIfStamp(element);
+        element.method = 'PUT';
+        assert.equal(element.headers, 'Content-Type: application/json');
+      });
+    });
+
     </script>
 
   </body>
