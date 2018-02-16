@@ -57,7 +57,7 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "oauth-authorization": "advanced-rest-client/oauth-authorization#^0.2.9",
     "variables-manager": "advanced-rest-client/variables-manager#^0.1.6",
-    "variables-evaluator": "advanced-rest-client/variables-evaluator#^0.1.1",
+    "variables-evaluator": "advanced-rest-client/variables-evaluator#^0.2.1",
     "url-history-saver": "advanced-rest-client/url-history-saver#^0.1.1",
     "paper-toast": "PolymerElements/paper-toast#<2"
   },
