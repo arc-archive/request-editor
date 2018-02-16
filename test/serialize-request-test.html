@@ -34,13 +34,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element = fixture('basic');
       });
 
+      var POSTACTIONS = [{
+        'source': 'request.body',
+        'action': 'assign-variable',
+        'enabled': true
+      }];
+      var PREACTIONS = {
+        variables: [{
+          enabled: true,
+          value: 'test-value',
+          variable: 'test-var'
+        }]
+      };
+
       test('Serializes request with empty values', function() {
         var data = element.serializeRequest();
         assert.equal(data.url, '', 'URL is empty');
         assert.equal(data.method, '', 'Method is empty');
         assert.equal(data.headers, '', 'Headers are empty');
         assert.isFalse(!!data.payload, 'Payload is falsy');
-        assert.isUndefined(data.action, 'Actionsare not defined');
+        assert.isUndefined(data.requestActions, 'Request actions are not defined');
+        assert.isUndefined(data.responseActions, 'Response actions are not defined');
         assert.isUndefined(data.authData);
       });
 
@@ -49,18 +63,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.method = 'test-method';
         element.headers = 'test-headers';
         element.payload = 'test-payload';
-        element.requestActions = [{
-          'source': 'request.body',
-          'action': 'assign-variable',
-          'enabled': true
-        }];
+        element.requestActions = PREACTIONS;
+        element.responseActions = POSTACTIONS;
 
         var data = element.serializeRequest();
         assert.equal(data.url, 'test-url', 'Url is set');
         assert.equal(data.method, 'test-method', 'Method is set');
         assert.equal(data.headers, 'test-headers', 'Headers are set');
         assert.equal(data.payload, 'test-payload', 'Payload is set');
-        assert.isTrue(data.actions === element.requestActions, 'Actions are set');
+        assert.isTrue(data.requestActions === PREACTIONS, 'Request actions are set');
+        assert.isTrue(data.responseActions === POSTACTIONS, 'Request actions are set');
         assert.isUndefined(data.authData);
       });
 

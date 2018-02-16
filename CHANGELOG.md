@@ -1,3 +1,22 @@
+<a name="0.4.3"></a>
+## [0.4.3](https://github.com/advanced-rest-client/request-editor/compare/0.4.2...0.4.3) (2018-02-16)
+
+
+### Docs
+
+* Updated documentation. ([b85a77927804cfa51bb80ce36bab886cc2703bdf](https://github.com/advanced-rest-client/request-editor/commit/b85a77927804cfa51bb80ce36bab886cc2703bdf))
+
+### New
+
+* Added support for request and response actions. ([9fbe93a69b744ab1628300e2f0b181fd799863d6](https://github.com/advanced-rest-client/request-editor/commit/9fbe93a69b744ab1628300e2f0b181fd799863d6))
+* Adding automatic headers setup when switching to post ([7c7b9fe939d205f754e474367981f5446debf67b](https://github.com/advanced-rest-client/request-editor/commit/7c7b9fe939d205f754e474367981f5446debf67b))
+
+### Update
+
+* Updated tests configuration. ([07e3d6d43aaf4e75d4c6fe5d3373edb0bc73f5ad](https://github.com/advanced-rest-client/request-editor/commit/07e3d6d43aaf4e75d4c6fe5d3373edb0bc73f5ad))
+
+
+
 <a name="0.4.2"></a>
 ## [0.4.2](https://github.com/advanced-rest-client/request-editor/compare/0.4.1...0.4.2) (2018-02-12)
 

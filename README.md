@@ -10,7 +10,10 @@ It produces the following values (as element's properties):
 - method - HTTP method
 - headers - HTTP headers string
 - payload - Request body. It can be either [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String), [File](https://developer.mozilla.org/en-US/docs/Web/API/File) ([Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob)) or [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
-- actions - List of request actions as defined in `request-actions-panel` element.
+- requestActions - List of request actions as defined in `request-actions-panel` element.
+- responseActions - List of response actions as defined in `request-actions-panel` element.
+- queryModel - Model for query parameters
+- headersModel - Model for headers value (not yet implemented)
 
 ## Variables
 
@@ -60,9 +63,10 @@ Detailed documentation for authorization is at https://github.com/advanced-rest-
 To make OAuth2 work properly set `oauth2RedirectUri` property to application
 redirect URI. User should set this value in in provider's settings.
 
-## Request actions
+## Request and response actions
 
-Request actions allow to perform a user defined action when the response is ready.
+Request actions allows to (re)set variables before the request is made.
+Response actions allows to perform a user defined action when the response is ready.
 More information can be found here: https://github.com/advanced-rest-client/request-actions-panel
 
 ### Styling
@@ -114,7 +118,8 @@ method **String** - HTTP method name. Can be empty. |
 headers **String** - HTTP headers string. Can be empty. |
 payload **(String&#124;File&#124;FormData)** - Message body. Can be undefined. |
 auth **Object** - Always undefined. For future use. |
-actions **Array.<Object>** - List of request actions |
+responseActions **Array.<Object>** - List of response actions |
+requestActions **Array.<Object>** - List of request actions |
 | request-save-state | Fired when the save action has been requested in the UI. This event is cancelable. | __none__ |
 | request-use-xhr-changed | Fired when the state of the toggle XHR button change. It is fired to inform request controlling element to switch to the XHR extension. `xhrExtension` must be set to display the toggle button. | value **Boolean** - Current state of the toggle button |
 | send-request | Fired when the user request to send current request.  This event can be cancelled. | url **String** - The request URL. Can be empty string. |
@@ -123,4 +128,5 @@ headers **String** - HTTP headers string. Can be empty. |
 payload **(String&#124;File&#124;FormData)** - Message body. Can be undefined. |
 auth **Object** - Always undefined. For future use. |
 id **String** - Generated UUID for the request. |
-actions **Array.<Object>** - List of request actions |
+responseActions **Array.<Object>** - List of response actions |
+requestActions **Array.<Object>** - List of request actions |
