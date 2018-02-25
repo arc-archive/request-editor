@@ -59,7 +59,8 @@
     "variables-manager": "advanced-rest-client/variables-manager#^0.1.6",
     "variables-evaluator": "advanced-rest-client/variables-evaluator#^0.2.1",
     "url-history-saver": "advanced-rest-client/url-history-saver#^0.1.1",
-    "paper-toast": "PolymerElements/paper-toast#<2"
+    "paper-toast": "PolymerElements/paper-toast#<2",
+    "chance": "^1.0.13"
   },
   "ignore": [
     "**/.*",
