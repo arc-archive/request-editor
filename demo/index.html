@@ -40,10 +40,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
   <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
   <link rel="import" href="../../url-history-saver/url-history-saver.html">
+  <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+  <link rel="import" href="../../paper-listbox/paper-listbox.html">
+  <link rel="import" href="../../paper-item/paper-item.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
   <link rel="import" href="../request-editor.html">
   <link rel="import" href="api-console-styles.html">
-
+  <script type="text/javascript" src="../../chance/chance.js"></script>
   <style is="custom-style" include="demo-pages-shared-styles">
 
     .vertical-section-container {
@@ -70,6 +73,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
 
     <div class="vertical-section-container centered">
+      <section>
+        <h4>Load request</h4>
+        <paper-dropdown-menu label="Request preset">
+          <paper-listbox class="dropdown-content" selected="{{restoredRequest}}" attr-for-selected="data-type">
+            <paper-item data-type="get">Simple GET request</paper-item>
+            <paper-item data-type="post">Simple POST request</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </section>
       <h4>Result</h4>
       <output>
         <h5>URL</h5>
@@ -130,9 +142,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   });
 
   (function(scope) {
+    /* global chance */
     var redirectUrl = location.href.replace(/request-editor\/demo\/(index\.html)?/,
         'oauth-authorization/oauth-popup.html');
     scope.oauth2RedirectUri = redirectUrl;
+
+    scope.observers = ['_restoredRequestChanged(restoredRequest)'];
+    scope._restoredRequestChanged = function(restoredRequest) {
+      var opts = {};
+      switch (restoredRequest) {
+        case 'post':
+          opts.method = 'POST';
+          opts.withBody = true;
+          break;
+      }
+      scope.generateRequest(opts);
+    };
+
+    function genHeaders(opts) {
+      var str = '';
+      for (var i = 0; i < chance.integer({min: 1, max: 7}); i++) {
+        str += 'x-' + chance.word() + ': ' + chance.word() + '\n';
+      }
+      if (opts.withBody) {
+        str += 'content-type: application/xml';
+      }
+      return str;
+    }
+    function getMethod(opts) {
+      if (opts.method) {
+        return opts.method;
+      }
+      if (opts.withBody) {
+        return ['POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'][chance.integer({min: 0, max: 4})];
+      }
+      return ['GET', 'HEAD'][chance.integer({min: 0, max: 1})];
+    }
+    scope.generateRequest = function(opts) {
+      scope.url = chance.url();
+      if (opts.withBody) {
+        scope.body = 'Demo page';
+      } else {
+        scope.body = '';
+      }
+      scope.headers = genHeaders(opts);
+      scope.method = getMethod(opts);
+    };
   })(document.getElementById('demo'));
   </script>
 </body>
