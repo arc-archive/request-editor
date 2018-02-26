@@ -106,6 +106,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.typeOf(element.queryModel, 'array');
         assert.lengthOf(element.queryModel, 2);
       });
+
+      test('collapseOpened is true by default', function() {
+        assert.isTrue(element.collapseOpened);
+      });
+    });
+
+    suite('toggle()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Closes the parameters editor', function() {
+        element.toggle();
+        assert.isFalse(element.collapseOpened);
+      });
+
+      test('Opens back the parameters editor', function() {
+        element.toggle();
+        assert.isFalse(element.collapseOpened);
+        element.toggle();
+        assert.isTrue(element.collapseOpened);
+      });
     });
 
     suite('_computeToggleIconClass()', function() {
@@ -214,7 +237,97 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
-    </script>
+    suite('notifyRequestChanged()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+        element.url = 'test-url';
+        element.method = 'test-method';
+        element.headers = 'test-headers';
+      });
 
+      test('Dispatches the event', function() {
+        var spy = sinon.spy();
+        element.addEventListener('request-data-changed', spy);
+        element.notifyRequestChanged();
+        assert.isTrue(spy.calledOnce);
+      });
+
+      test('Event is cancelable', function(done) {
+        element.addEventListener('request-data-changed', function clb(e) {
+          element.removeEventListener('request-data-changed', clb);
+          assert.isTrue(e.cancelable);
+          done();
+        });
+        element.notifyRequestChanged();
+      });
+
+      test('Event contains serialized request', function(done) {
+        element.addEventListener('request-data-changed', function clb(e) {
+          element.removeEventListener('request-data-changed', clb);
+          assert.equal(e.detail.url, 'test-url', 'Url is set');
+          // Rest of the request data are tested in `serializeRequest()` test
+          done();
+        });
+        element.notifyRequestChanged();
+      });
+    });
+
+    suite('_methodChanged()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Dispatches content-type-changed', function(done) {
+        element.addEventListener('content-type-changed', function clb(e) {
+          element.removeEventListener('content-type-changed', clb);
+          assert.equal(e.detail.value, 'application/json');
+          done();
+        });
+        element._methodChanged('POST');
+      });
+
+      test('Do not dispatches event when header is set', function() {
+        var ct = 'application/xml';
+        var spy = sinon.spy();
+        element.headers = 'content-type: ' + ct;
+        element.addEventListener('content-type-changed', spy);
+        element._methodChanged(ct);
+        assert.isFalse(spy.called);
+      });
+    });
+
+    suite('_sendRequestInner()', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Calls _sendRequest()', function(done) {
+        element._sendRequest = function() {
+          done();
+        };
+        var obj = {
+          preventDefault: function() {},
+          stopPropagation: function() {},
+          target: window
+        };
+        element._sendRequestInner(obj);
+      });
+
+      test('Don not call _sendRequest() when it is the source', function() {
+        var called = false;
+        element._sendRequest = function() {
+          called = true;
+        };
+        element._sendRequestInner({
+          target: element
+        });
+        assert.isFalse(called);
+      });
+
+    });
+    </script>
   </body>
 </html>
