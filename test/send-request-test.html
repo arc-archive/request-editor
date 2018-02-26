@@ -47,8 +47,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           variable: 'test-var'
         }]
       };
-      setup(function() {
+
+      suiteSetup(function() {
         element = fixture('basic');
+      });
+
+      setup(function() {
         element.headers = HEADERS;
         element.method = METHOD;
         element.url = URL;
@@ -98,7 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       suite('Basic auth', function() {
-        setup(function(done) {
+        suiteSetup(function(done) {
           setupElement();
           panel.selected = 'basic';
           authPanel = panel.$$('auth-method-basic');
@@ -112,7 +116,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Has headers data', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             assert.equal(e.detail.headers, 'authorization: Basic dGVzdDp0ZXN0');
             done();
           });
@@ -120,7 +125,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Accepts settings', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             var settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'basic');
@@ -134,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       suite('NTLM auth', function() {
-        setup(function(done) {
+        suiteSetup(function(done) {
           setupElement();
           panel.selected = 'ntlm';
           authPanel = panel.$$('auth-method-ntlm');
@@ -145,7 +151,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Headers are not altered', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             assert.equal(e.detail.headers, HEADERS);
             done();
           });
@@ -153,7 +160,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Accepts settings', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             var settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'ntlm');
@@ -167,7 +175,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       suite('Digest auth', function() {
-        setup(function(done) {
+        suiteSetup(function(done) {
           setupElement();
           panel.selected = 'digest';
           authPanel = panel.$$('auth-method-digest');
@@ -177,7 +185,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Headers are not altered', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             assert.equal(e.detail.headers, 'authorization: Digest password="test", username="test"');
             done();
           });
@@ -185,7 +194,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Accepts settings', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             var settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'digest');
@@ -198,7 +208,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       suite('OAuth2 auth', function() {
-        setup(function(done) {
+        suiteSetup(function(done) {
           setupElement();
           panel.selected = 'oauth2';
           authPanel = panel.$$('auth-method-oauth2');
@@ -209,7 +219,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Headers are not altered', function(done) {
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             assert.equal(e.detail.headers, HEADERS);
             done();
           });
@@ -218,7 +229,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         test('Accepts settings', function(done) {
           TestHelpers.forceXIfStamp(element);
-          element.addEventListener('send-request', function(e) {
+          element.addEventListener('send-request', function clb(e) {
+            element.removeEventListener('send-request', clb);
             var settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'oauth2');

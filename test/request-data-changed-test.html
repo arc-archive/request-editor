@@ -47,7 +47,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           variable: 'test-var'
         }]
       };
-      setup(function() {
+      suiteSetup(function() {
         element = fixture('basic');
         // This ensures that the tests runs after the element is initialized.
         TestHelpers.forceXIfStamp(element);
@@ -74,6 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Contains query parameters model', function(done) {
+        element.url = '';
         var callback = function(e) {
           element.removeEventListener('request-data-changed', callback);
           assert.typeOf(e.detail.queryModel, 'array');

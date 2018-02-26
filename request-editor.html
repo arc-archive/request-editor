@@ -512,8 +512,7 @@ it will be passed down to the editor.
 
     observers: [
       '_isPayloadChanged(isPayload)',
-      '_refreshPayload(selectedTab)',
-      '_methodChanged(method)'
+      '_refreshPayload(selectedTab)'
     ],
 
     listeners: {
@@ -571,30 +570,6 @@ it will be passed down to the editor.
       };
       return result;
     },
-    /**
-     * Ensures that the content-type header is set when the user switches to
-     * body method.
-     * @param {String} method Value of the method.
-     */
-    _methodChanged: function(method) {
-      if (!method || ['GET', 'HEAD'].indexOf(method) !== -1) {
-        return;
-      }
-      var updateCt = false;
-      if (!this.headers) {
-        updateCt = true;
-      }
-      if (!updateCt && !this.headers.indexOf) {
-        updateCt = true;
-      }
-      if (!updateCt && this.headers.toLowerCase().indexOf('content-type') === -1) {
-        updateCt = true;
-      }
-      if (updateCt) {
-        this.fire('content-type-changed', {value: 'application/json'});
-      }
-    },
-
     // Computes class for the toggle's button icon.
     _computeToggleIconClass: function(opened) {
       var clazz = 'toggle-icon';
