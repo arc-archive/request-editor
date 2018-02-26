@@ -1,3 +1,13 @@
+<a name="0.4.8"></a>
+## [0.4.8](https://github.com/advanced-rest-client/request-editor/compare/0.4.7...0.4.8) (2018-02-26)
+
+
+### Update
+
+* Updated dependency version ([478886f4c8387c4eda4d8ea481da9782e3d31c2c](https://github.com/advanced-rest-client/request-editor/commit/478886f4c8387c4eda4d8ea481da9782e3d31c2c))
+
+
+
 <a name="0.4.7"></a>
 ## [0.4.7](https://github.com/advanced-rest-client/request-editor/compare/0.4.6...0.4.7) (2018-02-26)
 
