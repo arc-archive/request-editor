@@ -27,53 +27,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
+    <test-fixture id="noUrl">
+      <template>
+        <request-editor no-url-editor></request-editor>
+      </template>
+    </test-fixture>
+
     <script>
     /* global fixture, assert, TestHelpers, sinon */
-    suite('basic', function() {
+    suite('Defaults', function() {
       var element;
-      setup(function() {
+      suiteSetup(function() {
         element = fixture('basic');
-      });
-
-      test('Body is hidden for GET', function() {
-        element.method = 'GET';
         TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
-        assert.isTrue(tab.hasAttribute('hidden'));
-      });
-
-      test('Body is hidden for HEAD', function() {
-        element.method = 'HEAD';
-        TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
-        assert.isTrue(tab.hasAttribute('hidden'));
-      });
-
-      test('Body is visible for POST', function() {
-        element.method = 'POST';
-        TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
-        assert.isFalse(tab.hasAttribute('hidden'));
       });
 
       test('URL editor is visible by default', function() {
-        TestHelpers.forceXIfStamp(element);
         var editor = Polymer.dom(element.root).querySelector('url-input-editor');
         assert.ok(editor);
-      });
-
-      test('URL editor is removed when noUrlEditor is set', function() {
-        TestHelpers.forceXIfStamp(element);
-        element.noUrlEditor = true;
-        TestHelpers.forceXIfStamp(element);
-        var editor = Polymer.dom(element.root).querySelector('url-input-editor');
-        assert.notOk(editor);
-      });
-
-      test('Hiding URL editor removes the URL value', function() {
-        element.url = 'https://mulesoft.com';
-        element.noUrlEditor = true;
-        assert.isUndefined(element.url);
       });
 
       test('Fires request-data-changed custom event', function() {
@@ -100,7 +71,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Computes query model property', function() {
-        TestHelpers.forceXIfStamp(element);
         element.$$('url-input-editor').detailsOpened = true;
         element.url = 'https://mulesoft.com?param=value&test=true';
         assert.typeOf(element.queryModel, 'array');
@@ -112,9 +82,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
+    suite('noUrlEditor', function() {
+      var element;
+      suiteSetup(function() {
+        element = fixture('noUrl');
+        TestHelpers.forceXIfStamp(element);
+      });
+
+      test('URL editor is removed when noUrlEditor is set', function() {
+        var editor = Polymer.dom(element.root).querySelector('url-input-editor');
+        assert.notOk(editor);
+      });
+
+      test('Hiding URL editor removes the URL value', function() {
+        assert.isUndefined(element.url);
+      });
+    });
+
+    suite('Tabs setup', function() {
+      var element;
+      suiteSetup(function() {
+        element = fixture('basic');
+      });
+
+      test('Body is hidden for GET', function() {
+        element.method = 'GET';
+        TestHelpers.forceXIfStamp(element);
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
+        assert.isTrue(tab.hasAttribute('hidden'));
+      });
+
+      test('Body is hidden for HEAD', function() {
+        element.method = 'HEAD';
+        TestHelpers.forceXIfStamp(element);
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
+        assert.isTrue(tab.hasAttribute('hidden'));
+      });
+
+      test('Body is visible for POST', function() {
+        element.method = 'POST';
+        TestHelpers.forceXIfStamp(element);
+        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
+        assert.isFalse(tab.hasAttribute('hidden'));
+      });
+    });
+
     suite('toggle()', function() {
       var element;
-      setup(function() {
+      suiteSetup(function() {
         element = fixture('basic');
       });
 
@@ -125,15 +140,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Opens back the parameters editor', function() {
         element.toggle();
-        assert.isFalse(element.collapseOpened);
-        element.toggle();
         assert.isTrue(element.collapseOpened);
       });
     });
 
     suite('_computeToggleIconClass()', function() {
       var element;
-      setup(function() {
+      suiteSetup(function() {
         element = fixture('basic');
       });
 
@@ -155,7 +168,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     suite('_computeToggleLabel()', function() {
       var element;
-      setup(function() {
+      suiteSetup(function() {
         element = fixture('basic');
       });
 
@@ -209,34 +222,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
-    suite('Method change', function() {
-      var element;
-      setup(function() {
-        element = fixture('basic');
-      });
-
-      test('Changing method to POST sets up default content type', function() {
-        element.method = 'PUT';
-        assert.equal(element.headers, 'Content-Type: application/json');
-      });
-
-      test('Leaves header value when switching back to GET', function() {
-        element.method = 'PUT';
-        TestHelpers.forceXIfStamp(element);
-        element.method = 'GET';
-        assert.equal(element.headers, 'Content-Type: application/json');
-      });
-
-      test('Do not multiply headers', function() {
-        element.method = 'PUT';
-        TestHelpers.forceXIfStamp(element);
-        element.method = 'GET';
-        TestHelpers.forceXIfStamp(element);
-        element.method = 'PUT';
-        assert.equal(element.headers, 'Content-Type: application/json');
-      });
-    });
-
     suite('notifyRequestChanged()', function() {
       var element;
       setup(function() {
@@ -273,34 +258,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
-    suite('_methodChanged()', function() {
-      var element;
-      setup(function() {
-        element = fixture('basic');
-      });
-
-      test('Dispatches content-type-changed', function(done) {
-        element.addEventListener('content-type-changed', function clb(e) {
-          element.removeEventListener('content-type-changed', clb);
-          assert.equal(e.detail.value, 'application/json');
-          done();
-        });
-        element._methodChanged('POST');
-      });
-
-      test('Do not dispatches event when header is set', function() {
-        var ct = 'application/xml';
-        var spy = sinon.spy();
-        element.headers = 'content-type: ' + ct;
-        element.addEventListener('content-type-changed', spy);
-        element._methodChanged(ct);
-        assert.isFalse(spy.called);
-      });
-    });
-
     suite('_sendRequestInner()', function() {
       var element;
-      setup(function() {
+      suiteSetup(function() {
         element = fixture('basic');
       });
 
