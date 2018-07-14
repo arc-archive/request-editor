@@ -1,22 +1,11 @@
 <!doctype html>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="../../app-pouchdb/pouchdb.html">
     <script src="../../web-component-tester/browser.js"></script>
-    <script src="../../iron-test-helpers/test-helpers.js"></script>
-    <script src="../../iron-test-helpers/mock-interactions.js"></script>
     <link rel="import" href="../request-editor.html">
   </head>
   <body>
@@ -28,15 +17,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
-    /* global fixture, assert, sinon, TestHelpers */
     suite('basic', function() {
-      var element;
-      var authPanel;
-      setup(function() {
+      let element;
+      let authPanel;
+      setup(function(done) {
         element = fixture('basic');
-        TestHelpers.forceXIfStamp(element);
-        var panel = element.$$('authorization-panel');
-        authPanel = panel.$$('auth-method-basic');
+        flush(() => {
+          const panel = element.shadowRoot.querySelector('authorization-panel');
+          panel.selected = 1;
+          flush(() => {
+            authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+            done();
+          });
+        });
       });
 
       test('_useXhrExtension is false by default', function() {
@@ -44,7 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Fires request-use-xhr-changed custom event', function() {
-        var spy = sinon.spy();
+        const spy = sinon.spy();
         element.addEventListener('request-use-xhr-changed', spy);
         element._useXhrExtension = true;
         assert.isTrue(spy.calledOnce);
@@ -61,14 +54,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Fires request-save-state custom event', function() {
-        var spy = sinon.spy();
+        const spy = sinon.spy();
         element.addEventListener('request-save-state', spy);
         element.saveRequestState();
         assert.isTrue(spy.calledOnce);
       });
 
       test('Fires request-clear-state custom event', function() {
-        var spy = sinon.spy();
+        const spy = sinon.spy();
         element.addEventListener('request-clear-state', spy);
         element.clearRequest();
         assert.isTrue(spy.calledOnce);
