@@ -189,7 +189,15 @@ the License.
             <paper-tab>Actions</paper-tab>
           </paper-tabs>
           <iron-pages selected="[[selectedTab]]" selected-attribute="opened" class="editors-container">
-            <api-headers-editor events-target="[[eventsTarget]]" is-payload="{{isPayload}}" content-type="{{contentType}}" value="{{headers}}" on-headers-changed="_headersChanged"></api-headers-editor>
+            <api-headers-editor
+              events-target="[[eventsTarget]]"
+              is-payload="{{isPayload}}"
+              content-type="{{contentType}}"
+              value="{{headers}}"
+              on-headers-changed="_headersChanged"
+              allow-custom
+              allow-disable-params
+              allow-hide-optional></api-headers-editor>
             <authorization-panel redirect-uri="[[oauth2RedirectUri]]" settings="{{authSettings}}" http-method="[[method]]" request-url="[[url]]" request-body="[[payload]]"></authorization-panel>
             <api-body-editor events-target="[[eventsTarget]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></api-body-editor>
             <variables-editor></variables-editor>
