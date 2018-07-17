@@ -12,7 +12,6 @@ License for the specific language governing permissions and limitations under
 the License.
 -->
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../polymer/lib/legacy/class.html">
 <link rel="import" href="../url-input-editor/url-input-editor.html">
 <link rel="import" href="../api-headers-editor/api-headers-editor.html">
 <link rel="import" href="../http-method-selector/http-method-selector.html">
@@ -331,8 +330,7 @@ the License.
    * @demo demo/index.html
    * @appliesMixin ArcBehaviors.EventsTargetBehavior
    */
-  class RequestEditor extends
-    Polymer.mixinBehaviors([ArcBehaviors.EventsTargetBehavior], Polymer.Element) {
+  class RequestEditor extends ArcBehaviors.EventsTargetBehavior(Polymer.Element) {
     static get is() { return 'request-editor';}
     static get properties() {
       return {
