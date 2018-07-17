@@ -60,11 +60,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 339,
+              "line": 337,
               "column": 8
             },
             "end": {
-              "line": 343,
+              "line": 341,
               "column": 9
             }
           },
@@ -83,11 +83,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 345,
+              "line": 343,
               "column": 8
             },
             "end": {
-              "line": 348,
+              "line": 346,
               "column": 9
             }
           },
@@ -105,11 +105,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 350,
+              "line": 348,
               "column": 8
             },
             "end": {
-              "line": 354,
+              "line": 352,
               "column": 9
             }
           },
@@ -128,11 +128,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 356,
+              "line": 354,
               "column": 8
             },
             "end": {
-              "line": 360,
+              "line": 358,
               "column": 9
             }
           },
@@ -151,11 +151,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 362,
+              "line": 360,
               "column": 8
             },
             "end": {
-              "line": 366,
+              "line": 364,
               "column": 9
             }
           },
@@ -174,11 +174,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 368,
+              "line": 366,
               "column": 8
             },
             "end": {
-              "line": 372,
+              "line": 370,
               "column": 9
             }
           },
@@ -197,11 +197,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 374,
+              "line": 372,
               "column": 8
             },
             "end": {
-              "line": 378,
+              "line": 376,
               "column": 9
             }
           },
@@ -220,11 +220,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 380,
+              "line": 378,
               "column": 8
             },
             "end": {
-              "line": 383,
+              "line": 381,
               "column": 9
             }
           },
@@ -242,11 +242,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 387,
+              "line": 385,
               "column": 8
             },
             "end": {
-              "line": 391,
+              "line": 389,
               "column": 9
             }
           },
@@ -265,11 +265,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 395,
+              "line": 393,
               "column": 8
             },
             "end": {
-              "line": 399,
+              "line": 397,
               "column": 9
             }
           },
@@ -288,11 +288,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 403,
+              "line": 401,
               "column": 8
             },
             "end": {
-              "line": 403,
+              "line": 401,
               "column": 23
             }
           },
@@ -309,11 +309,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 405,
+              "line": 403,
               "column": 8
             },
             "end": {
-              "line": 408,
+              "line": 406,
               "column": 9
             }
           },
@@ -331,11 +331,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 413,
+              "line": 411,
               "column": 8
             },
             "end": {
-              "line": 416,
+              "line": 414,
               "column": 9
             }
           },
@@ -353,11 +353,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 422,
+              "line": 420,
               "column": 8
             },
             "end": {
-              "line": 426,
+              "line": 424,
               "column": 9
             }
           },
@@ -376,11 +376,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 431,
+              "line": 429,
               "column": 8
             },
             "end": {
-              "line": 434,
+              "line": 432,
               "column": 9
             }
           },
@@ -398,11 +398,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 436,
+              "line": 434,
               "column": 8
             },
             "end": {
-              "line": 439,
+              "line": 437,
               "column": 9
             }
           },
@@ -420,11 +420,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 445,
+              "line": 443,
               "column": 8
             },
             "end": {
-              "line": 445,
+              "line": 443,
               "column": 33
             }
           },
@@ -441,11 +441,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 451,
+              "line": 449,
               "column": 8
             },
             "end": {
-              "line": 451,
+              "line": 449,
               "column": 29
             }
           },
@@ -462,11 +462,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 455,
+              "line": 453,
               "column": 8
             },
             "end": {
-              "line": 458,
+              "line": 456,
               "column": 9
             }
           },
@@ -484,11 +484,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 463,
+              "line": 461,
               "column": 8
             },
             "end": {
-              "line": 463,
+              "line": 461,
               "column": 25
             }
           },
@@ -505,11 +505,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 465,
+              "line": 463,
               "column": 8
             },
             "end": {
-              "line": 468,
+              "line": 466,
               "column": 9
             }
           },
@@ -600,11 +600,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 478,
+              "line": 476,
               "column": 4
             },
             "end": {
-              "line": 481,
+              "line": 479,
               "column": 5
             }
           },
@@ -624,11 +624,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 483,
+              "line": 481,
               "column": 4
             },
             "end": {
-              "line": 486,
+              "line": 484,
               "column": 5
             }
           },
@@ -648,11 +648,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 489,
+              "line": 487,
               "column": 4
             },
             "end": {
-              "line": 491,
+              "line": 489,
               "column": 5
             }
           },
@@ -668,11 +668,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 497,
+              "line": 495,
               "column": 4
             },
             "end": {
-              "line": 505,
+              "line": 503,
               "column": 5
             }
           },
@@ -688,11 +688,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 518,
+              "line": 516,
               "column": 4
             },
             "end": {
-              "line": 530,
+              "line": 528,
               "column": 5
             }
           },
@@ -709,11 +709,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 532,
+              "line": 530,
               "column": 4
             },
             "end": {
-              "line": 538,
+              "line": 536,
               "column": 5
             }
           },
@@ -730,11 +730,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 540,
+              "line": 538,
               "column": 4
             },
             "end": {
-              "line": 542,
+              "line": 540,
               "column": 5
             }
           },
@@ -751,11 +751,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 547,
+              "line": 545,
               "column": 4
             },
             "end": {
-              "line": 552,
+              "line": 550,
               "column": 5
             }
           },
@@ -775,11 +775,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 557,
+              "line": 555,
               "column": 4
             },
             "end": {
-              "line": 561,
+              "line": 559,
               "column": 5
             }
           },
@@ -799,11 +799,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 566,
+              "line": 564,
               "column": 4
             },
             "end": {
-              "line": 573,
+              "line": 571,
               "column": 5
             }
           },
@@ -823,11 +823,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 577,
+              "line": 575,
               "column": 4
             },
             "end": {
-              "line": 587,
+              "line": 585,
               "column": 5
             }
           },
@@ -843,11 +843,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 591,
+              "line": 589,
               "column": 4
             },
             "end": {
-              "line": 601,
+              "line": 599,
               "column": 5
             }
           },
@@ -863,11 +863,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 605,
+              "line": 603,
               "column": 4
             },
             "end": {
-              "line": 609,
+              "line": 607,
               "column": 5
             }
           },
@@ -887,11 +887,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 613,
+              "line": 611,
               "column": 4
             },
             "end": {
-              "line": 619,
+              "line": 617,
               "column": 5
             }
           },
@@ -907,11 +907,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 623,
+              "line": 621,
               "column": 4
             },
             "end": {
-              "line": 633,
+              "line": 631,
               "column": 5
             }
           },
@@ -931,11 +931,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 638,
+              "line": 636,
               "column": 4
             },
             "end": {
-              "line": 649,
+              "line": 647,
               "column": 5
             }
           },
@@ -958,11 +958,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 654,
+              "line": 652,
               "column": 4
             },
             "end": {
-              "line": 661,
+              "line": 659,
               "column": 5
             }
           },
@@ -978,11 +978,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 666,
+              "line": 664,
               "column": 4
             },
             "end": {
-              "line": 681,
+              "line": 679,
               "column": 5
             }
           },
@@ -998,11 +998,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 683,
+              "line": 681,
               "column": 4
             },
             "end": {
-              "line": 685,
+              "line": 683,
               "column": 5
             }
           },
@@ -1027,11 +1027,11 @@
       "metadata": {},
       "sourceRange": {
         "start": {
-          "line": 333,
+          "line": 332,
           "column": 2
         },
         "end": {
-          "line": 745,
+          "line": 743,
           "column": 3
         }
       },
@@ -1062,11 +1062,11 @@
           "description": "Selected request tab.",
           "sourceRange": {
             "start": {
-              "line": 339,
+              "line": 337,
               "column": 8
             },
             "end": {
-              "line": 343,
+              "line": 341,
               "column": 9
             }
           },
@@ -1078,11 +1078,11 @@
           "description": "Current content type.",
           "sourceRange": {
             "start": {
-              "line": 345,
+              "line": 343,
               "column": 8
             },
             "end": {
-              "line": 348,
+              "line": 346,
               "column": 9
             }
           },
@@ -1094,11 +1094,11 @@
           "description": "Computed value if the method can carry a payload",
           "sourceRange": {
             "start": {
-              "line": 350,
+              "line": 348,
               "column": 8
             },
             "end": {
-              "line": 354,
+              "line": 352,
               "column": 9
             }
           },
@@ -1110,11 +1110,11 @@
           "description": "Headers for the request.",
           "sourceRange": {
             "start": {
-              "line": 356,
+              "line": 354,
               "column": 8
             },
             "end": {
-              "line": 360,
+              "line": 358,
               "column": 9
             }
           },
@@ -1126,11 +1126,11 @@
           "description": "Body for the request",
           "sourceRange": {
             "start": {
-              "line": 362,
+              "line": 360,
               "column": 8
             },
             "end": {
-              "line": 366,
+              "line": 364,
               "column": 9
             }
           },
@@ -1142,11 +1142,11 @@
           "description": "Current URL",
           "sourceRange": {
             "start": {
-              "line": 368,
+              "line": 366,
               "column": 8
             },
             "end": {
-              "line": 372,
+              "line": 370,
               "column": 9
             }
           },
@@ -1158,11 +1158,11 @@
           "description": "Current HTTP method",
           "sourceRange": {
             "start": {
-              "line": 374,
+              "line": 372,
               "column": 8
             },
             "end": {
-              "line": 378,
+              "line": 376,
               "column": 9
             }
           },
@@ -1174,11 +1174,11 @@
           "description": "Query parameters model generated by the URL editor.",
           "sourceRange": {
             "start": {
-              "line": 380,
+              "line": 378,
               "column": 8
             },
             "end": {
-              "line": 383,
+              "line": 381,
               "column": 9
             }
           },
@@ -1190,11 +1190,11 @@
           "description": "List of request actions to be performed when the response is received",
           "sourceRange": {
             "start": {
-              "line": 387,
+              "line": 385,
               "column": 8
             },
             "end": {
-              "line": 391,
+              "line": 389,
               "column": 9
             }
           },
@@ -1206,11 +1206,11 @@
           "description": "List of request actions to be performed before request is send",
           "sourceRange": {
             "start": {
-              "line": 395,
+              "line": 393,
               "column": 8
             },
             "end": {
-              "line": 399,
+              "line": 397,
               "column": 9
             }
           },
@@ -1222,11 +1222,11 @@
           "description": "If set it will renders the view in the narrow layout.",
           "sourceRange": {
             "start": {
-              "line": 403,
+              "line": 401,
               "column": 8
             },
             "end": {
-              "line": 403,
+              "line": 401,
               "column": 23
             }
           },
@@ -1238,11 +1238,11 @@
           "description": "A widith below which the `narrow` property will be set to true.",
           "sourceRange": {
             "start": {
-              "line": 405,
+              "line": 403,
               "column": 8
             },
             "end": {
-              "line": 408,
+              "line": 406,
               "column": 9
             }
           },
@@ -1254,11 +1254,11 @@
           "description": "Computed value when the URL change.\nIf not valid form submission won't be possible.",
           "sourceRange": {
             "start": {
-              "line": 413,
+              "line": 411,
               "column": 8
             },
             "end": {
-              "line": 416,
+              "line": 414,
               "column": 9
             }
           },
@@ -1270,11 +1270,11 @@
           "description": "Removes the URL editor from the DOM.\nIt will also cause that the `url` property will be empty and\non events fired by this element.",
           "sourceRange": {
             "start": {
-              "line": 422,
+              "line": 420,
               "column": 8
             },
             "end": {
-              "line": 426,
+              "line": 424,
               "column": 9
             }
           },
@@ -1286,11 +1286,11 @@
           "description": "When set it will display the UI to indicate that the request is being\nsend.",
           "sourceRange": {
             "start": {
-              "line": 431,
+              "line": 429,
               "column": 8
             },
             "end": {
-              "line": 434,
+              "line": 432,
               "column": 9
             }
           },
@@ -1302,11 +1302,11 @@
           "description": "True if the editor panel is opened",
           "sourceRange": {
             "start": {
-              "line": 436,
+              "line": 434,
               "column": 8
             },
             "end": {
-              "line": 439,
+              "line": 437,
               "column": 9
             }
           },
@@ -1318,11 +1318,11 @@
           "description": "Redirect URL for the OAuth2 authorization.\nIf can be also set by dispatching `oauth2-redirect-url-changed`\nwith `value` property on the `detail` object.",
           "sourceRange": {
             "start": {
-              "line": 445,
+              "line": 443,
               "column": 8
             },
             "end": {
-              "line": 445,
+              "line": 443,
               "column": 33
             }
           },
@@ -1334,11 +1334,11 @@
           "description": "If set then it renders an option in request context menu to\ntoggle to XHR request via the extension.\nIt's only relevant to ARC Chrome app.",
           "sourceRange": {
             "start": {
-              "line": 451,
+              "line": 449,
               "column": 8
             },
             "end": {
-              "line": 451,
+              "line": 449,
               "column": 29
             }
           },
@@ -1350,11 +1350,11 @@
           "description": "Generated request ID when the request is sent. This value is reported\nin send and abort events",
           "sourceRange": {
             "start": {
-              "line": 463,
+              "line": 461,
               "column": 8
             },
             "end": {
-              "line": 463,
+              "line": 461,
               "column": 25
             }
           },
@@ -1366,11 +1366,11 @@
           "description": "Current authorization panel settings.",
           "sourceRange": {
             "start": {
-              "line": 465,
+              "line": 463,
               "column": 8
             },
             "end": {
-              "line": 468,
+              "line": 466,
               "column": 9
             }
           },

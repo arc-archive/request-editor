@@ -9,7 +9,6 @@
  */
 
 /// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/legacy/class.d.ts" />
 /// <reference path="../url-input-editor/url-input-editor.d.ts" />
 /// <reference path="../api-headers-editor/api-headers-editor.d.ts" />
 /// <reference path="../http-method-selector/http-method-selector.d.ts" />
