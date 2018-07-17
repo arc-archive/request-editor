@@ -40,7 +40,7 @@
       test('Fires when abort button pressed', function() {
         var spy = sinon.spy();
         element.addEventListener('abort-request', spy);
-        var button = Polymer.dom(element.root).querySelector('#abortButton');
+        var button = element.shadowRoot.querySelector('#abortButton');
         MockInteractions.tap(button);
         assert.isTrue(spy.calledOnce);
       });

@@ -6,8 +6,6 @@
     <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="import" href="../../app-pouchdb/pouchdb.html">
     <script src="../../web-component-tester/browser.js"></script>
-    <script src="../../iron-test-helpers/test-helpers.js"></script>
-    <script src="../../iron-test-helpers/mock-interactions.js"></script>
     <link rel="import" href="../request-editor.html">
   </head>
   <body>
@@ -25,31 +23,30 @@
     </test-fixture>
 
     <script>
-    /* global fixture, assert, TestHelpers, sinon */
     suite('Defaults', function() {
-      var element;
-      suiteSetup(function() {
+      let element;
+      suiteSetup(function(done) {
         element = fixture('basic');
-        TestHelpers.forceXIfStamp(element);
+        flush(() => done());
       });
 
       test('URL editor is visible by default', function() {
-        var editor = Polymer.dom(element.root).querySelector('url-input-editor');
+        const editor = element.shadowRoot.querySelector('url-input-editor');
         assert.ok(editor);
       });
 
       test('Fires request-data-changed custom event', function() {
-        var spy = sinon.spy();
+        const spy = sinon.spy();
         element.addEventListener('request-data-changed', spy);
         element.url = 'https://mulesoft.com';
         assert.isTrue(spy.calledOnce);
       });
 
       test('The request-data-changed custom event contains request data', function(done) {
-        var URL = element.url = 'https://mulesoft.com';
-        var HEADERS = element.headers = 'content-type: test';
-        var METHOD = 'HEAD';
-        var callback = function(e) {
+        const URL = element.url = 'https://mulesoft.com';
+        const HEADERS = element.headers = 'content-type: test';
+        const METHOD = 'HEAD';
+        const callback = function(e) {
           element.removeEventListener('request-data-changed', callback);
           assert.equal(e.detail.url, URL);
           assert.equal(e.detail.headers, HEADERS);
@@ -62,7 +59,7 @@
       });
 
       test('Computes query model property', function() {
-        element.$$('url-input-editor').detailsOpened = true;
+        element.shadowRoot.querySelector('url-input-editor').detailsOpened = true;
         element.url = 'https://mulesoft.com?param=value&test=true';
         assert.typeOf(element.queryModel, 'array');
         assert.lengthOf(element.queryModel, 2);
@@ -74,14 +71,14 @@
     });
 
     suite('noUrlEditor', function() {
-      var element;
-      suiteSetup(function() {
+      let element;
+      suiteSetup(function(done) {
         element = fixture('noUrl');
-        TestHelpers.forceXIfStamp(element);
+        flush(() => done());
       });
 
       test('URL editor is removed when noUrlEditor is set', function() {
-        var editor = Polymer.dom(element.root).querySelector('url-input-editor');
+        const editor = element.shadowRoot.querySelector('url-input-editor');
         assert.notOk(editor);
       });
 
@@ -91,35 +88,41 @@
     });
 
     suite('Tabs setup', function() {
-      var element;
+      let element;
       suiteSetup(function() {
         element = fixture('basic');
       });
 
-      test('Body is hidden for GET', function() {
+      test('Body is hidden for GET', function(done) {
         element.method = 'GET';
-        TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
-        assert.isTrue(tab.hasAttribute('hidden'));
+        flush(() => {
+          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[2];
+          assert.isTrue(tab.hasAttribute('hidden'));
+          done();
+        });
       });
 
-      test('Body is hidden for HEAD', function() {
+      test('Body is hidden for HEAD', function(done) {
         element.method = 'HEAD';
-        TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
-        assert.isTrue(tab.hasAttribute('hidden'));
+        flush(() => {
+          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[2];
+          assert.isTrue(tab.hasAttribute('hidden'));
+          done();
+        });
       });
 
-      test('Body is visible for POST', function() {
+      test('Body is visible for POST', function(done) {
         element.method = 'POST';
-        TestHelpers.forceXIfStamp(element);
-        var tab = Polymer.dom(element.root).querySelectorAll('paper-tabs paper-tab')[2];
-        assert.isFalse(tab.hasAttribute('hidden'));
+        flush(() => {
+          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[2];
+          assert.isFalse(tab.hasAttribute('hidden'));
+          done();
+        });
       });
     });
 
     suite('toggle()', function() {
-      var element;
+      let element;
       suiteSetup(function() {
         element = fixture('basic');
       });
@@ -136,23 +139,23 @@
     });
 
     suite('_computeToggleIconClass()', function() {
-      var element;
+      let element;
       suiteSetup(function() {
         element = fixture('basic');
       });
 
       test('Always returns string', function() {
-        var result = element._computeToggleIconClass();
+        const result = element._computeToggleIconClass();
         assert.typeOf(result, 'string');
       });
 
       test('Returns toggle-icon for falsy argument', function() {
-        var result = element._computeToggleIconClass();
+        const result = element._computeToggleIconClass();
         assert.equal(result, 'toggle-icon');
       });
 
       test('Adds opened name for truily argument', function() {
-        var result = element._computeToggleIconClass(1);
+        const result = element._computeToggleIconClass(1);
         assert.equal(result, 'toggle-icon opened');
       });
     });
@@ -164,57 +167,60 @@
       });
 
       test('Always returns string', function() {
-        var result = element._computeToggleLabel();
+        const result = element._computeToggleLabel();
         assert.typeOf(result, 'string');
       });
 
       test('Returns \'show\' label for falsy argument', function() {
-        var result = element._computeToggleLabel();
+        const result = element._computeToggleLabel();
         assert.equal(result, 'Show panel');
       });
 
       test('Returns \'hide\' label for truily argument', function() {
-        var result = element._computeToggleLabel(1);
+        const result = element._computeToggleLabel(1);
         assert.equal(result, 'Hide panel');
       });
     });
 
     suite('_isPayloadChanged()', function() {
-      var element;
+      let element;
       setup(function() {
         element = fixture('basic');
       });
 
-      test('Changes selected tab', function() {
+      test('Changes selected tab', function(done) {
         element.method = 'PUT';
         element.selectedTab = 1;
-        TestHelpers.forceXIfStamp(element);
-
-        element._isPayloadChanged(false);
-        assert.equal(element.selectedTab, 0);
+        flush(() => {
+          element._isPayloadChanged(false);
+          assert.equal(element.selectedTab, 0);
+          done();
+        });
       });
 
-      test('Do not changes selected tab if is payload', function() {
+      test('Do not changes selected tab if is payload', function(done) {
         element.method = 'PUT';
         element.selectedTab = 3;
-        TestHelpers.forceXIfStamp(element);
-
-        element._isPayloadChanged(true);
-        assert.equal(element.selectedTab, 3);
+        flush(() => {
+          element._isPayloadChanged(true);
+          assert.equal(element.selectedTab, 3);
+          done();
+        });
       });
 
-      test('Do not changes selected tab if other tab is selected', function() {
+      test('Do not changes selected tab if other tab is selected', function(done) {
         element.method = 'PUT';
         element.selectedTab = 3;
-        TestHelpers.forceXIfStamp(element);
-
-        element._isPayloadChanged(false);
-        assert.equal(element.selectedTab, 3);
+        flush(() => {
+          element._isPayloadChanged(false);
+          assert.equal(element.selectedTab, 3);
+          done();
+        });
       });
     });
 
     suite('notifyRequestChanged()', function() {
-      var element;
+      let element;
       setup(function() {
         element = fixture('basic');
         element.url = 'test-url';
@@ -223,7 +229,7 @@
       });
 
       test('Dispatches the event', function() {
-        var spy = sinon.spy();
+        const spy = sinon.spy();
         element.addEventListener('request-data-changed', spy);
         element.notifyRequestChanged();
         assert.isTrue(spy.calledOnce);
@@ -250,7 +256,7 @@
     });
 
     suite('_sendRequestInner()', function() {
-      var element;
+      let element;
       suiteSetup(function() {
         element = fixture('basic');
       });
@@ -259,7 +265,7 @@
         element._sendRequest = function() {
           done();
         };
-        var obj = {
+        const obj = {
           preventDefault: function() {},
           stopPropagation: function() {},
           target: window
@@ -268,7 +274,7 @@
       });
 
       test('Don not call _sendRequest() when it is the source', function() {
-        var called = false;
+        let called = false;
         element._sendRequest = function() {
           called = true;
         };
