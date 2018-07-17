@@ -497,7 +497,7 @@ the License.
       const request = this.serializeRequest();
       this.dispatchEvent(new CustomEvent('request-data-changed', {
         cancelable: true,
-        composite: true,
+        composed: true,
         bubbles: true,
         detail: request
       }));
@@ -579,7 +579,7 @@ the License.
       request.id = this.requestId;
       this.dispatchEvent(new CustomEvent('api-request', {
         cancelable: true,
-        composite: true,
+        composed: true,
         bubbles: true,
         detail: request
       }));
@@ -590,7 +590,7 @@ the License.
     _abortRequest() {
       this.dispatchEvent(new CustomEvent('abort-api-request', {
         cancelable: true,
-        composite: true,
+        composed: true,
         bubbles: true,
         detail: {
           url: this.url,
@@ -639,7 +639,7 @@ the License.
         return;
       }
       this.dispatchEvent(new CustomEvent('request-use-xhr-changed', {
-        composite: true,
+        composed: true,
         bubbles: true,
         detail: {
           value: newValue
@@ -652,7 +652,7 @@ the License.
      */
     saveRequestState() {
       this.dispatchEvent(new CustomEvent('request-save-state', {
-        composite: true,
+        composed: true,
         bubbles: true,
         cancelable: true
       }));
@@ -672,7 +672,7 @@ the License.
       this.shadowRoot.querySelector('authorization-panel').clear();
       this.selectedTab = 0;
       this.dispatchEvent(new CustomEvent('request-clear-state', {
-        composite: true,
+        composed: true,
         bubbles: true,
         cancelable: true
       }));
