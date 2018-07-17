@@ -475,12 +475,12 @@ the License.
     }
 
     _attachListeners(node) {
-      this.addEventListener('send-request', this._sendRequestInner);
+      this.addEventListener('api-request', this._sendRequestInner);
       node.addEventListener('oauth2-redirect-uri-changed', this._authRedirectChanged);
     }
 
     _detachListeners(node) {
-      this.removeEventListener('send-request', this._sendRequestInner);
+      this.removeEventListener('api-request', this._sendRequestInner);
       node.removeEventListener('oauth2-redirect-uri-changed', this._authRedirectChanged);
     }
 
@@ -571,13 +571,13 @@ the License.
       this._sendRequest();
     }
     /**
-     * Sends the `send-request` custom event to send the request.
+     * Sends the `api-request` custom event to send the request.
      */
     _sendRequest() {
       const request = this.serializeRequest();
       this.requestId = this.$.uuid.generate();
       request.id = this.requestId;
-      this.dispatchEvent(new CustomEvent('send-request', {
+      this.dispatchEvent(new CustomEvent('api-request', {
         cancelable: true,
         composite: true,
         bubbles: true,
@@ -585,10 +585,10 @@ the License.
       }));
     }
     /**
-     * Sends the `abort-request` custom event to cancel the request.
+     * Sends the `abort-api-request` custom event to cancel the request.
      */
     _abortRequest() {
-      this.dispatchEvent(new CustomEvent('abort-request', {
+      this.dispatchEvent(new CustomEvent('abort-api-request', {
         cancelable: true,
         composite: true,
         bubbles: true,
@@ -687,7 +687,7 @@ the License.
      *
      * This event can be cancelled.
      *
-     * @event send-request
+     * @event api-request
      * @param {String} url The request URL. Can be empty string.
      * @param {String} method HTTP method name. Can be empty.
      * @param {String} headers HTTP headers string. Can be empty.
@@ -702,11 +702,11 @@ the License.
      *
      * This event can be cancelled.
      *
-     * @event abort-request
+     * @event abort-api-request
      * @param {String} url The request URL. Can be empty string. Also uit may be
      * different URL that the one used to send the request if the user changed
      * it in between.
-     * @param {String} id Generated UUID of the request with `send-request`
+     * @param {String} id Generated UUID of the request with `api-request`
      * event.
      */
     /**

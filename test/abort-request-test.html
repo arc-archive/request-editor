@@ -6,8 +6,6 @@
     <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="import" href="../../app-pouchdb/pouchdb.html">
     <script src="../../web-component-tester/browser.js"></script>
-    <script src="../../iron-test-helpers/test-helpers.js"></script>
-    <script src="../../iron-test-helpers/mock-interactions.js"></script>
     <link rel="import" href="../request-editor.html">
   </head>
   <body>
@@ -19,35 +17,34 @@
     </test-fixture>
 
     <script>
-    /* global fixture, assert, TestHelpers, sinon, MockInteractions */
-    suite('abort-request event', function() {
-      var element;
-      var HEADERS = 'content-type: test';
-      var URL = 'https://mulesoft.com';
-      var METHOD = 'PUT';
-      var PAYLOAD = 'test-payload';
-      var ID = 'test-id';
-      setup(function() {
+    suite('abort-api-request event', function() {
+      let element;
+      const HEADERS = 'content-type: test';
+      const URL = 'https://mulesoft.com';
+      const METHOD = 'PUT';
+      const PAYLOAD = 'test-payload';
+      const ID = 'test-id';
+      setup(function(done) {
         element = fixture('basic');
         element.headers = HEADERS;
         element.method = METHOD;
         element.url = URL;
         element.payload = PAYLOAD;
         element.requestId = ID;
-        TestHelpers.forceXIfStamp(element);
+        flush(() => done());
       });
 
       test('Fires when abort button pressed', function() {
-        var spy = sinon.spy();
-        element.addEventListener('abort-request', spy);
-        var button = element.shadowRoot.querySelector('#abortButton');
-        MockInteractions.tap(button);
+        const spy = sinon.spy();
+        element.addEventListener('abort-api-request', spy);
+        const button = element.shadowRoot.querySelector('#abortButton');
+        button.click();
         assert.isTrue(spy.calledOnce);
       });
 
       test('Event contains the URL and the ID', function(done) {
-        element.addEventListener('abort-request', function clb(e) {
-          element.removeEventListener('abort-request', clb);
+        element.addEventListener('abort-api-request', function clb(e) {
+          element.removeEventListener('abort-api-request', clb);
           assert.equal(e.detail.url, URL, 'URL is set');
           assert.equal(e.detail.id, ID, 'id is set');
           done();

@@ -331,12 +331,12 @@ declare namespace UiElements {
     _sendRequestInner(e: any): void;
 
     /**
-     * Sends the `send-request` custom event to send the request.
+     * Sends the `api-request` custom event to send the request.
      */
     _sendRequest(): void;
 
     /**
-     * Sends the `abort-request` custom event to cancel the request.
+     * Sends the `abort-api-request` custom event to cancel the request.
      */
     _abortRequest(): void;
 

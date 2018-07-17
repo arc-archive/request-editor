@@ -17,7 +17,7 @@
     </test-fixture>
 
     <script>
-    suite('send-request event', function() {
+    suite('api-request event', function() {
       let element;
       const HEADERS = 'content-type: test';
       const URL = 'https://mulesoft.com';
@@ -52,14 +52,14 @@
 
       test('Fires when send button pressed', function() {
         const spy = sinon.spy();
-        element.addEventListener('send-request', spy);
+        element.addEventListener('api-request', spy);
         const button = element.shadowRoot.querySelector('#sendButton');
         button.click();
         assert.isTrue(spy.calledOnce);
       });
 
       test('Event contains the request data', function(done) {
-        element.addEventListener('send-request', function(e) {
+        element.addEventListener('api-request', function(e) {
           assert.equal(e.detail.url, URL, 'URL is set');
           assert.equal(e.detail.method, METHOD, 'Method is set');
           assert.equal(e.detail.headers, HEADERS, 'Headers are set');
@@ -109,8 +109,8 @@
         });
 
         test('Has headers data', function(done) {
-          element.addEventListener('send-request', function clb(e) {
-            element.removeEventListener('send-request', clb);
+          element.addEventListener('api-request', function clb(e) {
+            element.removeEventListener('api-request', clb);
             assert.equal(e.detail.headers, 'authorization: basic dGVzdDp0ZXN0');
             done();
           });
@@ -118,8 +118,8 @@
         });
 
         test('Accepts settings', function(done) {
-          element.addEventListener('send-request', function clb(e) {
-            element.removeEventListener('send-request', clb);
+          element.addEventListener('api-request', function clb(e) {
+            element.removeEventListener('api-request', clb);
             const settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'basic');
@@ -147,8 +147,8 @@
         });
 
         test('Headers are not altered', function(done) {
-          element.addEventListener('send-request', function clb(e) {
-            element.removeEventListener('send-request', clb);
+          element.addEventListener('api-request', function clb(e) {
+            element.removeEventListener('api-request', clb);
             assert.equal(e.detail.headers, HEADERS);
             done();
           });
@@ -156,8 +156,8 @@
         });
 
         test('Accepts settings', function(done) {
-          element.addEventListener('send-request', function clb(e) {
-            element.removeEventListener('send-request', clb);
+          element.addEventListener('api-request', function clb(e) {
+            element.removeEventListener('api-request', clb);
             const settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'ntlm');
@@ -184,8 +184,8 @@
         });
 
         // test('Headers are not altered', function(done) {
-        //   element.addEventListener('send-request', function clb(e) {
-        //     element.removeEventListener('send-request', clb);
+        //   element.addEventListener('api-request', function clb(e) {
+        //     element.removeEventListener('api-request', clb);
         //     assert.equal(e.detail.headers, 'authorization: Digest password="test", username="test"');
         //     done();
         //   });
@@ -193,8 +193,8 @@
         // });
 
         test('Accepts settings', function(done) {
-          element.addEventListener('send-request', function clb(e) {
-            element.removeEventListener('send-request', clb);
+          element.addEventListener('api-request', function clb(e) {
+            element.removeEventListener('api-request', clb);
             const settings = e.detail.auth;
             assert.typeOf(settings, 'object');
             assert.equal(settings.type, 'digest');
@@ -208,6 +208,10 @@
 
       suite('OAuth2 auth', function() {
         suiteSetup(function(done) {
+          sessionStorage.removeItem('auth.methods.latest.auth_token');
+          sessionStorage.removeItem('auth.methods.latest.auth_uri');
+          sessionStorage.removeItem('auth.methods.latest.client_id');
+          sessionStorage.removeItem('auth.methods.latest.tokenType');
           setupElement(() => {
             panel.selected = 4;
             flush(() => {
@@ -221,8 +225,8 @@
         });
 
         test('Headers are not altered', function(done) {
-          element.addEventListener('send-request', function clb(e) {
-            element.removeEventListener('send-request', clb);
+          element.addEventListener('api-request', function clb(e) {
+            element.removeEventListener('api-request', clb);
             assert.equal(e.detail.headers, HEADERS);
             done();
           });
@@ -231,8 +235,8 @@
 
         test('Accepts settings', function(done) {
           flush(() => {
-            element.addEventListener('send-request', function clb(e) {
-              element.removeEventListener('send-request', clb);
+            element.addEventListener('api-request', function clb(e) {
+              element.removeEventListener('api-request', clb);
               const settings = e.detail.auth;
               assert.typeOf(settings, 'object');
               assert.equal(settings.type, 'oauth2');

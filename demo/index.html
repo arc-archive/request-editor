@@ -118,11 +118,11 @@
   function openToast(id) {
     document.getElementById(id).opened = true;
   }
-  window.addEventListener('send-request', function() {
+  window.addEventListener('api-request', function() {
     openToast('requestSend');
     document.querySelector('request-editor').loadingRequest = true;
   });
-  window.addEventListener('abort-request', function() {
+  window.addEventListener('abort-api-request', function() {
     openToast('requestAbort');
     document.querySelector('request-editor').loadingRequest = false;
   });

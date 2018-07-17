@@ -819,7 +819,7 @@
         },
         {
           "name": "_sendRequest",
-          "description": "Sends the `send-request` custom event to send the request.",
+          "description": "Sends the `api-request` custom event to send the request.",
           "privacy": "protected",
           "sourceRange": {
             "start": {
@@ -839,7 +839,7 @@
         },
         {
           "name": "_abortRequest",
-          "description": "Sends the `abort-request` custom event to cancel the request.",
+          "description": "Sends the `abort-api-request` custom event to cancel the request.",
           "privacy": "protected",
           "sourceRange": {
             "start": {
@@ -1381,8 +1381,14 @@
       "events": [
         {
           "type": "CustomEvent",
-          "name": "abort-request",
+          "name": "abort-api-request",
           "description": "Fired when the user request to abort current request.\n\nThis event can be cancelled.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "api-request",
+          "description": "Fired when the user request to send current request.\n\nThis event can be cancelled.",
           "metadata": {}
         },
         {
@@ -1407,12 +1413,6 @@
           "type": "CustomEvent",
           "name": "request-use-xhr-changed",
           "description": "Fired when the state of the toggle XHR button change.\nIt is fired to inform request controlling element to switch to the XHR\nextension.\n`xhrExtension` must be set to display the toggle button.",
-          "metadata": {}
-        },
-        {
-          "type": "CustomEvent",
-          "name": "send-request",
-          "description": "Fired when the user request to send current request.\n\nThis event can be cancelled.",
           "metadata": {}
         },
         {
