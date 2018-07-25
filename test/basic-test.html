@@ -96,7 +96,7 @@
       test('Body is hidden for GET', function(done) {
         element.method = 'GET';
         flush(() => {
-          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[2];
+          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[1];
           assert.isTrue(tab.hasAttribute('hidden'));
           done();
         });
@@ -105,7 +105,7 @@
       test('Body is hidden for HEAD', function(done) {
         element.method = 'HEAD';
         flush(() => {
-          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[2];
+          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[1];
           assert.isTrue(tab.hasAttribute('hidden'));
           done();
         });
@@ -114,7 +114,7 @@
       test('Body is visible for POST', function(done) {
         element.method = 'POST';
         flush(() => {
-          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[2];
+          const tab = element.shadowRoot.querySelectorAll('paper-tabs paper-tab')[1];
           assert.isFalse(tab.hasAttribute('hidden'));
           done();
         });
