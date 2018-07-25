@@ -29,6 +29,7 @@
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   <link rel="import" href="../../variables-evaluator/variables-evaluator.html">
   <link rel="import" href="../../variables-manager/variables-manager.html">
+  <link rel="import" href="../../variables-editor/variables-editor.html">
   <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
   <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
   <link rel="import" href="../../url-history-saver/url-history-saver.html">
@@ -99,13 +100,20 @@
         </output>
       </div>
 
-      <h4>Additional elements used with this demo page</h4>
-      <ul>
-        <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
-        <li><a href="https://github.com/advanced-rest-client/variables-manager">variables-manager</a></li>
-        <li><a href="https://github.com/advanced-rest-client/url-history-saver">url-history-saver</a></li>
-        <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li>
-      </ul>
+      <div class="vertical-section-container centered">
+        <h4>Additional elements used with this demo page</h4>
+        <ul>
+          <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
+          <li><a href="https://github.com/advanced-rest-client/variables-manager">variables-manager</a></li>
+          <li><a href="https://github.com/advanced-rest-client/url-history-saver">url-history-saver</a></li>
+          <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li>
+        </ul>
+      </div>
+
+      <div class="vertical-section-container centered">
+        <h4>Variables editor</h4>
+        <variables-editor></variables-editor>
+      </div>
 
     </template>
   </dom-bind>

@@ -17,7 +17,6 @@ the License.
 <link rel="import" href="../http-method-selector/http-method-selector.html">
 <link rel="import" href="../http-method-selector/http-method-selector-mini.html">
 <link rel="import" href="../api-body-editor/api-body-editor.html">
-<link rel="import" href="../variables-editor/variables-editor.html">
 <link rel="import" href="../authorization-panel/authorization-panel.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-tabs/paper-tabs.html">
@@ -185,7 +184,6 @@ the License.
             <paper-tab>Headers</paper-tab>
             <paper-tab>Authorization</paper-tab>
             <paper-tab hidden$="[[!isPayload]]">Body</paper-tab>
-            <paper-tab>Variables</paper-tab>
             <paper-tab>Actions</paper-tab>
           </paper-tabs>
           <iron-pages selected="[[selectedTab]]" selected-attribute="opened" class="editors-container">
@@ -200,7 +198,6 @@ the License.
               allow-hide-optional></api-headers-editor>
             <authorization-panel redirect-uri="[[oauth2RedirectUri]]" settings="{{authSettings}}" http-method="[[method]]" request-url="[[url]]" request-body="[[payload]]"></authorization-panel>
             <api-body-editor events-target="[[eventsTarget]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></api-body-editor>
-            <variables-editor></variables-editor>
             <request-actions-panel after-actions="{{responseActions}}" before-actions="{{requestActions}}"></request-actions-panel>
           </iron-pages>
         </iron-collapse>
@@ -239,6 +236,10 @@ the License.
    * [variables-manager](https://github.com/advanced-rest-client/variables-manager)
    * that stores variables in the local datastore. It should be placed anywhere
    * in the DOM. The elements uses browser's events system to communicate.
+   *
+   * Note, as of version 2.0 this component does not include editor for variables.
+   * Variables are not part of the request and therefore are included into request
+   * editor. The app should place `variables-editor` somewhere.
    *
    * ## Events retargeting
    *
