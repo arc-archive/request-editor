@@ -325,7 +325,7 @@ the License.
    * @appliesMixin ArcBehaviors.EventsTargetBehavior
    */
   class RequestEditor extends ArcBehaviors.EventsTargetBehavior(Polymer.Element) {
-    static get is() { return 'request-editor';}
+    static get is() {return 'request-editor';}
     static get properties() {
       return {
         // Selected request tab.
@@ -523,6 +523,8 @@ the License.
     /**
      * Handles change to `isPayload` property. Restores payload editor tab
      * if needed.
+     *
+     * @param {Boolean} isPayload
      */
     _isPayloadChanged(isPayload) {
       if (!isPayload && this.selectedTab === 1) {
@@ -533,6 +535,8 @@ the License.
     /**
      * Called when the selected tab changes. Refreshes payload editor state
      * (for code mirror) if currently selected.
+     *
+     * @param {Number} selectedTab
      */
     _refreshPayload(selectedTab) {
       if (selectedTab === 2) {
@@ -542,6 +546,8 @@ the License.
     /**
      * Handles an event dispatched by eny of the child elements.
      * It cancels the even and stops it's propagation and the sends the request
+     *
+     * @param {CustomEvent} e
      */
     _sendRequestInner(e) {
       if (e.target === this) {
@@ -581,6 +587,8 @@ the License.
     }
     /**
      * Clears the URL value if the URL editor is removed.
+     *
+     * @param {Boolean} value
      */
     _noUrlEditorChanged(value) {
       if (value) {
