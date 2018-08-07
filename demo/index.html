@@ -37,16 +37,30 @@
   <link rel="import" href="../../paper-listbox/paper-listbox.html">
   <link rel="import" href="../../paper-item/paper-item.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
+  <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
   <link rel="import" href="../request-editor.html">
-  <link rel="import" href="api-console-styles.html">
   <script type="text/javascript" src="../../chance/chance.js"></script>
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
+    body,
+    html {
+      background-color: #e5e5e5;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .card {
+      @apply --shadow-elevation-4dp;
+      padding: 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+    }
+
     .vertical-section-container {
       max-width: 1100px;
-      background-color: #fff;
-      padding: 40px;
-      box-sizing: border-box;
       margin-bottom: 40px;
     }
 
@@ -67,12 +81,12 @@
   <url-history-saver></url-history-saver>
   <dom-bind id="demo">
     <template>
-      <div class="vertical-section-container centered">
+      <div class="vertical-section-container centered card">
         <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" oauth2-redirect-uri="[[oauth2RedirectUri]]"></request-editor>
       </div>
 
       <div class="vertical-section-container centered">
-        <section>
+        <section class="card">
           <h4>Load request</h4>
           <paper-dropdown-menu label="Request preset">
             <paper-listbox slot="dropdown-content" on-selected-changed="_restoredRequestChanged" attr-for-selected="data-type">
@@ -81,26 +95,28 @@
             </paper-listbox>
           </paper-dropdown-menu>
         </section>
-        <h4>Result</h4>
-        <output>
-          <h5>URL</h5>
-          <code>[[url]]</code>
-          <h5>Method</h5>
-          <code>[[method]]</code>
-          <h5>Headers</h5>
-          <code>[[headers]]</code>
-          <template is="dom-if" if="[[isPayload]]">
-            <h5>Body</h5>
-            <code>[[body]]</code>
-          </template>
-          <template is="dom-if" if="[[contentType]]">
-            <h5>Used content type</h5>
-            <code>[[contentType]]</code>
-          </template>
-        </output>
+        <section class="card">
+          <h4>Result</h4>
+          <output>
+            <h5>URL</h5>
+            <code>[[url]]</code>
+            <h5>Method</h5>
+            <code>[[method]]</code>
+            <h5>Headers</h5>
+            <code>[[headers]]</code>
+            <template is="dom-if" if="[[isPayload]]">
+              <h5>Body</h5>
+              <code>[[body]]</code>
+            </template>
+            <template is="dom-if" if="[[contentType]]">
+              <h5>Used content type</h5>
+              <code>[[contentType]]</code>
+            </template>
+          </output>
+        </section>
       </div>
 
-      <div class="vertical-section-container centered">
+      <div class="vertical-section-container centered card">
         <h4>Additional elements used with this demo page</h4>
         <ul>
           <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
@@ -110,11 +126,10 @@
         </ul>
       </div>
 
-      <div class="vertical-section-container centered">
+      <div class="vertical-section-container centered card">
         <h4>Variables editor</h4>
         <variables-editor></variables-editor>
       </div>
-
     </template>
   </dom-bind>
   <paper-toast id="requestSend" text="Request send event detected"></paper-toast>
