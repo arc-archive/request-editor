@@ -25,7 +25,6 @@ the License.
 <link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
@@ -142,33 +141,15 @@ the License.
           </template>
           <url-input-editor events-target="[[eventsTarget]]" auto-validate required value="{{url}}" query-parameters="{{queryModel}}" invalid="{{urlInvalid}}"></url-input-editor>
           <div class="main-action-buttons">
-            <paper-button id="sendButton" raised class="action-button" hidden$="[[loadingRequest]]" on-tap="_sendRequest">send</paper-button>
-            <paper-button id="abortButton" raised class="action-button" hidden$="[[!loadingRequest]]" on-tap="_abortRequest">abort</paper-button>
+            <paper-button raised class="action-button" hidden$="[[loadingRequest]]" on-click="_sendRequest">send</paper-button>
+            <paper-button raised class="action-button" hidden$="[[!loadingRequest]]" on-click="_abortRequest">abort</paper-button>
           </div>
           <paper-menu-button horizontal-align="right" class="request-menu">
             <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
-              <template is="dom-if" if="[[xhrExtension]]">
-                <paper-icon-item on-tap="toggleXhr">
-                  <span slot="item-icon">
-                    <paper-toggle-button checked="{{_useXhrExtension}}"></paper-toggle-button>
-                    <paper-tooltip offset="0" animation-delay="200">Toggle send via XHR extension</paper-tooltip>
-                  </span>
-                  Use XHR extension
-                </paper-icon-item>
-              </template>
-              <paper-icon-item on-tap="saveRequestState">
-                <span slot="item-icon">
-                  <iron-icon icon="arc:save" class="context-menu-icon"></iron-icon>
-                  <paper-tooltip item-icon offset="0" animation-delay="200">Save current request</paper-tooltip>
-                </span>
-                Save
-              </paper-icon-item>
-              <paper-icon-item on-tap="clearRequest">
-                <span slot="item-icon">
-                  <iron-icon icon="arc:clear-all" class="context-menu-icon"></iron-icon>
-                  <paper-tooltip item-icon offset="0" animation-delay="200">Clear request data</paper-tooltip>
-                </span>
+              <slot name="request-context-menu"></slot>
+              <paper-icon-item on-click="clearRequest">
+                <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
                 Clear
               </paper-icon-item>
             </paper-listbox>
@@ -456,19 +437,6 @@ the License.
          */
         oauth2RedirectUri: String,
         /**
-         * If set then it renders an option in request context menu to
-         * toggle to XHR request via the extension.
-         * It's only relevant to ARC Chrome app.
-         */
-        xhrExtension: Boolean,
-        /**
-         * Current state of XHR toggle button
-         */
-        _useXhrExtension: {
-          type: Boolean,
-          observer: '_useXhrExtensionChanged'
-        },
-        /**
          * Generated request ID when the request is sent. This value is reported
          * in send and abort events
          */
@@ -628,48 +596,6 @@ the License.
         return;
       }
       menu.selected = undefined;
-    }
-    /**
-     * Toggles state of the use XHR extension toggle button.
-     */
-    toggleXhr(e) {
-      const node = e ? e.composedPath()[0].nodeName.toLowerCase() : '';
-      if (node !== 'paper-toggle-button') {
-        this._useXhrExtension = !this._useXhrExtension;
-      }
-      if (e && e.preventDefault) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      this._unselectRequestMenu();
-    }
-    /**
-     * Fires the `request-use-xhr-changed` custom event to inform about
-     * toggle button status change.
-     */
-    _useXhrExtensionChanged(newValue, oldValue) {
-      if (oldValue === undefined) {
-        return;
-      }
-      this.dispatchEvent(new CustomEvent('request-use-xhr-changed', {
-        composed: true,
-        bubbles: true,
-        detail: {
-          value: newValue
-        }
-      }));
-    }
-    /**
-     * Fires cancelable `request-save-state` custom event so the application
-     * can save the request object.
-     */
-    saveRequestState() {
-      this.dispatchEvent(new CustomEvent('request-save-state', {
-        composed: true,
-        bubbles: true,
-        cancelable: true
-      }));
-      this._unselectRequestMenu();
     }
     /**
      * Clears the request properties and sends cancelable `request-clear-state`
