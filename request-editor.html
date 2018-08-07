@@ -68,6 +68,11 @@ the License.
     .params-header {
       @apply --layout-horizontal;
       @apply --layout-center;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
     .action-button {
@@ -174,10 +179,9 @@ the License.
         <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
       </template>
       <section class="params-section">
-        <header class="params-header">
+        <header class="params-header" on-click="toggle">
           <h2>Parameters</h2>
-          <paper-icon-button icon="arc:expand-more" id="toggleParameters" on-tap="toggle" class$="[[_computeToggleIconClass(collapseOpened)]]"></paper-icon-button>
-          <paper-tooltip for="toggleParameters" animation-delay="100" position="right" offset="0">[[_computeToggleLabel(collapseOpened)]]</paper-tooltip>
+          <paper-icon-button icon="arc:expand-more" class$="[[_computeToggleIconClass(collapseOpened)]]" title$="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
         </header>
         <iron-collapse opened="[[collapseOpened]]">
           <paper-tabs selected="{{selectedTab}}" hidden$="[[!collapseOpened]]">
