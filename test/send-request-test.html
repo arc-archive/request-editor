@@ -53,7 +53,7 @@
       test('Fires when send button pressed', function() {
         const spy = sinon.spy();
         element.addEventListener('api-request', spy);
-        const button = element.shadowRoot.querySelector('#sendButton');
+        const button = element.shadowRoot.querySelector('.action-button.send');
         button.click();
         assert.isTrue(spy.calledOnce);
       });

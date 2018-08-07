@@ -32,34 +32,6 @@
         });
       });
 
-      test('_useXhrExtension is false by default', function() {
-        assert.isFalse(element._useXhrExtension);
-      });
-
-      test('Fires request-use-xhr-changed custom event', function() {
-        const spy = sinon.spy();
-        element.addEventListener('request-use-xhr-changed', spy);
-        element._useXhrExtension = true;
-        assert.isTrue(spy.calledOnce);
-      });
-
-      test('request-use-xhr-changed custom event has state', function(done) {
-        element._useXhrExtension = false;
-        element.addEventListener('request-use-xhr-changed', function clb(e) {
-          element.removeEventListener('request-use-xhr-changed', clb);
-          assert.isTrue(e.detail.value);
-          done();
-        });
-        element._useXhrExtension = true;
-      });
-
-      test('Fires request-save-state custom event', function() {
-        const spy = sinon.spy();
-        element.addEventListener('request-save-state', spy);
-        element.saveRequestState();
-        assert.isTrue(spy.calledOnce);
-      });
-
       test('Fires request-clear-state custom event', function() {
         const spy = sinon.spy();
         element.addEventListener('request-clear-state', spy);
@@ -99,7 +71,6 @@
         assert.isUndefined(element.responseActions);
         assert.deepEqual(element.authSettings, {});
       });
-
     });
     </script>
 
