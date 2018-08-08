@@ -37,6 +37,7 @@
   <link rel="import" href="../../paper-listbox/paper-listbox.html">
   <link rel="import" href="../../paper-item/paper-item.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
+  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
   <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
   <link rel="import" href="../request-editor.html">
   <script type="text/javascript" src="../../chance/chance.js"></script>
@@ -81,9 +82,24 @@
   <url-history-saver></url-history-saver>
   <dom-bind id="demo">
     <template>
-      <div class="vertical-section-container centered card">
-        <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" oauth2-redirect-uri="[[oauth2RedirectUri]]"></request-editor>
-      </div>
+      <section class="vertical-section-container centered card" role="main">
+        <request-editor
+          url="{{url}}"
+          method="{{method}}"
+          headers="{{headers}}"
+          payload="{{body}}"
+          content-type="{{contentType}}"
+          is-payload="{{isPayload}}"
+          oauth2-redirect-uri="[[oauth2RedirectUri]]"
+          readonly="[[readOnly]]"
+          no-url-editor="[[noUrlEditor]]"></request-editor>
+      </section>
+
+      <section class="vertical-section-container centered card">
+        <h3>Configuration</h3>
+        <paper-toggle-button checked="{{readOnly}}">Read only mode</paper-toggle-button>
+        <paper-toggle-button checked="{{noUrlEditor}}">No URL editor</paper-toggle-button>
+      </section>
 
       <div class="vertical-section-container centered">
         <section class="card">
