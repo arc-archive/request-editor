@@ -37,7 +37,7 @@
       test('Fires when abort button pressed', function() {
         const spy = sinon.spy();
         element.addEventListener('abort-api-request', spy);
-        const button = element.shadowRoot.querySelector('#abortButton');
+        const button = element.shadowRoot.querySelector('.action-button.abort');
         button.click();
         assert.isTrue(spy.calledOnce);
       });
