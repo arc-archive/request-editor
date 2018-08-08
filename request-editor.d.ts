@@ -14,7 +14,6 @@
 /// <reference path="../http-method-selector/http-method-selector.d.ts" />
 /// <reference path="../http-method-selector/http-method-selector-mini.d.ts" />
 /// <reference path="../api-body-editor/api-body-editor.d.ts" />
-/// <reference path="../variables-editor/variables-editor.d.ts" />
 /// <reference path="../authorization-panel/authorization-panel.d.ts" />
 /// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
 /// <reference path="../paper-tabs/paper-tabs.d.ts" />
@@ -23,7 +22,6 @@
 /// <reference path="../paper-styles/paper-styles.d.ts" />
 /// <reference path="../paper-button/paper-button.d.ts" />
 /// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../paper-tooltip/paper-tooltip.d.ts" />
 /// <reference path="../iron-collapse/iron-collapse.d.ts" />
 /// <reference path="../iron-media-query/iron-media-query.d.ts" />
 /// <reference path="../arc-icons/arc-icons.d.ts" />
@@ -67,6 +65,10 @@ declare namespace UiElements {
    * [variables-manager](https://github.com/advanced-rest-client/variables-manager)
    * that stores variables in the local datastore. It should be placed anywhere
    * in the DOM. The elements uses browser's events system to communicate.
+   *
+   * Note, as of version 2.0 this component does not include editor for variables.
+   * Variables are not part of the request and therefore are included into request
+   * editor. The app should place `variables-editor` somewhere.
    *
    * ## Events retargeting
    *
@@ -256,18 +258,6 @@ declare namespace UiElements {
     oauth2RedirectUri: string|null|undefined;
 
     /**
-     * If set then it renders an option in request context menu to
-     * toggle to XHR request via the extension.
-     * It's only relevant to ARC Chrome app.
-     */
-    xhrExtension: boolean|null|undefined;
-
-    /**
-     * Current state of XHR toggle button
-     */
-    _useXhrExtension: boolean|null|undefined;
-
-    /**
      * Generated request ID when the request is sent. This value is reported
      * in send and abort events
      */
@@ -277,6 +267,11 @@ declare namespace UiElements {
      * Current authorization panel settings.
      */
     authSettings: object|null|undefined;
+
+    /**
+     * When set the editor is in read only mode.
+     */
+    readonly: boolean|null|undefined;
     _attachListeners(node: any): void;
     _detachListeners(node: any): void;
 
@@ -316,19 +311,19 @@ declare namespace UiElements {
      * Handles change to `isPayload` property. Restores payload editor tab
      * if needed.
      */
-    _isPayloadChanged(isPayload: any): void;
+    _isPayloadChanged(isPayload: Boolean|null): void;
 
     /**
      * Called when the selected tab changes. Refreshes payload editor state
      * (for code mirror) if currently selected.
      */
-    _refreshPayload(selectedTab: any): void;
+    _refreshPayload(selectedTab: Number|null): void;
 
     /**
      * Handles an event dispatched by eny of the child elements.
      * It cancels the even and stops it's propagation and the sends the request
      */
-    _sendRequestInner(e: any): void;
+    _sendRequestInner(e: CustomEvent|null): void;
 
     /**
      * Sends the `api-request` custom event to send the request.
@@ -343,29 +338,12 @@ declare namespace UiElements {
     /**
      * Clears the URL value if the URL editor is removed.
      */
-    _noUrlEditorChanged(value: any): void;
+    _noUrlEditorChanged(value: Boolean|null): void;
 
     /**
      * Deselects menu item if the URL editor is present.
      */
     _unselectRequestMenu(): void;
-
-    /**
-     * Toggles state of the use XHR extension toggle button.
-     */
-    toggleXhr(e: any): void;
-
-    /**
-     * Fires the `request-use-xhr-changed` custom event to inform about
-     * toggle button status change.
-     */
-    _useXhrExtensionChanged(newValue: any, oldValue: any): void;
-
-    /**
-     * Fires cancelable `request-save-state` custom event so the application
-     * can save the request object.
-     */
-    saveRequestState(): void;
 
     /**
      * Clears the request properties and sends cancelable `request-clear-state`
