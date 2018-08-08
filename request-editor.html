@@ -133,13 +133,13 @@ the License.
     <div class="content">
       <template is="dom-if" if="[[!noUrlEditor]]" restamp>
         <template is="dom-if" if="[[narrow]]" restamp>
-          <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+          <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
         </template>
         <div class="url-editor">
           <template is="dom-if" if="[[!narrow]]" restamp>
-            <http-method-selector-mini events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector-mini>
+            <http-method-selector-mini events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector-mini>
           </template>
-          <url-input-editor events-target="[[eventsTarget]]" auto-validate required value="{{url}}" query-parameters="{{queryModel}}" invalid="{{urlInvalid}}"></url-input-editor>
+          <url-input-editor events-target="[[eventsTarget]]" auto-validate required value="{{url}}" query-parameters="{{queryModel}}" invalid="{{urlInvalid}}" readonly="[[readonly]]"></url-input-editor>
           <div class="main-action-buttons">
             <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="_sendRequest">send</paper-button>
             <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="_abortRequest">abort</paper-button>
@@ -157,7 +157,7 @@ the License.
         </div>
       </template>
       <template is="dom-if" if="[[noUrlEditor]]" restamp>
-        <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}"></http-method-selector>
+        <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
       </template>
       <section class="params-section">
         <header class="params-header" on-click="toggle">
@@ -178,12 +178,27 @@ the License.
               content-type="{{contentType}}"
               value="{{headers}}"
               on-headers-changed="_headersChanged"
+              readonly="[[readonly]]"
               allow-custom
               allow-disable-params
               allow-hide-optional></api-headers-editor>
-            <api-body-editor events-target="[[eventsTarget]]" content-type="[[contentType]]" value="{{payload}}" opened-editor="0"></api-body-editor>
-            <authorization-panel redirect-uri="[[oauth2RedirectUri]]" settings="{{authSettings}}" http-method="[[method]]" request-url="[[url]]" request-body="[[payload]]"></authorization-panel>
-            <request-actions-panel after-actions="{{responseActions}}" before-actions="{{requestActions}}"></request-actions-panel>
+            <api-body-editor
+              events-target="[[eventsTarget]]"
+              content-type="[[contentType]]"
+              value="{{payload}}"
+              readonly="[[readonly]]"
+              opened-editor="0"></api-body-editor>
+            <authorization-panel
+              redirect-uri="[[oauth2RedirectUri]]"
+              settings="{{authSettings}}"
+              http-method="[[method]]"
+              request-url="[[url]]"
+              request-body="[[payload]]"
+              readonly="[[readonly]]"></authorization-panel>
+            <request-actions-panel
+              after-actions="{{responseActions}}"
+              before-actions="{{requestActions}}"
+              readonly="[[readonly]]"></request-actions-panel>
           </iron-pages>
         </iron-collapse>
       </section>
@@ -444,8 +459,13 @@ the License.
         // Current authorization panel settings.
         authSettings: {
           type: Object,
-          notify: true
-        }
+          notify: true,
+          observer: 'notifyRequestChanged'
+        },
+        /**
+         * When set the editor is in read only mode.
+         */
+        readonly: Boolean
       };
     }
 
