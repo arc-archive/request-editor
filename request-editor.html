@@ -139,7 +139,15 @@ the License.
           <template is="dom-if" if="[[!narrow]]" restamp>
             <http-method-selector-mini events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector-mini>
           </template>
-          <url-input-editor events-target="[[eventsTarget]]" auto-validate required value="{{url}}" query-parameters="{{queryModel}}" invalid="{{urlInvalid}}" readonly="[[readonly]]"></url-input-editor>
+          <url-input-editor
+            events-target="[[eventsTarget]]"
+            auto-validate
+            required
+            value="{{url}}"
+            query-parameters="{{queryModel}}"
+            invalid="{{urlInvalid}}"
+            readonly="[[readonly]]"
+            details-opened="{{urlOpened}}"></url-input-editor>
           <div class="main-action-buttons">
             <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="_sendRequest">send</paper-button>
             <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="_abortRequest">abort</paper-button>
@@ -465,8 +473,29 @@ the License.
         /**
          * When set the editor is in read only mode.
          */
-        readonly: Boolean
+        readonly: Boolean,
+        /**
+         * Set to open URL detailed editor.
+         */
+        urlOpened: Boolean,
+        /**
+         * Current state of the editor that can be later used to restore
+         * the satte. This does not count for request data. It only shows
+         * state of the UI regions.
+         * @type {Object}
+         */
+        state: {
+          type: Object,
+          notify: true,
+          observer: '_stateChanged'
+        }
       };
+    }
+
+    static get observers() {
+      return [
+        '_computePanelState(collapseOpened, selectedTab, urlOpened)'
+      ];
     }
 
     constructor() {
@@ -648,6 +677,52 @@ the License.
 
     _authRedirectChanged(e) {
       this.oauth2RedirectUri = e.detail.value;
+    }
+    /**
+     * Computes and sets `state` property.
+     * It is called automatically if any of the arguments change.
+     * @param {Boolean} collapseOpened
+     * @param {Number} selectedTab
+     * @param {Boolean} urlOpened
+     */
+    _computePanelState(collapseOpened, selectedTab, urlOpened) {
+      const data = {
+        collapseOpened,
+        selectedTab,
+        urlOpened
+      };
+      this._cancelStateRestore = true;
+      this.state = data;
+      this._cancelStateRestore = false;
+    }
+    /**
+     * Updates the editor state when `stae` changes.
+     * @param {Object} state Current state
+     */
+    _stateChanged(state) {
+      if (!state || this._cancelStateRestore) {
+        return;
+      }
+      if (state.collapseOpened !== undefined) {
+        const value = Boolean(state.collapseOpened);
+        if (value !== this.collapseOpened) {
+          this.collapseOpened = value;
+        }
+      }
+      if (state.selectedTab !== undefined) {
+        const value = Number(state.selectedTab);
+        if (value !== this.selectedTab) {
+          if (!(!this.isPayload && value === 1)) {
+            this.selectedTab = value;
+          }
+        }
+      }
+      if (state.urlOpened !== undefined) {
+        const value = Boolean(state.urlOpened);
+        if (value !== this.urlOpened) {
+          this.urlOpened = value;
+        }
+      }
     }
     /**
      * Fired when the user request to send current request.

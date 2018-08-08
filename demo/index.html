@@ -7,8 +7,10 @@
 
   <title>request-editor demo</title>
   <script>
-  if (location.search.indexOf('response_type') !== -1 && location.search.indexOf('redirect_uri') !== -1) {
+  if (location.search.indexOf('response_type') !== -1 &&
+    location.search.indexOf('redirect_uri') !== -1) {
     // OAUTH DEMO
+    /* global URLSearchParams */
     const p = new URLSearchParams(location.search);
     const state = p.get('state');
     const type = p.get('response_type');
@@ -84,6 +86,7 @@
     <template>
       <section class="vertical-section-container centered card" role="main">
         <request-editor
+          id="editor"
           url="{{url}}"
           method="{{method}}"
           headers="{{headers}}"
@@ -111,6 +114,7 @@
             </paper-listbox>
           </paper-dropdown-menu>
         </section>
+
         <section class="card">
           <h4>Result</h4>
           <output>
@@ -128,6 +132,8 @@
               <h5>Used content type</h5>
               <code>[[contentType]]</code>
             </template>
+            <h5>Editor state</h5>
+            <code>[[stringify(editorState)]]</code>
           </output>
         </section>
       </div>
@@ -212,6 +218,12 @@
       }
       return ['GET', 'HEAD'][chance.integer({min: 0, max: 1})];
     }
+    scope.stringify = function(value) {
+      if (!value) {
+        return;
+      }
+      return JSON.stringify(value);
+    };
     scope.generateRequest = function(opts) {
       scope.url = chance.url();
       if (opts.withBody) {
@@ -222,6 +234,19 @@
       scope.headers = genHeaders(opts);
       scope.method = getMethod(opts);
     };
+
+    scope._handleStateChange = function() {
+      const editor = document.getElementById('editor');
+      scope.editorState = editor.state;
+    };
+
+    scope._init = function() {
+      const editor = document.getElementById('editor');
+      editor.addEventListener('state-changed', () => scope._handleStateChange());
+      scope.editorState = editor.state;
+    };
+
+    window.addEventListener('WebComponentsReady', scope._init);
   })(document.getElementById('demo'));
   </script>
 </body>
