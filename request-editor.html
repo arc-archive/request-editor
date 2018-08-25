@@ -149,7 +149,7 @@ the License.
             readonly="[[readonly]]"
             details-opened="{{urlOpened}}"></url-input-editor>
           <div class="main-action-buttons">
-            <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="_sendRequest">send</paper-button>
+            <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="send">send</paper-button>
             <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="_abortRequest">abort</paper-button>
           </div>
           <paper-menu-button horizontal-align="right" class="request-menu">
@@ -604,12 +604,12 @@ the License.
       }
       e.preventDefault();
       e.stopPropagation();
-      this._sendRequest();
+      this.send();
     }
     /**
-     * Sends the `api-request` custom event to send the request.
+     * Dispatches the `api-request` custom event to send the request.
      */
-    _sendRequest() {
+    send() {
       const request = this.serializeRequest();
       this.requestId = this.$.uuid.generate();
       request.id = this.requestId;

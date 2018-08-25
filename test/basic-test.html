@@ -161,7 +161,7 @@
     });
 
     suite('_computeToggleLabel()', function() {
-      var element;
+      let element;
       suiteSetup(function() {
         element = fixture('basic');
       });
@@ -261,8 +261,8 @@
         element = fixture('basic');
       });
 
-      test('Calls _sendRequest()', function(done) {
-        element._sendRequest = function() {
+      test('Calls send()', function(done) {
+        element.send = function() {
           done();
         };
         const obj = {
@@ -273,9 +273,9 @@
         element._sendRequestInner(obj);
       });
 
-      test('Don not call _sendRequest() when it is the source', function() {
+      test('Don not call send() when it is the source', function() {
         let called = false;
-        element._sendRequest = function() {
+        element.send = function() {
           called = true;
         };
         element._sendRequestInner({
@@ -283,7 +283,6 @@
         });
         assert.isFalse(called);
       });
-
     });
     </script>
   </body>
