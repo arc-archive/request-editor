@@ -49,7 +49,7 @@
           assert.equal(e.detail.id, ID, 'id is set');
           done();
         });
-        element._abortRequest();
+        element.abort();
       });
     });
     </script>

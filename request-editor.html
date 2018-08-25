@@ -150,7 +150,7 @@ the License.
             details-opened="{{urlOpened}}"></url-input-editor>
           <div class="main-action-buttons">
             <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="send">send</paper-button>
-            <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="_abortRequest">abort</paper-button>
+            <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="abort">abort</paper-button>
           </div>
           <paper-menu-button horizontal-align="right" class="request-menu">
             <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
@@ -623,7 +623,7 @@ the License.
     /**
      * Sends the `abort-api-request` custom event to cancel the request.
      */
-    _abortRequest() {
+    abort() {
       this.dispatchEvent(new CustomEvent('abort-api-request', {
         cancelable: true,
         composed: true,
