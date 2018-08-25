@@ -61,6 +61,7 @@
       });
 
       test('Contains query parameters model', function(done) {
+        element.shadowRoot.querySelector('url-input-editor').detailsOpened = true;
         element.url = '';
         const callback = function(e) {
           element.removeEventListener('request-data-changed', callback);
@@ -69,7 +70,6 @@
           done();
         };
         element.addEventListener('request-data-changed', callback);
-        element.shadowRoot.querySelector('url-input-editor').detailsOpened = true;
         element.url = URL;
       });
 

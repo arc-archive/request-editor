@@ -19,8 +19,9 @@
     <script>
     suite('serializeRequest()', function() {
       let element;
-      suiteSetup(function() {
+      suiteSetup(function(done) {
         element = fixture('basic');
+        flush(() => done());
       });
 
       const POSTACTIONS = [{
@@ -74,23 +75,24 @@
         assert.isUndefined(data.auth);
       });
 
-      test('Serializes Auth data', function() {
+      test('Serializes Auth data', function(done) {
         element.url = 'test-url';
         element.method = 'test-method';
         element.headers = 'test-headers';
         element.payload = 'test-payload';
         element.authSettings = AUTH;
-
-        const data = element.serializeRequest();
-        assert.equal(data.url, 'test-url', 'Url is set');
-        assert.equal(data.method, 'test-method', 'Method is set');
-        assert.equal(data.headers, 'test-headers', 'Headers are set');
-        assert.equal(data.payload, 'test-payload', 'Payload is set');
-        assert.typeOf(data.auth, 'object');
-        assert.equal(data.auth.type, 'ntlm');
-        assert.typeOf(data.auth.settings, 'object');
+        flush(() => {
+          const data = element.serializeRequest();
+          assert.equal(data.url, 'test-url', 'Url is set');
+          assert.equal(data.method, 'test-method', 'Method is set');
+          assert.equal(data.headers, 'test-headers: ', 'Headers are set');
+          assert.equal(data.payload, 'test-payload', 'Payload is set');
+          assert.typeOf(data.auth, 'object', 'Auth is an object');
+          assert.equal(data.auth.type, 'ntlm', 'Type is NTLM');
+          assert.typeOf(data.auth.settings, 'object', 'Auth settings is an object');
+          done();
+        });
       });
-
     });
     </script>
   </body>
