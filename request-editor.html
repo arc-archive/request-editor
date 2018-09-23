@@ -499,11 +499,13 @@ the License.
 
     _attachListeners(node) {
       this.addEventListener('api-request', this._sendRequestInner);
+      this.addEventListener('send-request', this._sendRequestInner);
       node.addEventListener('oauth2-redirect-uri-changed', this._authRedirectChanged);
     }
 
     _detachListeners(node) {
       this.removeEventListener('api-request', this._sendRequestInner);
+      this.removeEventListener('send-request', this._sendRequestInner);
       node.removeEventListener('oauth2-redirect-uri-changed', this._authRedirectChanged);
     }
 
@@ -594,7 +596,7 @@ the License.
      * @param {CustomEvent} e
      */
     _sendRequestInner(e) {
-      if (e.target === this) {
+      if (e.composedPath()[0] === this) {
         return;
       }
       e.preventDefault();
