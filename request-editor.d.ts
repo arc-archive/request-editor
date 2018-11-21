@@ -151,6 +151,12 @@ declare namespace UiElements {
    * `--request-editor-tabs-container` | Mixin applied to the headers and body
    * editors container | `{}`
    * `--request-editor-tab-selected` | Mixin applied to selected tab | `{}`
+   * `--request-editor-url-line-color` | Color of the URL section | ``
+   * `--request-editor-context-menu-color` | Color of the context menu | ``
+   * `--context-menu-item-color` | Color of the context menu item | ``
+   * `--context-menu-item-background-color` | Background color of the context menu item | ``
+   * `--context-menu-item-color-hover` | Color of the context menu item when hovered | ``
+   * `--context-menu-item-background-color-hover` | Background color of the context menu item when hovered | ``
    *
    * To style edtors use variables defined in the following elements:
    * - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)

@@ -45,6 +45,7 @@ the License.
     }
 
     .url-editor {
+      color: var(--request-editor-url-line-color);
       @apply --layout-horizontal;
       @apply --request-editor-url-editor;
     }
@@ -109,7 +110,20 @@ the License.
 
     .request-menu {
       margin-top: 9px;
+      color: var(--request-editor-context-menu-color);
       @apply --request-editor-context-menu;
+    }
+
+    .menu-item {
+      @apply --paper-item;
+      color: var(--context-menu-item-color);
+      background-color: var(--context-menu-item-background-color);
+    }
+
+    .menu-item:hover {
+      @apply --paper-item-hover;
+      color: var(--context-menu-item-color-hover);
+      background-color: var(--context-menu-item-background-color-hover);
     }
 
     .context-menu-icon {
@@ -155,7 +169,7 @@ the License.
             <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
               <slot name="request-context-menu"></slot>
-              <paper-icon-item on-click="clearRequest">
+              <paper-icon-item on-click="clearRequest" class="menu-item">
                 <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
                 Clear
               </paper-icon-item>
@@ -329,6 +343,12 @@ the License.
    * `--request-editor-tabs-container` | Mixin applied to the headers and body
    * editors container | `{}`
    * `--request-editor-tab-selected` | Mixin applied to selected tab | `{}`
+   * `--request-editor-url-line-color` | Color of the URL section | ``
+   * `--request-editor-context-menu-color` | Color of the context menu | ``
+   * `--context-menu-item-color` | Color of the context menu item | ``
+   * `--context-menu-item-background-color` | Background color of the context menu item | ``
+   * `--context-menu-item-color-hover` | Color of the context menu item when hovered | ``
+   * `--context-menu-item-background-color-hover` | Background color of the context menu item when hovered | ``
    *
    * To style edtors use variables defined in the following elements:
    * - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)
