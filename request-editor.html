@@ -166,20 +166,30 @@ the License.
             <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="send">send</paper-button>
             <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="abort">abort</paper-button>
           </div>
-          <paper-menu-button horizontal-align="right" class="request-menu">
+          <paper-menu-button horizontal-align="right" class="request-menu" close-on-activate on-paper-dropdown-close="_requestMenuClosed">
             <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
-              <slot name="request-context-menu"></slot>
               <paper-icon-item on-click="clearRequest" class="menu-item">
                 <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
                 Clear
               </paper-icon-item>
+              <slot name="request-context-menu"></slot>
             </paper-listbox>
           </paper-menu-button>
         </div>
       </template>
       <template is="dom-if" if="[[noUrlEditor]]" restamp>
         <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
+        <paper-menu-button horizontal-align="right" class="request-menu" close-on-activate on-paper-dropdown-close="_requestMenuClosed">
+          <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
+          <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
+            <paper-icon-item on-click="clearRequest" class="menu-item">
+              <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
+              Clear
+            </paper-icon-item>
+            <slot name="request-context-menu"></slot>
+          </paper-listbox>
+        </paper-menu-button>
       </template>
       <section class="params-section">
         <header class="params-header" on-click="toggle">
@@ -705,7 +715,7 @@ the License.
         bubbles: true,
         cancelable: true
       }));
-      this._unselectRequestMenu();
+      Polymer.RenderStatus.afterNextRender(this, () => this._unselectRequestMenu());
     }
 
     _authRedirectChanged(e) {
@@ -757,6 +767,10 @@ the License.
         }
       }
       Polymer.RenderStatus.afterNextRender(this, () => this.notifyResize());
+    }
+
+    _requestMenuClosed() {
+      Polymer.RenderStatus.afterNextRender(this, () => this._unselectRequestMenu());
     }
     /**
      * Fired when the user request to send current request.
