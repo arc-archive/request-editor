@@ -48,6 +48,7 @@ the License.
     .url-editor {
       color: var(--request-editor-url-line-color);
       @apply --layout-horizontal;
+      @apply --layout-center;
       @apply --request-editor-url-editor;
     }
 
@@ -57,7 +58,6 @@ the License.
     }
 
     .main-action-buttons {
-      margin-top: 20px;
       margin-left: 16px;
       @apply --request-editor-main-action-buttons;
     }
@@ -110,7 +110,6 @@ the License.
     }
 
     .request-menu {
-      margin-top: 9px;
       color: var(--request-editor-context-menu-color);
       @apply --request-editor-context-menu;
     }
@@ -142,6 +141,12 @@ the License.
 
     paper-tab.iron-selected {
       @apply --request-editor-tab-selected;
+    }
+
+    .inline-method-selector {
+      @apply --layout-horizontal;
+      @apply --layout-center;
+      @apply --layout-wrap;
     }
     </style>
     <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
@@ -179,17 +184,19 @@ the License.
         </div>
       </template>
       <template is="dom-if" if="[[noUrlEditor]]" restamp>
-        <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
-        <paper-menu-button horizontal-align="right" class="request-menu" close-on-activate on-paper-dropdown-close="_requestMenuClosed">
-          <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
-          <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
-            <paper-icon-item on-click="clearRequest" class="menu-item">
-              <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
-              Clear
-            </paper-icon-item>
-            <slot name="request-context-menu"></slot>
-          </paper-listbox>
-        </paper-menu-button>
+        <div class="inline-method-selector">
+          <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
+          <paper-menu-button horizontal-align="right" class="request-menu" close-on-activate on-paper-dropdown-close="_requestMenuClosed">
+            <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
+            <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
+              <paper-icon-item on-click="clearRequest" class="menu-item">
+                <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
+                Clear
+              </paper-icon-item>
+              <slot name="request-context-menu"></slot>
+            </paper-listbox>
+          </paper-menu-button>
+        </div>
       </template>
       <section class="params-section">
         <header class="params-header" on-click="toggle">
