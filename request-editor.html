@@ -12,6 +12,7 @@ License for the specific language governing permissions and limitations under
 the License.
 -->
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/utils/render-status.html">
 <link rel="import" href="../url-input-editor/url-input-editor.html">
 <link rel="import" href="../api-headers-editor/api-headers-editor.html">
 <link rel="import" href="../http-method-selector/http-method-selector.html">
@@ -596,8 +597,23 @@ the License.
       if (!isPayload && this.selectedTab === 1) {
         this.selectedTab = 0;
       }
-      this.shadowRoot.querySelector('paper-tabs').notifyResize();
+      this.notifyResize();
     }
+    /**
+     * Calls `notifyResize()` on `paper-tabs` and on currently selected panel
+     * if any is selected.
+     */
+    notifyResize() {
+      const tabs = this.shadowRoot.querySelector('paper-tabs');
+      if (tabs) {
+        tabs.notifyResize();
+      }
+      const panel = this.shadowRoot.querySelector('.editors-container').selectedItem;
+      if (panel && panel.notifyResize) {
+        panel.notifyResize();
+      }
+    }
+
     /**
      * Called when the selected tab changes. Refreshes payload editor state
      * (for code mirror) if currently selected.
@@ -740,6 +756,7 @@ the License.
           this.urlOpened = value;
         }
       }
+      Polymer.RenderStatus.afterNextRender(this, () => this.notifyResize());
     }
     /**
      * Fired when the user request to send current request.
