@@ -26,10 +26,9 @@
     "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
-    "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
     "authorization-panel": "advanced-rest-client/authorization-panel#^2.0.0",
-    "url-input-editor": "advanced-rest-client/url-input-editor#2.0.0-preview",
+    "url-input-editor": "advanced-rest-client/url-input-editor#^2.0.0",
     "api-body-editor": "advanced-rest-client/api-body-editor#^2.0.0",
     "api-headers-editor": "advanced-rest-client/api-headers-editor#^2.0.0",
     "http-method-selector": "advanced-rest-client/http-method-selector#^2.0.0",
@@ -42,7 +41,7 @@
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.0",
     "uuid-generator": "advanced-rest-client/uuid-generator#^2.0.0",
-    "request-actions-panel": "advanced-rest-client/request-actions-panel#2.0.0-preview"
+    "request-actions-panel": "advanced-rest-client/request-actions-panel#^2.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^3.0.1",
@@ -51,14 +50,15 @@
     "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "oauth-authorization": "advanced-rest-client/oauth-authorization#^2.0.0",
-    "variables-manager": "advanced-rest-client/variables-manager#2.0.0-preview",
-    "variables-evaluator": "advanced-rest-client/variables-evaluator#2.0.0-preview",
-    "variables-editor": "advanced-rest-client/variables-editor#2.0.0-preview",
-    "url-history-saver": "advanced-rest-client/url-history-saver#2.0.0-preview",
+    "variables-manager": "advanced-rest-client/variables-manager#^2.0.0",
+    "variables-evaluator": "advanced-rest-client/variables-evaluator#^2.0.0",
+    "variables-editor": "advanced-rest-client/variables-editor#^2.0.0",
+    "arc-models": "advanced-rest-client/arc-models#2.0.0-preview",
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "chance": "^1.0.13",
     "app-pouchdb": "PolymerElements/app-pouchdb#^2.1.1",
     "web-animations-js": "web-animations/web-animations-js#^2.3",
+    "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
     "arc-electron-default-theme": "advanced-rest-client/arc-electron-default-theme#2.0.0-preview"
   },
   "ignore": [

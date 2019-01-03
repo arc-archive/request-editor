@@ -34,7 +34,9 @@
   <link rel="import" href="../../variables-editor/variables-editor.html">
   <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
   <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
-  <link rel="import" href="../../url-history-saver/url-history-saver.html">
+  <link rel="import" href="../../arc-models/url-history-model.html">
+  <link rel="import" href="../../arc-models/variables-model.html">
+  <link rel="import" href="../../iron-media-query/iron-media-query.html">
   <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
   <link rel="import" href="../../paper-listbox/paper-listbox.html">
   <link rel="import" href="../../paper-item/paper-item.html">
@@ -81,9 +83,11 @@
   <variables-manager></variables-manager>
   <oauth2-authorization></oauth2-authorization>
   <oauth1-authorization></oauth1-authorization>
-  <url-history-saver></url-history-saver>
+  <url-history-model></url-history-model>
+  <variables-model></variables-model>
   <dom-bind id="demo">
     <template>
+      <iron-media-query query="(max-width: 768px)" query-matches="{{narrow}}"></iron-media-query>
       <section class="vertical-section-container centered card" role="main">
         <request-editor
           id="editor"
@@ -95,7 +99,8 @@
           is-payload="{{isPayload}}"
           oauth2-redirect-uri="[[oauth2RedirectUri]]"
           readonly="[[readOnly]]"
-          no-url-editor="[[noUrlEditor]]"></request-editor>
+          no-url-editor="[[noUrlEditor]]"
+          narrow="[[narrow]]"></request-editor>
       </section>
 
       <section class="vertical-section-container centered card">

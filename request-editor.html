@@ -27,7 +27,6 @@ the License.
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
-<link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../events-target-behavior/events-target-behavior.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
@@ -69,11 +68,14 @@ the License.
     .params-header {
       @apply --layout-horizontal;
       @apply --layout-center;
-      cursor: pointer;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
+    }
+
+    .params-header h2 {
+      cursor: pointer;
     }
 
     .action-button {
@@ -149,7 +151,6 @@ the License.
       @apply --layout-wrap;
     }
     </style>
-    <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
     <div class="content">
       <template is="dom-if" if="[[!noUrlEditor]]" restamp>
         <template is="dom-if" if="[[narrow]]" restamp>
@@ -199,9 +200,9 @@ the License.
         </div>
       </template>
       <section class="params-section">
-        <header class="params-header" on-click="toggle">
-          <h2>Parameters</h2>
-          <paper-icon-button icon="arc:expand-more" class$="[[_computeToggleIconClass(collapseOpened)]]" title$="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
+        <header class="params-header">
+          <h2 on-click="toggle">Parameters</h2>
+          <paper-icon-button on-click="toggle" icon="arc:expand-more" class$="[[_computeToggleIconClass(collapseOpened)]]" title$="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
         </header>
         <iron-collapse opened="[[collapseOpened]]">
           <paper-tabs selected="{{selectedTab}}" hidden$="[[!collapseOpened]]">
@@ -391,7 +392,7 @@ the License.
         selectedTab: {
           type: Number,
           value: 0,
-          observer: '_refreshPayload'
+          observer: '_refreshEditors'
         },
         // Current content type.
         contentType: {
@@ -445,14 +446,9 @@ the License.
           observer: 'notifyRequestChanged'
         },
         /**
-         * If set it will renders the view in the narrow layout.
+         * If set it renders the view in the narrow layout.
          */
-        narrow: Boolean,
-        // A widith below which the `narrow` property will be set to true.
-        narrowWidth: {
-          type: String,
-          value: '768px'
-        },
+        narrow: {type: Boolean, value: false},
         /**
          * Computed value when the URL change.
          * If not valid form submission won't be possible.
@@ -547,9 +543,48 @@ the License.
       node.removeEventListener('oauth2-redirect-uri-changed', this._authRedirectChanged);
     }
 
-    // Toggles body panel.
+    /**
+     * Toggles body panel.
+     */
     toggle() {
       this.collapseOpened = !this.collapseOpened;
+      this._sendGaEvent('Toggle parameters', String(this.collapseOpened));
+    }
+
+    /**
+     * Dispatches bubbling and composed custom event.
+     * By default the event is cancelable until `cancelable` property is set to false.
+     * @param {String} type Event type
+     * @param {?any} detail A detail to set
+     * @param {?Boolean} cancelable When false the event is not cancelable.
+     * @return {CustomEvent}
+     */
+    _dispatch(type, detail, cancelable) {
+      if (typeof cancelable !== 'boolean') {
+        cancelable = true;
+      }
+      const e = new CustomEvent(type, {
+        bubbles: true,
+        composed: true,
+        cancelable,
+        detail
+      });
+      this.dispatchEvent(e);
+      return e;
+    }
+    /**
+     * Sends usage google analytics event
+     * @param {String} action Action description
+     * @param {String} label Event label
+     * @return {CustomEvent}
+     */
+    _sendGaEvent(action, label) {
+      return this._dispatch('send-analytics', {
+        type: 'event',
+        category: 'Request editor',
+        action,
+        label
+      }, false);
     }
     /**
      * Called each time if any of `method`, `url`, 'payload' or `headers` filed
@@ -558,12 +593,7 @@ the License.
      */
     notifyRequestChanged() {
       const request = this.serializeRequest();
-      this.dispatchEvent(new CustomEvent('request-data-changed', {
-        cancelable: true,
-        composed: true,
-        bubbles: true,
-        detail: request
-      }));
+      this._dispatch('request-data-changed', request);
     }
     /**
      * Serializes current request data into an object.
@@ -592,15 +622,23 @@ the License.
       };
       return result;
     }
-    // Computes class for the toggle's button icon.
+    /**
+     * Computes class for the toggle's button icon.
+     * @param {Boolean} opened Collapse opened state
+     * @return {String} CSS class name
+     */
     _computeToggleIconClass(opened) {
-      let clazz = 'toggle-icon';
+      let klass = 'toggle-icon';
       if (opened) {
-        clazz += ' opened';
+        klass += ' opened';
       }
-      return clazz;
+      return klass;
     }
-
+    /**
+     * Computes title attribute for panel toggle icon.
+     * @param {Boolean} opened Collapse opened state
+     * @return {String} Label value
+     */
     _computeToggleLabel(opened) {
       return opened ? 'Hide panel' : 'Show panel';
     }
@@ -632,15 +670,24 @@ the License.
     }
 
     /**
-     * Called when the selected tab changes. Refreshes payload editor state
-     * (for code mirror) if currently selected.
+     * Called when the selected tab changes. Refreshes payload and headers editor
+     * state (code mirror) if currently selected.
      *
      * @param {Number} selectedTab
      */
-    _refreshPayload(selectedTab) {
-      if (selectedTab === 2) {
-        // this.shadowRoot.querySelector('api-body-editor').refresh();
-      }
+    _refreshEditors(selectedTab) {
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        const isPayload = this.isPayload;
+        let panel;
+        if (isPayload && selectedTab === 2) {
+          panel = this.shadowRoot.querySelector('api-body-editor');
+        } else if (selectedTab === 0) {
+          panel = this.shadowRoot.querySelector('api-headers-editor');
+        }
+        if (panel && panel.refresh) {
+          panel.refresh();
+        }
+      });
     }
     /**
      * Handles an event dispatched by eny of the child elements.
@@ -663,26 +710,18 @@ the License.
       const request = this.serializeRequest();
       this.requestId = this.$.uuid.generate();
       request.id = this.requestId;
-      this.dispatchEvent(new CustomEvent('api-request', {
-        cancelable: true,
-        composed: true,
-        bubbles: true,
-        detail: request
-      }));
+      this._dispatch('api-request', request);
+      this._sendGaEvent('Send request');
     }
     /**
      * Sends the `abort-api-request` custom event to cancel the request.
      */
     abort() {
-      this.dispatchEvent(new CustomEvent('abort-api-request', {
-        cancelable: true,
-        composed: true,
-        bubbles: true,
-        detail: {
-          url: this.url,
-          id: this.requestId
-        }
-      }));
+      this._dispatch('abort-api-request', {
+        url: this.url,
+        id: this.requestId
+      });
+      this._sendGaEvent('Abort request');
     }
     /**
      * Clears the URL value if the URL editor is removed.
@@ -717,11 +756,8 @@ the License.
       this.set('requestActions', undefined);
       this.shadowRoot.querySelector('authorization-panel').clear();
       this.selectedTab = 0;
-      this.dispatchEvent(new CustomEvent('request-clear-state', {
-        composed: true,
-        bubbles: true,
-        cancelable: true
-      }));
+      this._dispatch('request-clear-state');
+      this._sendGaEvent('Clear request');
       Polymer.RenderStatus.afterNextRender(this, () => this._unselectRequestMenu());
     }
 

@@ -1,10 +1,10 @@
 {
-  "name": "@arc-components/request-editor",
+  "name": "@advanced-rest-client/request-editor",
   "version": "2.0.0-preview",
   "license": "Apache-2.0",
   "description": "A request complete HTTP request editor",
   "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.5.1"
+    "@polymer/gen-typescript-declarations": "^1.6.0"
   },
   "private": false,
   "main": "request-editor.html",

@@ -8,7 +8,12 @@
  *   request-editor.html
  */
 
+
+// tslint:disable:variable-name Describing an API that's defined elsewhere.
+// tslint:disable:no-any describes the API as best we are able today
+
 /// <reference path="../polymer/types/polymer-element.d.ts" />
+/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
 /// <reference path="../url-input-editor/url-input-editor.d.ts" />
 /// <reference path="../api-headers-editor/api-headers-editor.d.ts" />
 /// <reference path="../http-method-selector/http-method-selector.d.ts" />
@@ -23,7 +28,6 @@
 /// <reference path="../paper-button/paper-button.d.ts" />
 /// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
 /// <reference path="../iron-collapse/iron-collapse.d.ts" />
-/// <reference path="../iron-media-query/iron-media-query.d.ts" />
 /// <reference path="../arc-icons/arc-icons.d.ts" />
 /// <reference path="../events-target-behavior/events-target-behavior.d.ts" />
 /// <reference path="../paper-menu-button/paper-menu-button.d.ts" />
@@ -217,14 +221,9 @@ declare namespace UiElements {
     requestActions: any[]|null|undefined;
 
     /**
-     * If set it will renders the view in the narrow layout.
+     * If set it renders the view in the narrow layout.
      */
     narrow: boolean|null|undefined;
-
-    /**
-     * A widith below which the `narrow` property will be set to true.
-     */
-    narrowWidth: string|null|undefined;
 
     /**
      * Computed value when the URL change.
@@ -293,6 +292,24 @@ declare namespace UiElements {
     toggle(): void;
 
     /**
+     * Dispatches bubbling and composed custom event.
+     * By default the event is cancelable until `cancelable` property is set to false.
+     *
+     * @param type Event type
+     * @param detail A detail to set
+     * @param cancelable When false the event is not cancelable.
+     */
+    _dispatch(type: String|null, detail: any|null, cancelable: Boolean|null): CustomEvent|null;
+
+    /**
+     * Sends usage google analytics event
+     *
+     * @param action Action description
+     * @param label Event label
+     */
+    _sendGaEvent(action: String|null, label: String|null): CustomEvent|null;
+
+    /**
      * Called each time if any of `method`, `url`, 'payload' or `headers` filed
      * change. Fires the `request-data-changed` custom event with current values
      * of the request.
@@ -315,9 +332,19 @@ declare namespace UiElements {
 
     /**
      * Computes class for the toggle's button icon.
+     *
+     * @param opened Collapse opened state
+     * @returns CSS class name
      */
-    _computeToggleIconClass(opened: any): any;
-    _computeToggleLabel(opened: any): any;
+    _computeToggleIconClass(opened: Boolean|null): String|null;
+
+    /**
+     * Computes title attribute for panel toggle icon.
+     *
+     * @param opened Collapse opened state
+     * @returns Label value
+     */
+    _computeToggleLabel(opened: Boolean|null): String|null;
 
     /**
      * Handles change to `isPayload` property. Restores payload editor tab
@@ -326,10 +353,16 @@ declare namespace UiElements {
     _isPayloadChanged(isPayload: Boolean|null): void;
 
     /**
-     * Called when the selected tab changes. Refreshes payload editor state
-     * (for code mirror) if currently selected.
+     * Calls `notifyResize()` on `paper-tabs` and on currently selected panel
+     * if any is selected.
      */
-    _refreshPayload(selectedTab: Number|null): void;
+    notifyResize(): void;
+
+    /**
+     * Called when the selected tab changes. Refreshes payload and headers editor
+     * state (code mirror) if currently selected.
+     */
+    _refreshEditors(selectedTab: Number|null): void;
 
     /**
      * Handles an event dispatched by eny of the child elements.
@@ -376,6 +409,7 @@ declare namespace UiElements {
      * @param state Current state
      */
     _stateChanged(state: object|null): void;
+    _requestMenuClosed(): void;
   }
 }
 

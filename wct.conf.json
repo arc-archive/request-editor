@@ -36,6 +36,26 @@
         "platform": "macOS 10.13",
         "version": "11.1"
       }]
+    },
+    "istanbub": {
+      "dir": "./coverage",
+      "reporters": ["text-summary", "lcov"],
+      "include": [
+        "**/*.html"
+      ],
+      "exclude": [
+        "**/test/**",
+        "**/demo/**",
+        "**/tasks/**"
+      ],
+      "thresholds": {
+        "global": {
+          "statements": 80,
+          "branches": 80,
+          "functions": 90,
+          "lines": 80
+        }
+      }
     }
   }
 }
