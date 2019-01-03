@@ -1,3 +1,41 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...2.0.0) (2019-01-03)
+
+
+### Breaking
+
+* Removing context actions from the editor. It can be added via slots api ([bce7ebddbcd8587f0620aa7f999ba324c87111a4](https://github.com/advanced-rest-client/request-editor/commit/bce7ebddbcd8587f0620aa7f999ba324c87111a4))
+* Updating the events API to match api-* components ([69b16288dc7351bf4da6f39e02019cc34811054f](https://github.com/advanced-rest-client/request-editor/commit/69b16288dc7351bf4da6f39e02019cc34811054f))
+
+### Docs
+
+* Updating docs ([c5fa7afeaa8aea016ba3106a953dea943dbbf5c7](https://github.com/advanced-rest-client/request-editor/commit/c5fa7afeaa8aea016ba3106a953dea943dbbf5c7))
+
+### Fix
+
+* Fixing custom event initialization property ([93c10ded81e7480ac4781a90ab67a6b878bc1964](https://github.com/advanced-rest-client/request-editor/commit/93c10ded81e7480ac4781a90ab67a6b878bc1964))
+* Fixing element initialization wioth mixin ([ec5360337fefc77aaffb9ce87175859cbf9abf6a](https://github.com/advanced-rest-client/request-editor/commit/ec5360337fefc77aaffb9ce87175859cbf9abf6a))
+* Fixing tests ([447889bafc82a1155b151a1031bdfe760cedaef8](https://github.com/advanced-rest-client/request-editor/commit/447889bafc82a1155b151a1031bdfe760cedaef8))
+
+### New
+
+* Adding `readonly` property on the editor ([f3757869e66b9f26246a78c27dbbb3d138d66ce7](https://github.com/advanced-rest-client/request-editor/commit/f3757869e66b9f26246a78c27dbbb3d138d66ce7))
+* Adding UI state store / restore option ([c5cb4decc4b8114fb415b0fb70efd2d35de24ada](https://github.com/advanced-rest-client/request-editor/commit/c5cb4decc4b8114fb415b0fb70efd2d35de24ada))
+* Making abort method public ([b74f48fa5c4386efc57f5b3ff6a8ba39c6b2c796](https://github.com/advanced-rest-client/request-editor/commit/b74f48fa5c4386efc57f5b3ff6a8ba39c6b2c796))
+
+### Update
+
+* Adding new styling API ([04241fe7be779e90265dce56024ec7801c622c45](https://github.com/advanced-rest-client/request-editor/commit/04241fe7be779e90265dce56024ec7801c622c45))
+* Enabling headers editor to add custom headers ([d4e4394a924927132913688ba9e15a4ff3ce80ff](https://github.com/advanced-rest-client/request-editor/commit/d4e4394a924927132913688ba9e15a4ff3ce80ff))
+* Making whole parameters title clickable ([3eeabac51bf505472036377333dc0d23f7b72bdf](https://github.com/advanced-rest-client/request-editor/commit/3eeabac51bf505472036377333dc0d23f7b72bdf))
+* Reordering tabs ([1939360f6b67d0c01fed819490831b8538bb7ba3](https://github.com/advanced-rest-client/request-editor/commit/1939360f6b67d0c01fed819490831b8538bb7ba3))
+* Updating demo page ([9674cc2060f5ef6b3c3ddfcd5d51e2218ed7e147](https://github.com/advanced-rest-client/request-editor/commit/9674cc2060f5ef6b3c3ddfcd5d51e2218ed7e147))
+* Updating demo page ([c40f24edd5d778eaa77a19ca396151b49e7cc34b](https://github.com/advanced-rest-client/request-editor/commit/c40f24edd5d778eaa77a19ca396151b49e7cc34b))
+* Updating docs ([227ec8462065968a7a539d878537eb8cbae23255](https://github.com/advanced-rest-client/request-editor/commit/227ec8462065968a7a539d878537eb8cbae23255))
+* Updating tests after API change ([fc8485a25bab43370bb8f95a8b82b4b37690f9ee](https://github.com/advanced-rest-client/request-editor/commit/fc8485a25bab43370bb8f95a8b82b4b37690f9ee))
+
+
+
 <a name="0.4.10"></a>
 ## [0.4.10](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...0.4.10) (2018-02-26)
 
