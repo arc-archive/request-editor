@@ -1,13 +1,4 @@
 <!doctype html>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <html>
 <head>
   <meta charset="utf-8">
@@ -16,12 +7,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>request-editor demo</title>
   <script>
-  if (location.search.indexOf('response_type') !== -1 && location.search.indexOf('redirect_uri') !== -1) {
+  if (location.search.indexOf('response_type') !== -1 &&
+    location.search.indexOf('redirect_uri') !== -1) {
     // OAUTH DEMO
-    var p = new URLSearchParams(location.search);
-    var state = p.get('state');
-    var type = p.get('response_type');
-    var red = p.get('redirect_uri');
+    /* global URLSearchParams */
+    const p = new URLSearchParams(location.search);
+    const state = p.get('state');
+    const type = p.get('response_type');
+    let red = p.get('redirect_uri');
     red += '?state=' + state;
     if (type === 'token') {
       red += '&access_token=ya.12345.asdfghh';
@@ -31,29 +24,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     location.href = red;
   }
   </script>
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
+  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+  <link rel="import" href="../../neon-animation/web-animations.html">
+  <link rel="import" href="../../app-pouchdb/pouchdb.html">
   <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   <link rel="import" href="../../variables-evaluator/variables-evaluator.html">
   <link rel="import" href="../../variables-manager/variables-manager.html">
+  <link rel="import" href="../../variables-editor/variables-editor.html">
   <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
   <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
-  <link rel="import" href="../../url-history-saver/url-history-saver.html">
+  <link rel="import" href="../../arc-models/url-history-model.html">
+  <link rel="import" href="../../arc-models/variables-model.html">
+  <link rel="import" href="../../iron-media-query/iron-media-query.html">
   <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
   <link rel="import" href="../../paper-listbox/paper-listbox.html">
   <link rel="import" href="../../paper-item/paper-item.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
+  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
   <link rel="import" href="../request-editor.html">
-  <link rel="import" href="api-console-styles.html">
   <script type="text/javascript" src="../../chance/chance.js"></script>
-  <style is="custom-style" include="demo-pages-shared-styles">
+  <custom-style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+    body,
+    html {
+      background-color: #e5e5e5;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .card {
+      @apply --shadow-elevation-4dp;
+      padding: 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+    }
 
     .vertical-section-container {
       max-width: 1100px;
-      background-color: #fff;
-      padding: 40px;
-      box-sizing: border-box;
       margin-bottom: 40px;
     }
 
@@ -63,57 +75,90 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #FBE9E7;
       padding: 4px 8px;
     }
-
-  </style>
+    </style>
+  </custom-style>
 </head>
 <body unresolved>
-  <template is="dom-bind" id="demo">
-    <div class="vertical-section-container centered">
-      <request-editor url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" oauth2-redirect-uri="[[oauth2RedirectUri]]"></request-editor>
-    </div>
-
-    <div class="vertical-section-container centered">
-      <section>
-        <h4>Load request</h4>
-        <paper-dropdown-menu label="Request preset">
-          <paper-listbox class="dropdown-content" selected="{{restoredRequest}}" attr-for-selected="data-type">
-            <paper-item data-type="get">Simple GET request</paper-item>
-            <paper-item data-type="post">Simple POST request</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
+  <variables-evaluator></variables-evaluator>
+  <variables-manager></variables-manager>
+  <oauth2-authorization></oauth2-authorization>
+  <oauth1-authorization></oauth1-authorization>
+  <url-history-model></url-history-model>
+  <variables-model></variables-model>
+  <dom-bind id="demo">
+    <template>
+      <iron-media-query query="(max-width: 768px)" query-matches="{{narrow}}"></iron-media-query>
+      <section class="vertical-section-container centered card" role="main">
+        <request-editor
+          id="editor"
+          url="{{url}}"
+          method="{{method}}"
+          headers="{{headers}}"
+          payload="{{body}}"
+          content-type="{{contentType}}"
+          is-payload="{{isPayload}}"
+          oauth2-redirect-uri="[[oauth2RedirectUri]]"
+          readonly="[[readOnly]]"
+          no-url-editor="[[noUrlEditor]]"
+          narrow="[[narrow]]"></request-editor>
       </section>
-      <h4>Result</h4>
-      <output>
-        <h5>URL</h5>
-        <code>[[url]]</code>
-        <h5>Method</h5>
-        <code>[[method]]</code>
-        <h5>Headers</h5>
-        <code>[[headers]]</code>
-        <template is="dom-if" if="[[isPayload]]">
-          <h5>Body</h5>
-          <code>[[body]]</code>
-        </template>
-        <template is="dom-if" if="[[contentType]]">
-          <h5>Used content type</h5>
-          <code>[[contentType]]</code>
-        </template>
-      </output>
-    </div>
 
-    <h4>Additional elements used with this demo page</h4>
-    <ul>
-      <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
-      <li><a href="https://github.com/advanced-rest-client/variables-manager">variables-manager</a></li>
-      <li><a href="https://github.com/advanced-rest-client/url-history-saver">url-history-saver</a></li>
-      <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li>
-    </ul>
-    <variables-evaluator></variables-evaluator>
-    <variables-manager></variables-manager>
-    <oauth2-authorization></oauth2-authorization>
-    <oauth1-authorization></oauth1-authorization>
-    <url-history-saver></url-history-saver>
-  </template>
+      <section class="vertical-section-container centered card">
+        <h3>Configuration</h3>
+        <paper-toggle-button checked="{{readOnly}}">Read only mode</paper-toggle-button>
+        <paper-toggle-button checked="{{noUrlEditor}}">No URL editor</paper-toggle-button>
+      </section>
+
+      <div class="vertical-section-container centered">
+        <section class="card">
+          <h4>Load request</h4>
+          <paper-dropdown-menu label="Request preset">
+            <paper-listbox slot="dropdown-content" on-selected-changed="_restoredRequestChanged" attr-for-selected="data-type">
+              <paper-item data-type="get">Simple GET request</paper-item>
+              <paper-item data-type="post">Simple POST request</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </section>
+
+        <section class="card">
+          <h4>Result</h4>
+          <output>
+            <h5>URL</h5>
+            <code>[[url]]</code>
+            <h5>Method</h5>
+            <code>[[method]]</code>
+            <h5>Headers</h5>
+            <code>[[headers]]</code>
+            <template is="dom-if" if="[[isPayload]]">
+              <h5>Body</h5>
+              <code>[[body]]</code>
+            </template>
+            <template is="dom-if" if="[[contentType]]">
+              <h5>Used content type</h5>
+              <code>[[contentType]]</code>
+            </template>
+            <h5>Editor state</h5>
+            <code>[[stringify(editorState)]]</code>
+          </output>
+        </section>
+      </div>
+
+      <div class="vertical-section-container centered card">
+        <h4>Additional elements used with this demo page</h4>
+        <ul>
+          <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
+          <li><a href="https://github.com/advanced-rest-client/variables-manager">variables-manager</a></li>
+          <li><a href="https://github.com/advanced-rest-client/url-history-saver">url-history-saver</a></li>
+          <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li>
+        </ul>
+      </div>
+
+      <div class="vertical-section-container centered card">
+        <h4>Variables editor</h4>
+        <variables-editor></variables-editor>
+      </div>
+    </template>
+  </dom-bind>
   <paper-toast id="requestSend" text="Request send event detected"></paper-toast>
   <paper-toast id="requestAbort" text="Request abort event detected"></paper-toast>
   <paper-toast id="clearToast" text="Clear request state detected"></paper-toast>
@@ -123,11 +168,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   function openToast(id) {
     document.getElementById(id).opened = true;
   }
-  window.addEventListener('send-request', function() {
+  window.addEventListener('api-request', function() {
     openToast('requestSend');
     document.querySelector('request-editor').loadingRequest = true;
   });
-  window.addEventListener('abort-request', function() {
+  window.addEventListener('abort-api-request', function() {
     openToast('requestAbort');
     document.querySelector('request-editor').loadingRequest = false;
   });
@@ -143,13 +188,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   (function(scope) {
     /* global chance */
-    var redirectUrl = location.href.replace(/request-editor\/demo\/(index\.html)?/,
+    const redirectUrl = location.href.replace(/request-editor\/demo\/(index\.html)?/,
         'oauth-authorization/oauth-popup.html');
     scope.oauth2RedirectUri = redirectUrl;
 
-    scope.observers = ['_restoredRequestChanged(restoredRequest)'];
-    scope._restoredRequestChanged = function(restoredRequest) {
-      var opts = {};
+    scope._restoredRequestChanged = function(e) {
+      const restoredRequest = e.detail.value;
+      const opts = {};
       switch (restoredRequest) {
         case 'post':
           opts.method = 'POST';
@@ -160,8 +205,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     };
 
     function genHeaders(opts) {
-      var str = '';
-      for (var i = 0; i < chance.integer({min: 1, max: 7}); i++) {
+      let str = '';
+      for (let i = 0; i < chance.integer({min: 1, max: 7}); i++) {
         str += 'x-' + chance.word() + ': ' + chance.word() + '\n';
       }
       if (opts.withBody) {
@@ -178,6 +223,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       return ['GET', 'HEAD'][chance.integer({min: 0, max: 1})];
     }
+    scope.stringify = function(value) {
+      if (!value) {
+        return;
+      }
+      return JSON.stringify(value);
+    };
     scope.generateRequest = function(opts) {
       scope.url = chance.url();
       if (opts.withBody) {
@@ -188,6 +239,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       scope.headers = genHeaders(opts);
       scope.method = getMethod(opts);
     };
+
+    scope._handleStateChange = function() {
+      const editor = document.getElementById('editor');
+      scope.editorState = editor.state;
+    };
+
+    scope._init = function() {
+      const editor = document.getElementById('editor');
+      editor.addEventListener('state-changed', () => scope._handleStateChange());
+      scope.editorState = editor.state;
+    };
+
+    window.addEventListener('WebComponentsReady', scope._init);
   })(document.getElementById('demo'));
   </script>
 </body>
