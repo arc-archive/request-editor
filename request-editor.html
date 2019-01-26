@@ -167,7 +167,8 @@ the License.
             value="{{url}}"
             invalid="{{urlInvalid}}"
             readonly="[[readonly]]"
-            details-opened="{{urlOpened}}"></url-input-editor>
+            details-opened="{{urlOpened}}"
+            narrow=[[narrow]]></url-input-editor>
           <div class="main-action-buttons">
             <paper-button raised class="action-button send" hidden$="[[loadingRequest]]" on-click="send">send</paper-button>
             <paper-button raised class="action-button abort" hidden$="[[!loadingRequest]]" on-click="abort">abort</paper-button>
