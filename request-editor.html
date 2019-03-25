@@ -228,7 +228,10 @@ the License.
               content-type="[[contentType]]"
               value="{{payload}}"
               readonly="[[readonly]]"
-              opened-editor="0"></api-body-editor>
+              selected="0"
+              allow-custom
+              allow-disable-params
+              allow-hide-optional></api-body-editor>
             <authorization-panel
               redirect-uri="[[oauth2RedirectUri]]"
               settings="{{authSettings}}"

@@ -466,6 +466,49 @@
         assert.isFalse(spy.called);
       });
     });
+
+    suite('Components configuration', () => {
+      suite('api-headers-editor', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('basic');
+          element.method = 'POST';
+          flush(() => done());
+        });
+
+        [
+          ['isPayload', true],
+          ['allowCustom', true],
+          ['allowDisableParams', true],
+          ['allowHideOptional', true]
+        ].forEach((item) => {
+          test(`Has ${item[0]} set`, () => {
+            const panel = element.shadowRoot.querySelector('api-headers-editor');
+            assert.equal(panel[item[0]], item[1]);
+          });
+        });
+      });
+      suite('api-body-editor', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('basic');
+          element.method = 'POST';
+          flush(() => done());
+        });
+
+        [
+          ['selected', 0],
+          ['allowCustom', true],
+          ['allowDisableParams', true],
+          ['allowHideOptional', true]
+        ].forEach((item) => {
+          test(`Has ${item[0]} set`, () => {
+            const panel = element.shadowRoot.querySelector('api-body-editor');
+            assert.equal(panel[item[0]], item[1]);
+          });
+        });
+      });
+    });
     </script>
   </body>
 </html>
