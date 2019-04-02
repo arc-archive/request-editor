@@ -1,22 +1,47 @@
 {
-  "name": "@advanced-rest-client/request-editor",
-  "version": "2.0.1",
-  "license": "Apache-2.0",
   "description": "A request complete HTTP request editor",
-  "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.6.0"
+  "keywords": [
+    "web-components",
+    "polymer",
+    "advanced-rest-client",
+    "request",
+    "editor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/advanced-rest-client/request-editor.git"
   },
-  "private": false,
-  "main": "request-editor.html",
+  "name": "@advanced-rest-client/request-editor",
+  "version": "3.0.0-preview.1",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@advanced-rest-client/arc-electron-default-theme": "^3.0.0-preview.2",
+    "@advanced-rest-client/arc-models": "^3.0.0-preview.3",
+    "@advanced-rest-client/oauth-authorization": "^3.0.0-preview.2",
+    "@advanced-rest-client/variables-editor": "^3.0.0-preview.1",
+    "@advanced-rest-client/variables-evaluator": "^3.0.0-preview.2",
+    "@advanced-rest-client/variables-manager": "^3.0.0-preview.1",
+    "@polymer/gen-typescript-declarations": "^1.6.0",
+    "@polymer/iron-component-page": "^4.0.0",
+    "@polymer/iron-demo-helpers": "^3.0.0",
+    "@polymer/iron-media-query": "^3.0.0",
+    "@polymer/iron-test-helpers": "^3.0.0",
+    "@polymer/paper-toast": "^3.0.0",
+    "@polymer/test-fixture": "^4.0.2",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "chai": "^4.2.0",
+    "chance": "^1.0.18",
+    "mocha": "^5.2.0",
+    "sinon": "^7.2.3",
+    "wct-mocha": "^1.0.0",
+    "web-animations-js": "^2.3.1"
+  },
+  "main": "request-editor.js",
   "scripts": {
     "lint": "polymer lint request-editor.html",
     "test-sauce": "polymer test --plugin sauce --job-name \"request-editor:local-test\"",
     "test": "polymer test --plugin local",
     "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/advanced-rest-client/request-editor.git"
   },
   "bugs": {
     "url": "https://github.com/advanced-rest-client/request-editor/issues",
@@ -25,5 +50,32 @@
   "authors": [
     "Pawel Psztyc",
     "The Advanced REST client authors <arc@mulesoft.com>"
-  ]
+  ],
+  "contributors": [
+    "Pawel Psztyc",
+    "The Advanced REST client authors <arc@mulesoft.com>"
+  ],
+  "dependencies": {
+    "@advanced-rest-client/arc-icons": "^3.0.0-preview.2",
+    "@advanced-rest-client/authorization-panel": "^3.0.0-preview.2",
+    "@advanced-rest-client/events-target-mixin": "^3.0.0-preview.2",
+    "@advanced-rest-client/http-method-selector": "^3.0.0-preview.1",
+    "@advanced-rest-client/request-actions-panel": "^3.0.0-preview.1",
+    "@advanced-rest-client/url-input-editor": "^3.0.0-preview.1",
+    "@advanced-rest-client/uuid-generator": "^3.0.0-preview.1",
+    "@api-components/api-body-editor": "^3.0.0-preview.2",
+    "@api-components/api-headers-editor": "^3.0.0-preview.3",
+    "@polymer/iron-collapse": "^3.0.0",
+    "@polymer/iron-flex-layout": "^3.0.0",
+    "@polymer/iron-icon": "^3.0.0",
+    "@polymer/iron-pages": "^3.0.0",
+    "@polymer/paper-button": "^3.0.0",
+    "@polymer/paper-icon-button": "^3.0.0",
+    "@polymer/paper-item": "^3.0.0",
+    "@polymer/paper-listbox": "^3.0.0",
+    "@polymer/paper-menu-button": "^3.0.0",
+    "@polymer/paper-styles": "^3.0.0",
+    "@polymer/paper-tabs": "^3.0.0",
+    "@polymer/polymer": "^3.0.0"
+  }
 }

@@ -1,6 +1,4 @@
-<!doctype html>
-<html>
-<head>
+<!DOCTYPE html><html><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
@@ -24,27 +22,45 @@
     location.href = red;
   }
   </script>
-  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
-  <link rel="import" href="../../neon-animation/web-animations.html">
-  <link rel="import" href="../../app-pouchdb/pouchdb.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../variables-evaluator/variables-evaluator.html">
-  <link rel="import" href="../../variables-manager/variables-manager.html">
-  <link rel="import" href="../../variables-editor/variables-editor.html">
-  <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
-  <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
-  <link rel="import" href="../../arc-models/url-history-model.html">
-  <link rel="import" href="../../arc-models/variables-model.html">
-  <link rel="import" href="../../iron-media-query/iron-media-query.html">
-  <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
-  <link rel="import" href="../../paper-listbox/paper-listbox.html">
-  <link rel="import" href="../../paper-item/paper-item.html">
-  <link rel="import" href="../../paper-toast/paper-toast.html">
-  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
-  <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
-  <link rel="import" href="../request-editor.html">
-  <script type="text/javascript" src="../../chance/chance.js"></script>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <script src="../../../web-animations-js/web-animations-next.min.js"></script>
+
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/variables-evaluator/variables-evaluator.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/variables-manager/variables-manager.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/variables-editor/variables-editor.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/oauth-authorization/oauth2-authorization.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/oauth-authorization/oauth1-authorization.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-models/url-history-model.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-models/variables-model.js"></script>
+  <script type="module" src="../../../@polymer/iron-media-query/iron-media-query.js"></script>
+  <script type="module" src="../../../@polymer/paper-dropdown-menu/paper-dropdown-menu.js"></script>
+  <script type="module" src="../../../@polymer/paper-listbox/paper-listbox.js"></script>
+  <script type="module" src="../../../@polymer/paper-item/paper-item.js"></script>
+  <script type="module" src="../../../@polymer/paper-toast/paper-toast.js"></script>
+  <script type="module" src="../../../@polymer/paper-toggle-button/paper-toggle-button.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-electron-default-theme/arc-electron-default-theme.js"></script>
+  <script type="module" src="../request-editor.js"></script>
+  <script type="text/javascript" src="../../../chance/chance.js"></script>
+
+  <!-- CodeMirror + modes loader -->
+  <script src="../../../codemirror/lib/codemirror.js"></script>
+  <script src="../../../codemirror/addon/mode/loadmode.js"></script>
+  <script src="../../../codemirror/mode/meta.js"></script>
+  <!--Default set of parsers, add as many as you need -->
+  <script src="../../../codemirror/mode/javascript/javascript.js"></script>
+  <script src="../../../codemirror/mode/xml/xml.js"></script>
+  <script src="../../../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+  <!-- JSON linter -->
+  <script src="../../../jsonlint/lib/jsonlint.js"></script>
+  <script src="../../../codemirror/addon/lint/lint.js"></script>
+  <script src="../../../codemirror/addon/lint/json-lint.js"></script>
+
+  <script>
+  CodeMirror.modeURL = '../../../codemirror/mode/%N/%N.js';
+  </script>
+
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
     body,
@@ -78,29 +94,19 @@
     </style>
   </custom-style>
 </head>
-<body unresolved>
+<body unresolved="">
+  <variables-model></variables-model>
   <variables-evaluator></variables-evaluator>
   <variables-manager></variables-manager>
   <oauth2-authorization></oauth2-authorization>
   <oauth1-authorization></oauth1-authorization>
   <url-history-model></url-history-model>
-  <variables-model></variables-model>
+
   <dom-bind id="demo">
     <template>
       <iron-media-query query="(max-width: 768px)" query-matches="{{narrow}}"></iron-media-query>
       <section class="vertical-section-container centered card" role="main">
-        <request-editor
-          id="editor"
-          url="{{url}}"
-          method="{{method}}"
-          headers="{{headers}}"
-          payload="{{body}}"
-          content-type="{{contentType}}"
-          is-payload="{{isPayload}}"
-          oauth2-redirect-uri="[[oauth2RedirectUri]]"
-          readonly="[[readOnly]]"
-          no-url-editor="[[noUrlEditor]]"
-          narrow="[[narrow]]"></request-editor>
+        <request-editor id="editor" url="{{url}}" method="{{method}}" headers="{{headers}}" payload="{{body}}" content-type="{{contentType}}" is-payload="{{isPayload}}" oauth2-redirect-uri="[[oauth2RedirectUri]]" readonly="[[readOnly]]" no-url-editor="[[noUrlEditor]]" narrow="[[narrow]]"></request-editor>
       </section>
 
       <section class="vertical-section-container centered card">
@@ -164,6 +170,7 @@
   <paper-toast id="clearToast" text="Clear request state detected"></paper-toast>
   <paper-toast id="saveToast" text="Save request state detected"></paper-toast>
   <paper-toast id="xhrToast" text="Toggle XHR request state changed"></paper-toast>
+
   <script>
   function openToast(id) {
     document.getElementById(id).opened = true;

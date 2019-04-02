@@ -5,37 +5,12 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   request-editor.html
+ *   request-editor.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
-
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
-/// <reference path="../url-input-editor/url-input-editor.d.ts" />
-/// <reference path="../api-headers-editor/api-headers-editor.d.ts" />
-/// <reference path="../http-method-selector/http-method-selector.d.ts" />
-/// <reference path="../http-method-selector/http-method-selector-mini.d.ts" />
-/// <reference path="../api-body-editor/api-body-editor.d.ts" />
-/// <reference path="../authorization-panel/authorization-panel.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="../paper-tabs/paper-tabs.d.ts" />
-/// <reference path="../paper-tabs/paper-tab.d.ts" />
-/// <reference path="../iron-pages/iron-pages.d.ts" />
-/// <reference path="../paper-styles/paper-styles.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../iron-collapse/iron-collapse.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../events-target-behavior/events-target-behavior.d.ts" />
-/// <reference path="../paper-menu-button/paper-menu-button.d.ts" />
-/// <reference path="../paper-listbox/paper-listbox.d.ts" />
-/// <reference path="../paper-item/paper-icon-item.d.ts" />
-/// <reference path="../iron-icon/iron-icon.d.ts" />
-/// <reference path="../uuid-generator/uuid-generator.d.ts" />
-/// <reference path="../request-actions-panel/request-actions-panel.d.ts" />
 
 declare namespace UiElements {
 
@@ -172,7 +147,7 @@ declare namespace UiElements {
    * Also paper elements: `paper-button`, `paper-tab`, and `paper-tabs`
    */
   class RequestEditor extends
-    ArcBehaviors.EventsTargetBehavior(
+    EventsTargetMixin(
     Object) {
 
     /**
@@ -413,6 +388,11 @@ declare namespace UiElements {
   }
 }
 
-interface HTMLElementTagNameMap {
-  "request-editor": UiElements.RequestEditor;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "request-editor": UiElements.RequestEditor;
+  }
 }
+
+export {};
