@@ -14,6 +14,15 @@
     <script src="../../../codemirror/lib/codemirror.js"></script>
     <script src="../../../codemirror/addon/mode/loadmode.js"></script>
     <script src="../../../codemirror/mode/meta.js"></script>
+    <!--Default set of parsers, add as many as you need -->
+    <script src="../../../codemirror/mode/javascript/javascript.js"></script>
+    <script src="../../../codemirror/mode/xml/xml.js"></script>
+    <script src="../../../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <!-- JSON linter -->
+    <script src="../../../jsonlint/lib/jsonlint.js"></script>
+    <script src="../../../codemirror/addon/lint/lint.js"></script>
+    <script src="../../../codemirror/addon/lint/json-lint.js"></script>
+
   </head>
   <body>
 
@@ -256,6 +265,64 @@
             });
             element.send();
           });
+        });
+      });
+    });
+
+    suite('Content headers setup', () => {
+      let element;
+      suiteSetup(function() {
+        element = fixture('basic');
+      });
+
+      setup(function(done) {
+        element.method = 'GET';
+        element.url = 'https://api.domain.com';
+        flush(() => done());
+      });
+
+      test('Headers are automatically filtered', function(done) {
+        element.addEventListener('api-request', function clb(e) {
+          element.removeEventListener('api-request', clb);
+          assert.equal(e.detail.headers, 'accept: all');
+          done();
+        });
+        element.ignoreContentOnGet = true;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        element.send();
+      });
+
+      test('Headers are not filtered for POST', function(done) {
+        element.addEventListener('api-request', function clb(e) {
+          element.removeEventListener('api-request', clb);
+          assert.equal(e.detail.headers, 'content-type: my/app\naccept: all\ncontent-length: 80');
+          done();
+        });
+        element.method = 'POST';
+        element.ignoreContentOnGet = true;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        element.send();
+      });
+
+      test('Renders warning dialog is opened', function() {
+        element.ignoreContentOnGet = false;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        element.send();
+        assert.isTrue(element.$.headersWarningDialog.opened);
+      });
+
+      test('Dialog confirmation sends the requests', function(done) {
+        element.addEventListener('api-request', function clb(e) {
+          element.removeEventListener('api-request', clb);
+          assert.equal(e.detail.headers, 'content-type: my/app\naccept: all\ncontent-length: 80');
+          done();
+        });
+        element.ignoreContentOnGet = false;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        element.send();
+        flush(() => {
+          const node = element.shadowRoot.querySelector('paper-button[dialog-confirm]');
+          node.click();
         });
       });
     });

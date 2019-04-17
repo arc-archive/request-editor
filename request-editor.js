@@ -13,6 +13,8 @@ the License.
 */
 import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
 import {afterNextRender} from '../../@polymer/polymer/lib/utils/render-status.js';
+import {EventsTargetMixin} from '../../@advanced-rest-client/events-target-mixin/events-target-mixin.js';
+import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
 import '../../@advanced-rest-client/url-input-editor/url-input-editor.js';
 import '../../@api-components/api-headers-editor/api-headers-editor.js';
 import '../../@advanced-rest-client/http-method-selector/http-method-selector.js';
@@ -28,14 +30,13 @@ import '../../@polymer/paper-button/paper-button.js';
 import '../../@polymer/paper-icon-button/paper-icon-button.js';
 import '../../@polymer/iron-collapse/iron-collapse.js';
 import '../../@advanced-rest-client/arc-icons/arc-icons.js';
-import {EventsTargetMixin} from '../../@advanced-rest-client/events-target-mixin/events-target-mixin.js';
 import '../../@polymer/paper-menu-button/paper-menu-button.js';
 import '../../@polymer/paper-listbox/paper-listbox.js';
 import '../../@polymer/paper-item/paper-icon-item.js';
 import '../../@polymer/iron-icon/iron-icon.js';
 import '../../@advanced-rest-client/uuid-generator/uuid-generator.js';
 import '../../@advanced-rest-client/request-actions-panel/request-actions-panel.js';
-import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
+import '../../@polymer/paper-dialog/paper-dialog.js';
 /**
  * An element that renders the UI to create a HTTP request.
  *
@@ -289,26 +290,62 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
       @apply --layout-center;
       @apply --layout-wrap;
     }
+
+    .additional-info {
+      color: var(--request-editor-headers-dialog-secondary-info-color, #777);
+    }
     </style>
     <div class="content">
       <template is="dom-if" if="[[!noUrlEditor]]" restamp="">
         <template is="dom-if" if="[[narrow]]" restamp="">
-          <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
+          <http-method-selector
+            events-target="[[eventsTarget]]"
+            method="{{method}}"
+            is-payload="{{isPayload}}"
+            readonly="[[readonly]]"></http-method-selector>
         </template>
         <div class="url-editor">
           <template is="dom-if" if="[[!narrow]]" restamp="">
-            <http-method-selector-mini events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector-mini>
+            <http-method-selector-mini
+              events-target="[[eventsTarget]]"
+              method="{{method}}"
+              is-payload="{{isPayload}}"
+              readonly="[[readonly]]"></http-method-selector-mini>
           </template>
-          <url-input-editor events-target="[[eventsTarget]]" auto-validate="" required="" value="{{url}}" invalid="{{urlInvalid}}" readonly="[[readonly]]" details-opened="{{urlOpened}}" narrow="[[narrow]]"></url-input-editor>
+          <url-input-editor
+            events-target="[[eventsTarget]]"
+            auto-validate=""
+            required=""
+            value="{{url}}"
+            invalid="{{urlInvalid}}"
+            readonly="[[readonly]]"
+            details-opened="{{urlOpened}}"
+            narrow="[[narrow]]"></url-input-editor>
           <div class="main-action-buttons">
-            <paper-button raised="" class="action-button send" hidden\$="[[loadingRequest]]" on-click="send">send</paper-button>
-            <paper-button raised="" class="action-button abort" hidden\$="[[!loadingRequest]]" on-click="abort">abort</paper-button>
+            <paper-button
+              raised=""
+              class="action-button send"
+              hidden\$="[[loadingRequest]]"
+              on-click="send">send</paper-button>
+            <paper-button
+              raised=""
+              class="action-button abort"
+              hidden\$="[[!loadingRequest]]"
+              on-click="abort">abort</paper-button>
           </div>
-          <paper-menu-button horizontal-align="right" class="request-menu" close-on-activate="" on-paper-dropdown-close="_requestMenuClosed">
+          <paper-menu-button
+            horizontal-align="right"
+            class="request-menu"
+            close-on-activate=""
+            on-paper-dropdown-close="_requestMenuClosed">
             <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
               <paper-icon-item on-click="clearRequest" class="menu-item">
-                <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
+                <iron-icon
+                  icon="arc:clear-all"
+                  class="context-menu-icon"
+                  slot="item-icon"
+                  title="Clear request data"></iron-icon>
                 Clear
               </paper-icon-item>
               <slot name="request-context-menu"></slot>
@@ -318,12 +355,24 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
       </template>
       <template is="dom-if" if="[[noUrlEditor]]" restamp="">
         <div class="inline-method-selector">
-          <http-method-selector events-target="[[eventsTarget]]" method="{{method}}" is-payload="{{isPayload}}" readonly="[[readonly]]"></http-method-selector>
-          <paper-menu-button horizontal-align="right" class="request-menu" close-on-activate="" on-paper-dropdown-close="_requestMenuClosed">
+          <http-method-selector
+            events-target="[[eventsTarget]]"
+            method="{{method}}"
+            is-payload="{{isPayload}}"
+            readonly="[[readonly]]"></http-method-selector>
+          <paper-menu-button
+            horizontal-align="right"
+            class="request-menu"
+            close-on-activate=""
+            on-paper-dropdown-close="_requestMenuClosed">
             <paper-icon-button icon="arc:more-vert" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content" class="options-menu" id="requestMenu">
               <paper-icon-item on-click="clearRequest" class="menu-item">
-                <iron-icon icon="arc:clear-all" class="context-menu-icon" slot="item-icon" title="Clear request data"></iron-icon>
+                <iron-icon
+                  icon="arc:clear-all"
+                  class="context-menu-icon"
+                  slot="item-icon"
+                  title="Clear request data"></iron-icon>
                 Clear
               </paper-icon-item>
               <slot name="request-context-menu"></slot>
@@ -334,7 +383,11 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
       <section class="params-section">
         <header class="params-header">
           <h2 on-click="toggle">Parameters</h2>
-          <paper-icon-button on-click="toggle" icon="arc:expand-more" class\$="[[_computeToggleIconClass(collapseOpened)]]" title\$="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
+          <paper-icon-button
+            on-click="toggle"
+            icon="arc:expand-more"
+            class\$="[[_computeToggleIconClass(collapseOpened)]]"
+            title\$="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
         </header>
         <iron-collapse opened="[[collapseOpened]]">
           <paper-tabs selected="{{selectedTab}}" hidden\$="[[!collapseOpened]]">
@@ -379,7 +432,18 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
       </section>
     </div>
     <uuid-generator id="uuid"></uuid-generator>
-`;
+    <paper-dialog id="headersWarningDialog">
+      <h2>Headers are not valid</h2>
+      <div>
+        <p>The <b>GET</b> request should not contain <b>content-*</b> headers. It may
+        cause the server to behave unexpectedly.</p>
+        <p><b>Do you want to continue?</b></p>
+      </div>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel request</paper-button>
+        <paper-button dialog-confirm autofocus on-click="_sendIgnoreValidation">Continue</paper-button>
+      </div>
+    </paper-dialog>`;
   }
 
   static get properties() {
@@ -511,7 +575,14 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
         type: Object,
         notify: true,
         observer: '_stateChanged'
-      }
+      },
+      /**
+       * When set it will ignore all `content-*` headers when the request method
+       * is either `GET` or `HEAD`.
+       * When not set or `false` it renders warning dialog.
+       * @type {Boolean}
+       */
+      ignoreContentOnGet: Boolean
     };
   }
 
@@ -606,10 +677,11 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
   serializeRequest() {
     const input = this.shadowRoot.querySelector('url-input-editor');
     const queryModel = input ? input.queryParameters : [];
+    const method = this.method || 'GET';
     const result = {
       url: this.url || '',
-      method: this.method || 'GET',
-      headers: this.headers || '',
+      method,
+      headers: this._getHeaders(method),
       payload: this.payload,
       auth: this.authSettings,
       responseActions: this.responseActions,
@@ -617,6 +689,21 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
       queryModel
     };
     return result;
+  }
+  /**
+   * Returns headers value.
+   * If `ignoreContentOnGet` flag is set and request is `get` then it clears
+   * all `content-*` headers.
+   * @param {String} method Current HTTP method name.
+   * @return {String} HTTP headers string to use with request.
+   */
+  _getHeaders(method) {
+    let headers = this.headers || '';
+    if (this.ignoreContentOnGet && method.toLowerCase() === 'get') {
+      const reg = /^content-\S+(\s+)?:.*\n?/gim;
+      headers = headers.replace(reg, '');
+    }
+    return headers.trim();
   }
   /**
    * Computes class for the toggle's button icon.
@@ -701,13 +788,30 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
   }
   /**
    * Dispatches the `api-request` custom event to send the request.
+   *
+   * @param {Object} opts Send oiptions:
+   * - ignoreValidation (Boolean) - Ignores headers validation
    */
-  send() {
+  send(opts) {
+    opts = opts || {};
     const request = this.serializeRequest();
+    if (!opts.ignoreValidation && this._validateContentHeaders(request)) {
+      this.$.headersWarningDialog.opened = true;
+      return;
+    }
     this.requestId = this.$.uuid.generate();
     request.id = this.requestId;
     this._dispatch('api-request', request);
     this._sendGaEvent('Send request');
+  }
+  /**
+   * Handler for the dialog confirmation button click.
+   * Resends the request and skips validation.
+   */
+  _sendIgnoreValidation() {
+    this.send({
+      ignoreValidation: true
+    });
   }
   /**
    * Sends the `abort-api-request` custom event to cancel the request.
@@ -810,6 +914,21 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
 
   _requestMenuClosed() {
     afterNextRender(this, () => this._unselectRequestMenu());
+  }
+  /**
+   * Validates headers for `Content-*` entries agains current method.
+   * @param {Object} request The request object
+   * @return {Boolean} True if headers are invalid.
+   */
+  _validateContentHeaders(request) {
+    const method = request.method || 'get';
+    if (method.toLowerCase() !== 'get') {
+      return false;
+    }
+    if ((request.headers || '').toLowerCase().indexOf('content-') === -1) {
+      return false;
+    }
+    return true;
   }
   /**
    * Fired when the user request to send current request.

@@ -14,6 +14,15 @@
     <script src="../../../codemirror/lib/codemirror.js"></script>
     <script src="../../../codemirror/addon/mode/loadmode.js"></script>
     <script src="../../../codemirror/mode/meta.js"></script>
+    <!--Default set of parsers, add as many as you need -->
+    <script src="../../../codemirror/mode/javascript/javascript.js"></script>
+    <script src="../../../codemirror/mode/xml/xml.js"></script>
+    <script src="../../../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <!-- JSON linter -->
+    <script src="../../../jsonlint/lib/jsonlint.js"></script>
+    <script src="../../../codemirror/addon/lint/lint.js"></script>
+    <script src="../../../codemirror/addon/lint/json-lint.js"></script>
+
   </head>
   <body>
 
@@ -340,6 +349,33 @@
       });
     });
 
+    suite('_getHeaders()', () => {
+      let element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Returns all headers', () => {
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        const result = element._getHeaders('GET');
+        assert.equal(result, 'content-type: my/app\naccept: all\ncontent-length: 80');
+      });
+
+      test('Returns all headers for post', () => {
+        element.ignoreContentOnGet = true;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        const result = element._getHeaders('POST');
+        assert.equal(result, 'content-type: my/app\naccept: all\ncontent-length: 80');
+      });
+
+      test('Filters headers for GET', () => {
+        element.ignoreContentOnGet = true;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        const result = element._getHeaders('GET');
+        assert.equal(result, 'accept: all');
+      });
+    });
+
     suite('serializeRequest()', () => {
       let element;
       setup(function() {
@@ -391,6 +427,13 @@
         element.payload = 'test-payload';
         const result = element.serializeRequest();
         assert.equal(result.payload, element.payload);
+      });
+
+      test('Calls _getHeaders() and sets headers property', () => {
+        element.ignoreContentOnGet = true;
+        element.headers = 'content-type: my/app\naccept: all\ncontent-length: 80';
+        const result = element.serializeRequest();
+        assert.equal(result.headers, 'accept: all');
       });
 
       test('Sets auth', (done) => {
@@ -516,6 +559,49 @@
             assert.equal(panel[item[0]], item[1]);
           });
         });
+      });
+    });
+
+    suite('_validateContentHeaders()', () => {
+      let element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Returns false for non GET request', () => {
+        const result = element._validateContentHeaders({
+          method: 'POST'
+        });
+        assert.isFalse(result);
+      });
+
+      test('Returns false for non GET request', () => {
+        const result = element._validateContentHeaders({
+          method: 'POST'
+        });
+        assert.isFalse(result);
+      });
+
+      test('Returns false when no headers', () => {
+        const result = element._validateContentHeaders({
+          method: 'GET'
+        });
+        assert.isFalse(result);
+      });
+
+      test('Returns true when content-length header found', () => {
+        const result = element._validateContentHeaders({
+          method: 'GET',
+          headers: 'accept: xxx\ncontent-length: 10'
+        });
+        assert.isTrue(result);
+      });
+
+      test('Uses default method', () => {
+        const result = element._validateContentHeaders({
+          headers: 'content-length: 10\naccept: xxx\n'
+        });
+        assert.isTrue(result);
       });
     });
     </script>

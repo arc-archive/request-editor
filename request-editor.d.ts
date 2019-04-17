@@ -258,6 +258,13 @@ declare namespace UiElements {
      * state of the UI regions.
      */
     state: object|null;
+
+    /**
+     * When set it will ignore all `content-*` headers when the request method
+     * is either `GET` or `HEAD`.
+     * When not set or `false` it renders warning dialog.
+     */
+    ignoreContentOnGet: Boolean|null;
     _attachListeners(node: any): void;
     _detachListeners(node: any): void;
 
@@ -306,6 +313,16 @@ declare namespace UiElements {
     serializeRequest(): object|null;
 
     /**
+     * Returns headers value.
+     * If `ignoreContentOnGet` flag is set and request is `get` then it clears
+     * all `content-*` headers.
+     *
+     * @param method Current HTTP method name.
+     * @returns HTTP headers string to use with request.
+     */
+    _getHeaders(method: String|null): String|null;
+
+    /**
      * Computes class for the toggle's button icon.
      *
      * @param opened Collapse opened state
@@ -347,8 +364,17 @@ declare namespace UiElements {
 
     /**
      * Dispatches the `api-request` custom event to send the request.
+     *
+     * @param opts Send oiptions:
+     * - ignoreValidation (Boolean) - Ignores headers validation
      */
-    send(): void;
+    send(opts: object|null): void;
+
+    /**
+     * Handler for the dialog confirmation button click.
+     * Resends the request and skips validation.
+     */
+    _sendIgnoreValidation(): void;
 
     /**
      * Sends the `abort-api-request` custom event to cancel the request.
@@ -385,6 +411,14 @@ declare namespace UiElements {
      */
     _stateChanged(state: object|null): void;
     _requestMenuClosed(): void;
+
+    /**
+     * Validates headers for `Content-*` entries agains current method.
+     *
+     * @param request The request object
+     * @returns True if headers are invalid.
+     */
+    _validateContentHeaders(request: object|null): Boolean|null;
   }
 }
 
