@@ -76,12 +76,11 @@ http-method-selector-mini {
 }
 
 anypoint-tabs {
-  border-bottom: 1px var(--request-editor-tabs-border-color, #e5e5e5) solid;
-  margin-bottom: 8px;
+  border-bottom: 1px var(--request-editor-tabs-border, var(--primary-color)) solid;
 }
 
 .panel {
-  background-color: var(--request-editor-panel-background-color, #e5e5e5);
-  border: var(--request-editor-panel-border, #e5e5e5);;
+  background-color: var(--request-editor-panel-background-color, #F5F5F5);
+  border: var(--request-editor-panel-border, none);
 }
 `;

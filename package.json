@@ -1,7 +1,7 @@
 {
   "name": "@advanced-rest-client/request-editor",
   "description": "A HTTP request editor",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "license": "Apache-2.0",
   "main": "request-editor.js",
   "keywords": [
@@ -28,7 +28,7 @@
     "@advanced-rest-client/events-target-mixin": "^3.0.0",
     "@advanced-rest-client/http-code-snippets": "^3.0.2",
     "@advanced-rest-client/http-method-selector": "^3.0.2",
-    "@advanced-rest-client/request-actions-panel": "^3.0.2",
+    "@advanced-rest-client/request-actions-panel": "^3.0.4",
     "@advanced-rest-client/url-input-editor": "^3.0.2",
     "@advanced-rest-client/uuid-generator": "^3.0.0",
     "@anypoint-web-components/anypoint-button": "^1.0.10",
