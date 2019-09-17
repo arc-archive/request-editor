@@ -1,16 +1,14 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-
-  <title>request-editor demo</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+  <title>Request editor demo</title>
   <script>
   if (location.search.indexOf('response_type') !== -1 &&
     location.search.indexOf('redirect_uri') !== -1) {
     // OAUTH DEMO
-    /* global URLSearchParams */
     const p = new URLSearchParams(location.search);
     const state = p.get('state');
     const type = p.get('response_type');
@@ -24,235 +22,134 @@
     location.href = red;
   }
   </script>
-  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
-  <link rel="import" href="../../neon-animation/web-animations.html">
-  <link rel="import" href="../../app-pouchdb/pouchdb.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../variables-evaluator/variables-evaluator.html">
-  <link rel="import" href="../../variables-manager/variables-manager.html">
-  <link rel="import" href="../../variables-editor/variables-editor.html">
-  <link rel="import" href="../../oauth-authorization/oauth2-authorization.html">
-  <link rel="import" href="../../oauth-authorization/oauth1-authorization.html">
-  <link rel="import" href="../../arc-models/url-history-model.html">
-  <link rel="import" href="../../arc-models/variables-model.html">
-  <link rel="import" href="../../iron-media-query/iron-media-query.html">
-  <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
-  <link rel="import" href="../../paper-listbox/paper-listbox.html">
-  <link rel="import" href="../../paper-item/paper-item.html">
-  <link rel="import" href="../../paper-toast/paper-toast.html">
-  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
-  <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
-  <link rel="import" href="../request-editor.html">
-  <script type="text/javascript" src="../../chance/chance.js"></script>
-  <custom-style>
-    <style is="custom-style" include="demo-pages-shared-styles">
-    body,
-    html {
-      background-color: #e5e5e5;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-    }
-
-    .card {
-      @apply --shadow-elevation-4dp;
-      padding: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-      box-sizing: border-box;
-      background-color: #fff;
-    }
-
-    .vertical-section-container {
-      max-width: 1100px;
-      margin-bottom: 40px;
-    }
-
-    output code {
-      white-space: pre-wrap;
-      display: block;
-      background-color: #FBE9E7;
-      padding: 4px 8px;
-    }
-    </style>
-  </custom-style>
-</head>
-<body unresolved>
-  <variables-evaluator></variables-evaluator>
-  <variables-manager></variables-manager>
-  <oauth2-authorization></oauth2-authorization>
-  <oauth1-authorization></oauth1-authorization>
-  <url-history-model></url-history-model>
-  <variables-model></variables-model>
-  <dom-bind id="demo">
-    <template>
-      <iron-media-query query="(max-width: 768px)" query-matches="{{narrow}}"></iron-media-query>
-      <section class="vertical-section-container centered card" role="main">
-        <request-editor
-          id="editor"
-          url="{{url}}"
-          method="{{method}}"
-          headers="{{headers}}"
-          payload="{{body}}"
-          content-type="{{contentType}}"
-          is-payload="{{isPayload}}"
-          oauth2-redirect-uri="[[oauth2RedirectUri]]"
-          readonly="[[readOnly]]"
-          no-url-editor="[[noUrlEditor]]"
-          narrow="[[narrow]]"></request-editor>
-      </section>
-
-      <section class="vertical-section-container centered card">
-        <h3>Configuration</h3>
-        <paper-toggle-button checked="{{readOnly}}">Read only mode</paper-toggle-button>
-        <paper-toggle-button checked="{{noUrlEditor}}">No URL editor</paper-toggle-button>
-      </section>
-
-      <div class="vertical-section-container centered">
-        <section class="card">
-          <h4>Load request</h4>
-          <paper-dropdown-menu label="Request preset">
-            <paper-listbox slot="dropdown-content" on-selected-changed="_restoredRequestChanged" attr-for-selected="data-type">
-              <paper-item data-type="get">Simple GET request</paper-item>
-              <paper-item data-type="post">Simple POST request</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </section>
-
-        <section class="card">
-          <h4>Result</h4>
-          <output>
-            <h5>URL</h5>
-            <code>[[url]]</code>
-            <h5>Method</h5>
-            <code>[[method]]</code>
-            <h5>Headers</h5>
-            <code>[[headers]]</code>
-            <template is="dom-if" if="[[isPayload]]">
-              <h5>Body</h5>
-              <code>[[body]]</code>
-            </template>
-            <template is="dom-if" if="[[contentType]]">
-              <h5>Used content type</h5>
-              <code>[[contentType]]</code>
-            </template>
-            <h5>Editor state</h5>
-            <code>[[stringify(editorState)]]</code>
-          </output>
-        </section>
-      </div>
-
-      <div class="vertical-section-container centered card">
-        <h4>Additional elements used with this demo page</h4>
-        <ul>
-          <li><a href="https://github.com/advanced-rest-client/variables-evaluator">variables-evaluator</a></li>
-          <li><a href="https://github.com/advanced-rest-client/variables-manager">variables-manager</a></li>
-          <li><a href="https://github.com/advanced-rest-client/url-history-saver">url-history-saver</a></li>
-          <li><a href="https://github.com/advanced-rest-client/oauth-authorization">oauth-authorization</a></li>
-        </ul>
-      </div>
-
-      <div class="vertical-section-container centered card">
-        <h4>Variables editor</h4>
-        <variables-editor></variables-editor>
-      </div>
-    </template>
-  </dom-bind>
-  <paper-toast id="requestSend" text="Request send event detected"></paper-toast>
-  <paper-toast id="requestAbort" text="Request abort event detected"></paper-toast>
-  <paper-toast id="clearToast" text="Clear request state detected"></paper-toast>
-  <paper-toast id="saveToast" text="Save request state detected"></paper-toast>
-  <paper-toast id="xhrToast" text="Toggle XHR request state changed"></paper-toast>
+  <script src="../node_modules/web-animations-js/web-animations.min.js"></script>
+  <script src="../node_modules/jsonlint/lib/jsonlint.js"></script>
+  <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+  <script src="../node_modules/codemirror/addon/mode/loadmode.js"></script>
+  <script src="../node_modules/codemirror/mode/meta.js"></script>
+  <script src="../node_modules/codemirror/mode/javascript/javascript.js"></script>
+  <script src="../node_modules/codemirror/mode/xml/xml.js"></script>
+  <script src="../node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+  <script src="../node_modules/codemirror/addon/lint/lint.js"></script>
+  <script src="../node_modules/codemirror/addon/lint/json-lint.js"></script>
+  <link rel="stylesheet" href="../node_modules/codemirror/addon/lint/lint.css" />
   <script>
-  function openToast(id) {
-    document.getElementById(id).opened = true;
+  /* global CodeMirror */
+  CodeMirror.modeURL = '../node_modules/codemirror/mode/%N/%N.js';
+  </script>
+
+  <style>
+  .centered[role="main"] {
+    max-width: 1400px;
   }
-  window.addEventListener('api-request', function() {
-    openToast('requestSend');
-    document.querySelector('request-editor').loadingRequest = true;
-  });
-  window.addEventListener('abort-api-request', function() {
-    openToast('requestAbort');
-    document.querySelector('request-editor').loadingRequest = false;
-  });
-  window.addEventListener('request-clear-state', function() {
-    openToast('clearToast');
-  });
-  window.addEventListener('request-save-state', function() {
-    openToast('saveToast');
-  });
-  window.addEventListener('request-use-xhr-changed', function() {
-    openToast('xhrToast');
-  });
 
-  (function(scope) {
-    /* global chance */
-    const redirectUrl = location.href.replace(/request-editor\/demo\/(index\.html)?/,
-        'oauth-authorization/oauth-popup.html');
-    scope.oauth2RedirectUri = redirectUrl;
+  request-editor {
+    width: 900px;
+  }
 
-    scope._restoredRequestChanged = function(e) {
-      const restoredRequest = e.detail.value;
-      const opts = {};
-      switch (restoredRequest) {
-        case 'post':
-          opts.method = 'POST';
-          opts.withBody = true;
-          break;
-      }
-      scope.generateRequest(opts);
-    };
+  body.styled {
+    --anypoiont-dropdown-shaddow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --anypoiont-autocomplete-dropdown-shaddow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --primary-color: #00A2DF;
+    --arc-font-body1-font-size: 14px;
+    --arc-font-body1-font-weight: 400;
+    --arc-font-body1-line-height: 20px;
+    --arc-font-headline-font-size: 24px;
+    --arc-font-headline-font-weight: 400;
+    --arc-font-headline-letter-spacing: -.012em;
+    --arc-font-headline-line-height: 32px;
+    --arc-font-subhead-font-size: 16px;
+    --arc-font-subhead-font-weight: 400;
+    --arc-font-subhead-line-height: 24px;
+    --arc-font-title-font-size: 20px;
+    --arc-font-title-font-weight: 500;
+    --arc-font-title-line-height: 28px;
+    --arc-font-body1-font-size: 15px;
+    --arc-font-body1-font-weight: 400;
+    --arc-font-body1-line-height: 20px;
+    --action-button-background-color: var(--primary-color);
+    --action-button-background-image: none;
+    --action-button-color: #fff;
+    --action-button-transition: background-color 300ms linear;
+    --action-button-hover-background-color: #04b3f5;
+    --action-button-hover-color: #fff;
+    --action-button-disabled-background-color: #eaeaea;
+    --action-button-disabled-color: #a8a8a8;
+  }
+  body.styled.dark {
+    background-color: #424242;
+    height: 100vh;
+    color: #fff;
+    --action-button-background-color: #fff;
+    --action-button-color: var(--primary-color);
+    --secondary-action-button-color: #fff;
+    --primary-color: #2196f3;
+    --primary-text-color: #fff;
+    --paper-toggle-button-label-color: #fff;
+    --paper-listbox-background-color: #424242;
+    --paper-listbox-color: #fff;
+    --google-drive-list-view-file-icon-color: rgba(255, 255, 255, 0.54);
+    --google-drive-list-view-search-icon-color: rgba(255, 255, 255, 0.54);
+    --paper-item-body-secondary-color: rgba(255, 255, 255, 0.64);
+    --action-button-background-color: #212121;
+    --action-button-color: #fff;
+    --action-button-hover-background-color: #212121;
+    --action-button-hover-color: #04b3f5;
+    --google-drive-list-view-selected-background-color: #757575;
+    --paper-input-container-color: rgba(255, 255, 255, 0.64);
+    --paper-toggle-button-label-color: #fff;
+    --error-message-icon-color: rgba(255, 255, 255, 0.64);
+    --error-message-color: #fff;
 
-    function genHeaders(opts) {
-      let str = '';
-      for (let i = 0; i < chance.integer({min: 1, max: 7}); i++) {
-        str += 'x-' + chance.word() + ': ' + chance.word() + '\n';
-      }
-      if (opts.withBody) {
-        str += 'content-type: application/xml';
-      }
-      return str;
-    }
-    function getMethod(opts) {
-      if (opts.method) {
-        return opts.method;
-      }
-      if (opts.withBody) {
-        return ['POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'][chance.integer({min: 0, max: 4})];
-      }
-      return ['GET', 'HEAD'][chance.integer({min: 0, max: 1})];
-    }
-    scope.stringify = function(value) {
-      if (!value) {
-        return;
-      }
-      return JSON.stringify(value);
-    };
-    scope.generateRequest = function(opts) {
-      scope.url = chance.url();
-      if (opts.withBody) {
-        scope.body = 'Demo page';
-      } else {
-        scope.body = '';
-      }
-      scope.headers = genHeaders(opts);
-      scope.method = getMethod(opts);
-    };
+    --secondary-text-color: #616161;
+    --primary-background-color: #424242;
+    --anypoint-input-legacy-label-color: #F5F5F5;
+    --arc-interactive-demo-options-color: #F5F5F5;
+    --anypoint-checkbox-label-color:  #F5F5F5;
+    --anypoint-input-background-color: #494949;
+    --anypoint-input-label-color: #fff;
+    --anypoint-input-input-color: #fff;
+    --anypoint-input-border-bottom-color: #fff;
+    --anypoint-input-focused-border-bottom-color: #fff;
+    --anypoint-input-label-background-color: rgb(66, 66, 66);
+    --anypoint-input-legacy-focus-background-color: #3a3b3c;
+    --anypoint-input-legacy-focus-border-color: #178bea;
+    --anypoint-input-info-message-color: #fff;
+    --inline-documentation-background-color: #3a3a3a;
+    --anypoint-dropdown-menu-background-color: #494949;
+    --anypoint-dropdown-menu-label-background-color: var(--primary-background-color);
+    --anypoint-listbox-background-color: #494949;
+    --anypoint-dropdown-menu-focus-background-color: #9E9E9E;
+    --anypoint-dropdown-menu-label-color: #fff;
+    --anypoint-dropdown-menu-info-message-color: #fff;
+    --anypoint-item-hover-background-color: #9E9E9E;
+    --anypoiont-autocomplete-background-color: #494949;
+    --anypoint-icon-button-emphasis-low-color: #fff;
+    --from-row-action-icon-color: #fff;
+    --icon-button-color: #fff;
+    --api-form-action-icon-color: #fff;
+    --api-form-action-button-color: #fff;
+    --anypoint-icon-button-emphasis-low-color: #fff;
+    --anypoiont-autocomplete-background-color: #494949;
+    --auth-method-oauth2-redirect-info-color: #fff;
+    --from-row-action-icon-color: #fff;
+    --inline-documentation-color: #fff;
 
-    scope._handleStateChange = function() {
-      const editor = document.getElementById('editor');
-      scope.editorState = editor.state;
-    };
+    --code-mirror-background-color: #37474F;
+    --code-mirror-string-color: #C3E88D;
+    --code-mirror-punctuation-color: #EEFFFF;
+    --code-mirror-atom-color: #F07178;
+    --code-mirror-number-color: #F78C6A;
+    --code-mirror-cursor-color: #009688;
+    --paper-listbox-background-color: #37474F;
+  }
+  </style>
+</head>
 
-    scope._init = function() {
-      const editor = document.getElementById('editor');
-      editor.addEventListener('state-changed', () => scope._handleStateChange());
-      scope.editorState = editor.state;
-    };
-
-    window.addEventListener('WebComponentsReady', scope._init);
-  })(document.getElementById('demo'));
+<body>
+  <div id="demo"></div>
+  <script type="module" src="index.js"></script>
   </script>
 </body>
+
 </html>
