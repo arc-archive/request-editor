@@ -79,4 +79,9 @@ anypoint-tabs {
   border-bottom: 1px var(--request-editor-tabs-border-color, #e5e5e5) solid;
   margin-bottom: 8px;
 }
+
+.panel {
+  background-color: var(--request-editor-panel-background-color, #e5e5e5);
+  border: var(--request-editor-panel-border, #e5e5e5);;
+}
 `;

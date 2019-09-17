@@ -1005,12 +1005,14 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const configVisible = selectedTab === 4;
     const codeVisible = selectedTab === 5;
     return html`
+    <div class="panel">
     ${this._headerEditorTemplate(!headersVisible)}
     ${this._bodyEditorTemplate(!bodyVisible)}
     ${this._authEditorTemplate(!authVisible)}
     ${actionsVisible ? this._actionsEditorTemplate() : ''}
     ${configVisible ? this._configEditorTemplate() : ''}
     ${codeVisible ? this._codeTemplate() : ''}
+    </div>
     `;
   }
 
