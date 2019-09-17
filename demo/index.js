@@ -49,6 +49,25 @@ class DemoPage extends ArcDemoPage {
     this.narrow = e.detail.value;
   }
 
+  _requestHandler(e) {
+    e.preventDefault();
+    const { id } = e.detail;
+    console.log('Send action', e.detail);
+    setTimeout(() => {
+      document.body.dispatchEvent(new CustomEvent('api-response', {
+        bubbles: true,
+        detail: {
+          id
+        }
+      }));
+    }, 1000);
+  }
+
+  _requestChanegd(e) {
+    const name = e.type.split('-')[0];
+    console.log(name, e.detail.value);
+  }
+
   _demoTemplate() {
     const {
       demoStates,
@@ -83,6 +102,13 @@ class DemoPage extends ArcDemoPage {
             collapseOpened
             method="GET"
             slot="content"
+            @api-request="${this._requestHandler}"
+            @method-changed="${this._requestChanegd}"
+            @url-changed="${this._requestChanegd}"
+            @headers-changed="${this._requestChanegd}"
+            @payload-changed="${this._requestChanegd}"
+            @requestactions-changed="${this._requestChanegd}"
+            @responseactions-changed="${this._requestChanegd}"
           ></request-editor>
 
           <label slot="options" id="mainOptionsLabel">Options</label>

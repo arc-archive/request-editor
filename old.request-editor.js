@@ -11,32 +11,6 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
-import {afterNextRender} from '../../@polymer/polymer/lib/utils/render-status.js';
-import {EventsTargetMixin} from '../../@advanced-rest-client/events-target-mixin/events-target-mixin.js';
-import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
-import '../../@advanced-rest-client/url-input-editor/url-input-editor.js';
-import '../../@api-components/api-headers-editor/api-headers-editor.js';
-import '../../@advanced-rest-client/http-method-selector/http-method-selector.js';
-import '../../@advanced-rest-client/http-method-selector/http-method-selector-mini.js';
-import '../../@api-components/api-body-editor/api-body-editor.js';
-import '../../@advanced-rest-client/authorization-panel/authorization-panel.js';
-import '../../@polymer/iron-flex-layout/iron-flex-layout.js';
-import '../../@polymer/paper-tabs/paper-tabs.js';
-import '../../@polymer/paper-tabs/paper-tab.js';
-import '../../@polymer/iron-pages/iron-pages.js';
-import '../../@polymer/paper-styles/paper-styles.js';
-import '../../@polymer/paper-button/paper-button.js';
-import '../../@polymer/paper-icon-button/paper-icon-button.js';
-import '../../@polymer/iron-collapse/iron-collapse.js';
-import '../../@advanced-rest-client/arc-icons/arc-icons.js';
-import '../../@polymer/paper-menu-button/paper-menu-button.js';
-import '../../@polymer/paper-listbox/paper-listbox.js';
-import '../../@polymer/paper-item/paper-icon-item.js';
-import '../../@polymer/iron-icon/iron-icon.js';
-import '../../@advanced-rest-client/uuid-generator/uuid-generator.js';
-import '../../@advanced-rest-client/request-actions-panel/request-actions-panel.js';
-import '../../@polymer/paper-dialog/paper-dialog.js';
 /**
  * An element that renders the UI to create a HTTP request.
  *
@@ -175,9 +149,9 @@ import '../../@polymer/paper-dialog/paper-dialog.js';
  * @demo demo/index.html
  * @appliesMixin EventsTargetMixin
  */
-class RequestEditor extends EventsTargetMixin(PolymerElement) {
+class RequestEditor {
   static get template() {
-    return html`
+    return `
     <style>
     :host {
       display: block;
@@ -325,12 +299,12 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
             <paper-button
               raised=""
               class="action-button send"
-              hidden\$="[[loadingRequest]]"
+              hidden="[[loadingRequest]]"
               on-click="send">send</paper-button>
             <paper-button
               raised=""
               class="action-button abort"
-              hidden\$="[[!loadingRequest]]"
+              hidden="[[!loadingRequest]]"
               on-click="abort">abort</paper-button>
           </div>
           <paper-menu-button
@@ -386,13 +360,13 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
           <paper-icon-button
             on-click="toggle"
             icon="arc:expand-more"
-            class\$="[[_computeToggleIconClass(collapseOpened)]]"
-            title\$="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
+            class="[[_computeToggleIconClass(collapseOpened)]]"
+            title="[[_computeToggleLabel(collapseOpened)]]"></paper-icon-button>
         </header>
         <iron-collapse opened="[[collapseOpened]]">
-          <paper-tabs selected="{{selectedTab}}" hidden\$="[[!collapseOpened]]">
+          <paper-tabs selected="{{selectedTab}}" hidden="[[!collapseOpened]]">
             <paper-tab>Headers</paper-tab>
-            <paper-tab hidden\$="[[!isPayload]]">Body</paper-tab>
+            <paper-tab hidden="[[!isPayload]]">Body</paper-tab>
             <paper-tab>Authorization</paper-tab>
             <paper-tab>Actions</paper-tab>
           </paper-tabs>
@@ -508,7 +482,7 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
       /**
        * If set it renders the view in the narrow layout.
        */
-      narrow: {type: Boolean, value: false},
+      narrow: { type: Boolean, value: false },
       /**
        * Computed value when the URL change.
        * If not valid form submission won't be possible.
@@ -593,7 +567,6 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
   }
 
   constructor() {
-    super();
     this._sendRequestInner = this._sendRequestInner.bind(this);
     this._authRedirectChanged = this._authRedirectChanged.bind(this);
   }
@@ -759,7 +732,7 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
    * @param {Number} selectedTab
    */
   _refreshEditors(selectedTab) {
-    afterNextRender(this, () => {
+    setTimeout(() => {
       const isPayload = this.isPayload;
       let panel;
       if (isPayload && selectedTab === 2) {
@@ -858,7 +831,7 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
     this.selectedTab = 0;
     this._dispatch('request-clear-state');
     this._sendGaEvent('Clear request');
-    afterNextRender(this, () => this._unselectRequestMenu());
+    setTimeout(() => this._unselectRequestMenu());
   }
 
   _authRedirectChanged(e) {
@@ -909,11 +882,11 @@ class RequestEditor extends EventsTargetMixin(PolymerElement) {
         this.urlOpened = value;
       }
     }
-    afterNextRender(this, () => this.notifyResize());
+    setTimeout(this, () => this.notifyResize());
   }
 
   _requestMenuClosed() {
-    afterNextRender(this, () => this._unselectRequestMenu());
+    setTimeout(this, () => this._unselectRequestMenu());
   }
   /**
    * Validates headers for `Content-*` entries agains current method.

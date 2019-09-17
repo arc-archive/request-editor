@@ -6,18 +6,7 @@
 
 ## &lt;request-editor&gt;
 
-Complete HTTP request editor.
-
-Note: This is pre-release for final web components spec including ES modules.
-This component hasn't been fully tested and contains issues with variables manager initialization.
-
-```html
-<request-editor></request-editor>
-```
-
-### API components
-
-This components is a part of [API components ecosystem](https://elements.advancedrestclient.com/)
+A HTTP request editor. It allows the user to provide values to build a HTTP request in an accessible UI.
 
 ## Usage
 
@@ -26,54 +15,65 @@ This components is a part of [API components ecosystem](https://elements.advance
 npm install --save @advanced-rest-client/request-editor
 ```
 
-### In an html file
+### In a LitElement
 
-```html
-<html>
-  <head>
-    <script type="module">
-      import '@advanced-rest-client/request-editor/request-editor.js';
-    </script>
-  </head>
-  <body>
-    <request-editor></request-editor>
-  </body>
-</html>
-```
+```javascript
+import { LitElement, html } from 'lit-element';
+import '@advanced-rest-client/request-actions-panel/request-actions-panel.js';
 
-### In a Polymer 3 element
-
-```js
-import {PolymerElement, html} from '@polymer/polymer';
-import '@advanced-rest-client/request-editor/request-editor.js';
-
-class SampleElement extends PolymerElement {
-  static get template() {
+class SampleElement extends LitElement {
+  render() {
     return html`
-    <request-editor></request-editor>
+    <request-actions-panel
+      ?compatibility="${this.compatibility}"
+      .outlined="${this.outlined}"
+      ?readOnly="${this.readOnly}"
+      .url="${this.url}"
+      @url-changed="${this._urlHandler}"
+      .method="${this.method}"
+      @method-changed="${this._methodHandler}"
+      .payload="${this.payload}"
+      @payload-changed="${this._payloadHandler}"
+      .headers="${this.headers}"
+      @headers-changed="${this._headersHandler}"
+      .beforeActions="${this.requestActions}"
+      @beforeactions-changed="${this._requestActionsChanged}"
+      .afterActions="${this.responseActions}"
+      @afteractions-changed="${this._responseActionsChanged}"
+    ></request-actions-panel>
     `;
+  }
+
+  _requestActionsChanged(e) {
+    this.requestActions = e.detail.value;
+  }
+
+  _responseActionsChanged(e) {
+    this.responseActions = e.detail.value;
   }
 }
 customElements.define('sample-element', SampleElement);
 ```
 
-### Installation
+## Development
 
 ```sh
 git clone https://github.com/advanced-rest-client/request-editor
-cd api-url-editor
+cd request-editor
 npm install
-npm install -g polymer-cli
 ```
 
 ### Running the demo locally
 
 ```sh
-polymer serve --npm
-open http://127.0.0.1:<port>/demo/
+npm start
 ```
 
 ### Running the tests
 ```sh
-polymer test --npm
+npm test
 ```
+
+## API components
+
+This components is a part of [API components ecosystem](https://elements.advancedrestclient.com/)

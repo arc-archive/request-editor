@@ -74,4 +74,9 @@ http-method-selector-mini {
   height: 24px;
   fill: currentColor;
 }
+
+anypoint-tabs {
+  border-bottom: 1px var(--request-editor-tabs-border-color, #e5e5e5) solid;
+  margin-bottom: 8px;
+}
 `;

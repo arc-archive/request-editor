@@ -32,7 +32,9 @@ import '@anypoint-web-components/anypoint-menu-button/anypoint-menu-button.js';
 import '@anypoint-web-components/anypoint-listbox/anypoint-listbox.js';
 import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
 import '@anypoint-web-components/anypoint-dialog/anypoint-dialog.js';
+import '@advanced-rest-client/http-code-snippets/http-code-snippets.js';
 import styles from './styles.js';
+import '../request-config.js';
 /**
  * An element that renders the UI to create a HTTP request.
  *
@@ -277,6 +279,20 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     return this._isPayload;
   }
 
+  get state() {
+    return this._state;
+  }
+
+  set state(value) {
+    const old = this._state;
+    /* istanbul ignore if */
+    if (old === value) {
+      return;
+    }
+    this._state = value;
+    this._stateChanged(value);
+  }
+
   constructor() {
     super();
     this.selectedTab = 0;
@@ -335,11 +351,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
 
   /**
    * Handler for the `oauth2-redirect-uri-changed` custom event. Changes
-   * the `redirectUri` property.
+   * the `oauth2RedirectUri` property.
    * @param {CustomEvent} e
    */
   _authRedirectChangedHandler(e) {
-    this.redirectUri = e.detail.value;
+    this.oauth2RedirectUri = e.detail.value;
   }
 
   /**
@@ -359,12 +375,54 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   }
 
   /**
+   * Updates the editor state when `stae` changes.
+   * @param {Object} state Current state
+   */
+  _stateChanged(state) {
+    if (!state || this._cancelStateRestore) {
+      return;
+    }
+    if (state.collapseOpened !== undefined) {
+      const value = Boolean(state.collapseOpened);
+      if (value !== this.collapseOpened) {
+        this.collapseOpened = value;
+      }
+    }
+    if (state.selectedTab !== undefined) {
+      const value = Number(state.selectedTab);
+      if (value !== this.selectedTab) {
+        if (!(!this.isPayload && value === 1)) {
+          this.selectedTab = value;
+        }
+      }
+    }
+    if (state.urlOpened !== undefined) {
+      const value = Boolean(state.urlOpened);
+      if (value !== this.urlOpened) {
+        this.urlOpened = value;
+      }
+    }
+    setTimeout(() => this.notifyResize());
+  }
+
+  validateUrl() {
+    const panel = this.shadowRoot.querySelector('url-input-editor');
+    if (!panel) {
+      return true;
+    }
+    return panel.validate();
+  }
+
+  /**
    * Dispatches the `api-request` custom event to send the request.
    *
    * @param {Object} opts Send oiptions:
    * - ignoreValidation (Boolean) - Ignores headers validation
    */
   send(opts) {
+    if (!this.validateUrl()) {
+      return;
+    }
     opts = opts || {};
     const request = this.serializeRequest();
     if (!opts.ignoreValidation && this._validateContentHeaders(request)) {
@@ -374,6 +432,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     this.requestId = this.shadowRoot.querySelector('#uuid').generate();
     request.id = this.requestId;
+    this.loadingRequest = true;
     this._dispatch('api-request', request);
     this._sendGaEvent('Send request');
   }
@@ -395,6 +454,8 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       id: this.requestId
     });
     this._sendGaEvent('Abort request');
+    this.loadingRequest = false;
+    this._requestId = undefined;
   }
 
   /**
@@ -428,10 +489,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
 
   get currentEditor() {
     switch (this.selectedTab) {
-      case 0: return this.querySelector('api-headers-editor');
-      case 1: return this.querySelector('api-body-editor');
-      case 2: return this.querySelector('authorization-panel');
-      case 3: return this.querySelector('request-actions-panel');
+      case 0: return this.shadowRoot.querySelector('api-headers-editor');
+      case 1: return this.shadowRoot.querySelector('api-body-editor');
+      case 2: return this.shadowRoot.querySelector('authorization-panel');
+      case 3: return this.shadowRoot.querySelector('request-actions-panel');
+      case 4: return this.shadowRoot.querySelector('request-config');
+      case 5: return this.shadowRoot.querySelector('http-code-snippets');
       default: return null;
     }
   }
@@ -484,11 +547,17 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       url: this.url || '',
       method,
       headers: this._getHeaders(method),
-      payload: this.payload,
       auth: this.authSettings,
       responseActions: this.responseActions,
       requestActions: this.requestActions
     };
+    if (['get', 'head'].indexOf(method.toLowerCase()) === -1) {
+      result.payload = this.payload;
+    }
+    if (this.authMethod && this.authSettings) {
+      result.auth = this.authSettings;
+      result.authType = this.authMethod;
+    }
     return result;
   }
   /**
@@ -496,6 +565,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
    */
   toggle() {
     this.collapseOpened = !this.collapseOpened;
+    this._computePanelState();
     this._sendGaEvent('Toggle parameters', String(this.collapseOpened));
   }
 
@@ -542,6 +612,14 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   notifyRequestChanged() {
     const request = this.serializeRequest();
     this._dispatch('request-data-changed', request);
+  }
+
+  notifyChanged(type, value) {
+    this.dispatchEvent(new CustomEvent(`${type}-changed`, {
+      detail: {
+        value
+      }
+    }));
   }
 
   /**
@@ -630,12 +708,14 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const { value } = e.detail;
     this.method = value;
     this.notifyRequestChanged();
+    this.notifyChanged('method', value);
   }
 
   _urlHandler(e) {
     const { value } = e.detail;
     this.url = value;
     this.notifyRequestChanged();
+    this.notifyChanged('url', value);
   }
 
   _urlOpenedHandler(e) {
@@ -651,6 +731,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   _tabHandler(e) {
     this.selectedTab = e.detail.value;
     this._computePanelState();
+    this._refreshEditors();
   }
 
   _ctHandler(e) {
@@ -662,24 +743,28 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const { value } = e.detail;
     this.headers = value;
     this.notifyRequestChanged();
+    this.notifyChanged('headers', value);
   }
 
   _bodyHandler(e) {
     const { value } = e.detail;
-    this.body = value;
+    this.payload = value;
     this.notifyRequestChanged();
+    this.notifyChanged('payload', value);
   }
 
   _requestActionsChanged(e) {
     const { value } = e.detail;
     this.requestActions = value;
     this.notifyRequestChanged();
+    this.notifyChanged('requestactions', value);
   }
 
   _responseActionsChanged(e) {
     const { value } = e.detail;
     this.responseActions = value;
     this.notifyRequestChanged();
+    this.notifyChanged('responseactions', value);
   }
 
   render() {
@@ -904,6 +989,8 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       <anypoint-tab ?compatibility="${compatibility}" ?hidden="${!isPayload}">Body</anypoint-tab>
       <anypoint-tab ?compatibility="${compatibility}">Authorization</anypoint-tab>
       <anypoint-tab ?compatibility="${compatibility}">Actions</anypoint-tab>
+      <anypoint-tab ?compatibility="${compatibility}">Config</anypoint-tab>
+      <anypoint-tab ?compatibility="${compatibility}">Code</anypoint-tab>
     </anypoint-tabs>`;
   }
 
@@ -915,11 +1002,15 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const bodyVisible = selectedTab === 1;
     const authVisible = selectedTab === 2;
     const actionsVisible = selectedTab === 3;
+    const configVisible = selectedTab === 4;
+    const codeVisible = selectedTab === 5;
     return html`
     ${this._headerEditorTemplate(!headersVisible)}
     ${this._bodyEditorTemplate(!bodyVisible)}
     ${this._authEditorTemplate(!authVisible)}
-    ${this._actionsEditorTemplate(!actionsVisible)}
+    ${actionsVisible ? this._actionsEditorTemplate() : ''}
+    ${configVisible ? this._configEditorTemplate() : ''}
+    ${codeVisible ? this._codeTemplate() : ''}
     `;
   }
 
@@ -931,24 +1022,27 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       isPayload,
       contentType,
       headers,
-      readOnly
+      readOnly,
+      narrow
     } = this;
     return html`
     <api-headers-editor
       ?hidden="${hidden}"
-      ?compatibility="${compatibility}"
+      ?legacy="${compatibility}"
       ?outlined="${outlined}"
+      ?narrow="${narrow}"
       .eventsTarget="${eventsTarget}"
       ?ispayload="${isPayload}"
       @ispayload-changed="${this._isPayloadHandler}"
       .contentType="${contentType}"
-      @contenttype-changed="${this._ctHandler}"
+      @content-type-changed="${this._ctHandler}"
       .value="${headers}"
       @value-changed="${this._headersHandler}"
       ?readonly="${readOnly}"
       allowcustom
       allowdisableparams
       allowhideoptional
+      autovalidate
     ></api-headers-editor>`;
   }
 
@@ -959,16 +1053,18 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       eventsTarget,
       contentType,
       payload,
-      readOnly
+      readOnly,
+      narrow
     } = this;
     return html`
     <api-body-editor
       ?hidden="${hidden}"
-      ?compatibility="${compatibility}"
+      ?legacy="${compatibility}"
       ?outlined="${outlined}"
+      ?narrow="${narrow}"
       .eventsTarget="${eventsTarget}"
       .contentType="${contentType}"
-      @contenttype-changed="${this._ctHandler}"
+      @content-type-changed="${this._ctHandler}"
       .value="${payload}"
       @value-changed="${this._bodyHandler}"
       ?readonly="${readOnly}"
@@ -976,6 +1072,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       allowcustom
       allowdisableparams
       allowhideoptional
+      lineNumbers
     ></api-body-editor>
     `;
   }
@@ -994,7 +1091,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     return html`
     <authorization-panel
       ?hidden="${hidden}"
-      ?compatibility="${compatibility}"
+      ?legacy="${compatibility}"
       ?outlined="${outlined}"
       .redirectUri="${oauth2RedirectUri}"
       .settings="${authSettings}"
@@ -1006,7 +1103,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     `;
   }
 
-  _actionsEditorTemplate(hidden) {
+  _actionsEditorTemplate() {
     const {
       compatibility,
       outlined,
@@ -1016,7 +1113,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     } = this;
     return html`
     <request-actions-panel
-      ?hidden="${hidden}"
       ?readonly="${readOnly}"
       ?compatibility="${compatibility}"
       ?outlined="${outlined}"
@@ -1025,6 +1121,41 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       @beforeactions-changed="${this._requestActionsChanged}"
       @afteractions-changed="${this._responseActionsChanged}"
     ></request-actions-panel>`;
+  }
+
+  _configEditorTemplate() {
+    const {
+      compatibility,
+      outlined,
+      config,
+      readOnly
+    } = this;
+    return html`
+    <request-config
+      ?readonly="${readOnly}"
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      .config="${config}"
+    ></request-config>
+    `;
+  }
+
+  _codeTemplate() {
+    const {
+      url,
+      method,
+      headers,
+      payload
+    } = this;
+    return html`
+    <http-code-snippets
+      scrollable
+      .url="${url}"
+      .method="${method}"
+      .headers="${headers}"
+      .payload="${payload}"
+    ></http-code-snippets>
+    `;
   }
   /**
    * Fired when the user request to send current request.
