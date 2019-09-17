@@ -470,3 +470,7 @@
 
 
 
+## [3.0.2](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...3.0.2) (2019-09-17)
+
+
+
