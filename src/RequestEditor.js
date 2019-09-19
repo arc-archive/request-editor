@@ -921,6 +921,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
           <span slot="item-icon" class="icon context-menu-icon">${clearAll}</span>
           Clear
         </anypoint-icon-item>
+        <slot name="request-context-menu"></slot>
       </anypoint-listbox>
     </anypoint-menu-button>`;
   }
