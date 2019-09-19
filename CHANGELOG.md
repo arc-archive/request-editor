@@ -483,3 +483,17 @@
 
 
 
+## [3.0.4](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...3.0.4) (2019-09-19)
+
+
+### Bug Fixes
+
+* adding config change notification ([0b9635e](https://github.com/advanced-rest-client/request-editor/commit/0b9635e))
+
+
+### Features
+
+* adding menu items slot ([502c61e](https://github.com/advanced-rest-client/request-editor/commit/502c61e))
+
+
+
