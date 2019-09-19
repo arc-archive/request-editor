@@ -474,3 +474,12 @@
 
 
 
+## [3.0.3](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...3.0.3) (2019-09-19)
+
+
+### Features
+
+* adding menu items slot ([502c61e](https://github.com/advanced-rest-client/request-editor/commit/502c61e))
+
+
+
