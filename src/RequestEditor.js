@@ -256,6 +256,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        */
       state: { type: Object, },
       /**
+       * Request configuration options.
+       * This object is passed with the `api-request` event.
+       * @type {Object}
+       */
+      config: { type: Boolean },
+      /**
        * When set it will ignore all `content-*` headers when the request method
        * is either `GET` or `HEAD`.
        * When not set or `false` it renders warning dialog.
@@ -549,7 +555,8 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       headers: this._getHeaders(method),
       auth: this.authSettings,
       responseActions: this.responseActions,
-      requestActions: this.requestActions
+      requestActions: this.requestActions,
+      config: this.config
     };
     if (['get', 'head'].indexOf(method.toLowerCase()) === -1) {
       result.payload = this.payload;
@@ -765,6 +772,13 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.responseActions = value;
     this.notifyRequestChanged();
     this.notifyChanged('responseactions', value);
+  }
+
+  _configHandler(e) {
+    const { value } = e.detail;
+    this.config = value;
+    this.notifyRequestChanged();
+    this.notifyChanged('config', value);
   }
 
   render() {
@@ -1139,6 +1153,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       ?compatibility="${compatibility}"
       ?outlined="${outlined}"
       .config="${config}"
+      @change="${this._configHandler}"
     ></request-config>
     `;
   }

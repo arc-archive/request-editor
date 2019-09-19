@@ -267,6 +267,14 @@ describe('<request-editor>', function() {
       const result = element.serializeRequest();
       assert.deepEqual(result.requestActions, element.requestActions);
     });
+
+    it('Sets config', () => {
+      element.config = {
+        timeout: 50
+      };
+      const result = element.serializeRequest();
+      assert.deepEqual(result.config, element.config);
+    });
   });
 
   describe('_sendRequestInner()', function() {
@@ -502,6 +510,10 @@ describe('<request-editor>', function() {
       }]
     };
 
+    const CONFIG = {
+      timeout: 50
+    };
+
     beforeEach(async () => {
       element = await basicFixture();
       element.headers = HEADERS;
@@ -510,6 +522,7 @@ describe('<request-editor>', function() {
       element.payload = PAYLOAD;
       element.requestActions = PREACTIONS;
       element.responseActions = POSTACTIONS;
+      element.config = CONFIG;
       await nextFrame();
     });
 
@@ -529,6 +542,7 @@ describe('<request-editor>', function() {
         assert.equal(e.detail.payload, PAYLOAD, 'Payload is set');
         assert.isTrue(e.detail.requestActions === PREACTIONS, 'Request actions are set');
         assert.isTrue(e.detail.responseActions === POSTACTIONS, 'Response actions are set');
+        assert.deepEqual(e.detail.config, CONFIG, 'Config is set');
         assert.typeOf(e.detail.id, 'string', 'id is set');
         done();
       });
