@@ -1055,6 +1055,46 @@ describe('<request-editor>', function() {
     });
   });
 
+  describe.only('refreshEditors()', () => {
+    let element;
+    beforeEach(async () => {
+      element = await postRequestFixture();
+    });
+
+    it('calls refreshEditors() when tab changes', () => {
+      const spy = sinon.spy(element, 'refreshEditors');
+      const nodes = element.shadowRoot.querySelectorAll('.params-section anypoint-tab');
+      MockInteractions.tap(nodes[1]);
+      assert.isTrue(spy.called);
+    });
+
+    it('calls refreshEditors() from notifyResize()', () => {
+      const spy = sinon.spy(element, 'refreshEditors');
+      element.notifyResize();
+      assert.isTrue(spy.called);
+    });
+
+    it('calls refresh() on headers editor', async () => {
+      element.selectedTab = 0;
+      await nextFrame();
+      const editor = element.shadowRoot.querySelector('api-headers-editor');
+      const spy = sinon.spy(editor, 'refresh');
+      element.refreshEditors();
+      await aTimeout();
+      assert.isTrue(spy.called);
+    });
+
+    it('calls refresh() on payload editor', async () => {
+      element.selectedTab = 1;
+      await nextFrame();
+      const editor = element.shadowRoot.querySelector('api-body-editor');
+      const spy = sinon.spy(editor, 'refresh');
+      element.refreshEditors();
+      await aTimeout();
+      assert.isTrue(spy.called);
+    });
+  });
+
   describe('a11y', () => {
     // the a11y tests were performed for each individual element.
     // This component does not have any specific ARIA attributes.

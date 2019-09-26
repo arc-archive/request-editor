@@ -39,7 +39,7 @@
     "@anypoint-web-components/anypoint-menu-button": "^0.1.0",
     "@anypoint-web-components/anypoint-switch": "^0.1.2",
     "@anypoint-web-components/anypoint-tabs": "^0.1.6",
-    "@api-components/api-body-editor": "^3.0.0",
+    "@api-components/api-body-editor": "^3.0.4",
     "@api-components/api-headers-editor": "^3.0.0",
     "@polymer/iron-collapse": "^3.0.0",
     "lit-element": "^2.2.1",

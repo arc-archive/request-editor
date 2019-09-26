@@ -519,6 +519,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     if (panel && panel.notifyResize) {
       panel.notifyResize();
     }
+    this.refreshEditors();
   }
 
   /**
@@ -639,7 +640,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       const { selectedTab } = this;
       const isPayload = this.isPayload;
       let panel;
-      if (isPayload && selectedTab === 2) {
+      if (isPayload && selectedTab === 1) {
         panel = this.shadowRoot.querySelector('api-body-editor');
       } else if (selectedTab === 0) {
         panel = this.shadowRoot.querySelector('api-headers-editor');
