@@ -497,3 +497,18 @@
 
 
 
+## [3.0.5](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...3.0.5) (2019-09-26)
+
+
+### Bug Fixes
+
+* adding config change notification ([0b9635e](https://github.com/advanced-rest-client/request-editor/commit/0b9635e))
+* fixing post method initalization ([4e4f94f](https://github.com/advanced-rest-client/request-editor/commit/4e4f94f))
+
+
+### Features
+
+* adding menu items slot ([502c61e](https://github.com/advanced-rest-client/request-editor/commit/502c61e))
+
+
+
