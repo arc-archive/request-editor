@@ -631,13 +631,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   }
 
   /**
-   * Called when the selected tab changes. Refreshes payload and headers editor
+   * Refreshes payload and headers editors
    * state (code mirror) if currently selected.
-   *
-   * @param {Number} selectedTab
    */
-  _refreshEditors(selectedTab) {
+  refreshEditors() {
     setTimeout(() => {
+      const { selectedTab } = this;
       const isPayload = this.isPayload;
       let panel;
       if (isPayload && selectedTab === 2) {
@@ -740,7 +739,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   _tabHandler(e) {
     this.selectedTab = e.detail.value;
     this._computePanelState();
-    this._refreshEditors();
+    this.refreshEditors();
   }
 
   _ctHandler(e) {
