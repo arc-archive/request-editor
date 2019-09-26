@@ -10,6 +10,18 @@ describe('<request-editor>', function() {
     `);
   }
 
+  async function postRequestFixture() {
+    return await fixture(html`
+      <request-editor method="POST" url="https://domain.com"></request-editor>
+    `);
+  }
+
+  async function getRequestFixture() {
+    return await fixture(html`
+      <request-editor method="GET" url="https://domain.com"></request-editor>
+    `);
+  }
+
   describe('_dispatch()', () => {
     let element;
     beforeEach(async () => {
@@ -787,23 +799,28 @@ describe('<request-editor>', function() {
         element = await basicFixture();
       });
 
-      it('Restores collapse state', function() {
+      it('Restores collapse state', async function() {
         element.state = { collapseOpened: false };
+        await nextFrame();
         assert.isFalse(element.collapseOpened);
       });
 
-      it('Restores selected tab state', function() {
+      it('Restores selected tab state', async function() {
         element.state = { selectedTab: 2 };
+        await nextFrame();
         assert.equal(element.selectedTab, 2);
       });
 
-      it('Does not restores tab if it is body and no payload', function() {
+      it('Does not restores tab if it is body and no payload', async function() {
+        element.method = 'GET';
         element.state = { selectedTab: 1 };
+        await nextFrame();
         assert.equal(element.selectedTab, 0);
       });
 
-      it('Restores url opened state', function() {
+      it('Restores url opened state', async function() {
         element.state = { urlOpened: true };
+        await nextFrame();
         assert.isTrue(element.urlOpened);
       });
     });
@@ -1003,6 +1020,38 @@ describe('<request-editor>', function() {
         done();
       });
       element.abort();
+    });
+  });
+
+  describe('Request with payload', () => {
+    let element;
+    beforeEach(async () => {
+      element = await postRequestFixture();
+    });
+
+    it('has isPayload value', () => {
+      assert.isTrue(element.isPayload);
+    });
+
+    it('renders payload tab', () => {
+      const nodes = element.shadowRoot.querySelectorAll('.params-section anypoint-tab');
+      assert.isFalse(nodes[1].hasAttribute('hidden'));
+    });
+  });
+
+  describe('Request without payload', () => {
+    let element;
+    beforeEach(async () => {
+      element = await getRequestFixture();
+    });
+
+    it('has no isPayload value', () => {
+      assert.notOk(element.isPayload);
+    });
+
+    it('renders payload tab hidden', () => {
+      const nodes = element.shadowRoot.querySelectorAll('.params-section anypoint-tab');
+      assert.isTrue(nodes[1].hasAttribute('hidden'));
     });
   });
 

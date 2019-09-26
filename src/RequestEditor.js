@@ -384,10 +384,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
    * Updates the editor state when `stae` changes.
    * @param {Object} state Current state
    */
-  _stateChanged(state) {
+  async _stateChanged(state) {
     if (!state || this._cancelStateRestore) {
       return;
     }
+    await this.updateComplete;
     if (state.collapseOpened !== undefined) {
       const value = Boolean(state.collapseOpened);
       if (value !== this.collapseOpened) {
@@ -702,8 +703,9 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }))
   }
 
-  _isPayloadHandler(e) {
+  async _isPayloadHandler(e) {
     const { value } = e.detail;
+    await this.updateComplete;
     this._isPayload = value;
     if (!value && this.selectedTab === 1) {
       this.selectedTab = 0;
@@ -851,12 +853,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     return html`
     <http-method-selector
       .eventsTarget="${eventsTarget}"
+      ?readonly="${readOnly}"
+      @ispayload-changed="${this._isPayloadHandler}"
       .method="${method}"
       ?compatibility="${compatibility}"
       ?outlined="${outlined}"
-      ?readonly="${readOnly}"
       @method-changed="${this._methodHandler}"
-      @ispayload-changed="${this._isPayloadHandler}"
     ></http-method-selector>`;
   }
 
@@ -871,12 +873,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     return html`
     <http-method-selector-mini
       .eventsTarget="${eventsTarget}"
+      ?readonly="${readOnly}"
+      @ispayload-changed="${this._isPayloadHandler}"
       .method="${method}"
       ?compatibility="${compatibility}"
       ?outlined="${outlined}"
-      ?readonly="${readOnly}"
       @method-changed="${this._methodHandler}"
-      @ispayload-changed="${this._isPayloadHandler}"
     ></http-method-selector-mini>`;
   }
 
