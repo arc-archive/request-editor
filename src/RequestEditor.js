@@ -556,10 +556,14 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       method,
       headers: this._getHeaders(method),
       auth: this.authSettings,
-      responseActions: this.responseActions,
-      requestActions: this.requestActions,
       config: this.config
     };
+    if (this.responseActions) {
+      result.responseActions = Array.from(this.responseActions);
+    }
+    if (this.requestActions) {
+      result.requestActions = Object.assign({}, this.requestActions);
+    }
     if (['get', 'head'].indexOf(method.toLowerCase()) === -1) {
       result.payload = this.payload;
     }

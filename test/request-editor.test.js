@@ -269,13 +269,13 @@ describe('<request-editor>', function() {
     });
 
     it('Sets requestActions', () => {
-      element.requestActions = [{
+      element.requestActions = {
         variables: [{
           enabled: true,
           value: 'test-value',
           variable: 'test-var'
         }]
-      }];
+      };
       const result = element.serializeRequest();
       assert.deepEqual(result.requestActions, element.requestActions);
     });
@@ -552,8 +552,8 @@ describe('<request-editor>', function() {
         assert.equal(e.detail.method, METHOD, 'Method is set');
         assert.equal(e.detail.headers, HEADERS, 'Headers are set');
         assert.equal(e.detail.payload, PAYLOAD, 'Payload is set');
-        assert.isTrue(e.detail.requestActions === PREACTIONS, 'Request actions are set');
-        assert.isTrue(e.detail.responseActions === POSTACTIONS, 'Response actions are set');
+        assert.deepEqual(e.detail.requestActions, PREACTIONS, 'Request actions are set');
+        assert.deepEqual(e.detail.responseActions, POSTACTIONS, 'Response actions are set');
         assert.deepEqual(e.detail.config, CONFIG, 'Config is set');
         assert.typeOf(e.detail.id, 'string', 'id is set');
         done();
@@ -894,7 +894,7 @@ describe('<request-editor>', function() {
       element.method = 'POST';
       const callback = function(e) {
         element.removeEventListener('request-data-changed', callback);
-        assert.isTrue(e.detail.requestActions === PREACTIONS);
+        assert.deepEqual(e.detail.requestActions, PREACTIONS);
         done();
       };
       element.addEventListener('request-data-changed', callback);
@@ -905,7 +905,7 @@ describe('<request-editor>', function() {
       element.method = 'POST';
       const callback = function(e) {
         element.removeEventListener('request-data-changed', callback);
-        assert.isTrue(e.detail.responseActions === POSTACTIONS);
+        assert.deepEqual(e.detail.responseActions, POSTACTIONS);
         done();
       };
       element.addEventListener('request-data-changed', callback);
@@ -1055,7 +1055,7 @@ describe('<request-editor>', function() {
     });
   });
 
-  describe.only('refreshEditors()', () => {
+  describe('refreshEditors()', () => {
     let element;
     beforeEach(async () => {
       element = await postRequestFixture();
