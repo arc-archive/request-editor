@@ -12,6 +12,8 @@ import '@advanced-rest-client/oauth-authorization/oauth1-authorization.js';
 import '@advanced-rest-client/arc-models/url-history-model.js';
 import '@advanced-rest-client/arc-models/variables-model.js';
 import '@polymer/iron-media-query/iron-media-query.js';
+import { DataGenerator } from '@advanced-rest-client/arc-data-generator/arc-data-generator.js';
+import '@advanced-rest-client/arc-models/client-certificate-model.js';
 import '../request-editor.js';
 
 class DemoPage extends ArcDemoPage {
@@ -30,6 +32,8 @@ class DemoPage extends ArcDemoPage {
     this._demoStateHandler = this._demoStateHandler.bind(this);
     this._toggleMainOption = this._toggleMainOption.bind(this);
     this._narrowHandler = this._narrowHandler.bind(this);
+    this.generateCertData = this.generateCertData.bind(this);
+    this.deleteCertData = this.deleteCertData.bind(this);
 
     this.oauth2RedirectUri = location.href;
   }
@@ -47,6 +51,24 @@ class DemoPage extends ArcDemoPage {
 
   _narrowHandler(e) {
     this.narrow = e.detail.value;
+  }
+
+  async generateCertData() {
+    await DataGenerator.insertCertificatesData();
+    const e = new CustomEvent('data-imported', {
+      bubbles: true
+    });
+    document.body.dispatchEvent(e);
+  }
+
+  async deleteCertData() {
+    const e = new CustomEvent('destroy-model', {
+      detail: {
+        models: ['client-certificates']
+      },
+      bubbles: true
+    });
+    document.body.dispatchEvent(e);
   }
 
   _requestHandler(e) {
@@ -129,6 +151,12 @@ class DemoPage extends ArcDemoPage {
             Ignore content-* headers on GET
           </anypoint-checkbox>
         </arc-interactive-demo>
+
+        <div class="data-options">
+          <h3>Data options</h3>
+          <anypoint-button @click="${this.generateData}">Generate certificates</anypoint-button>
+          <anypoint-button @click="${this.deleteData}">Clear certificates</anypoint-button>
+        </div>
       </section>
     `;
   }
@@ -141,6 +169,7 @@ class DemoPage extends ArcDemoPage {
       <oauth2-authorization></oauth2-authorization>
       <oauth1-authorization></oauth1-authorization>
       <url-history-model></url-history-model>
+      <client-certificate-model></client-certificate-model>
       <iron-media-query
         query="(max-width: 768px)"
         @query-matches-changed="${this._narrowHandler}"></iron-media-query>
