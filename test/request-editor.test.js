@@ -697,6 +697,59 @@ describe('<request-editor>', function() {
         element.send();
       });
     });
+
+    describe('Authorization state notification', function() {
+      let element;
+      beforeEach(async () => {
+        element = await setupElement();
+      });
+
+      it('Dispatches request-data-changed when auth settings change', async () => {
+        const panel = element.shadowRoot.querySelector('authorization-panel');
+        panel.selected = 1;
+        await aTimeout();
+        const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+        authPanel.username = 'test-username';
+        authPanel.password = 'test-password';
+        const spy = sinon.spy();
+        element.addEventListener('request-data-changed', spy);
+        await aTimeout(100);
+        assert.isTrue(spy.called);
+        const { detail } = spy.args[0][0];
+        assert.equal(detail.authType, 'Basic Authentication');
+        assert.equal(detail.auth.username, 'test-username');
+      });
+
+      it('Dispatches authmethod-changed when auth settings change', async () => {
+        const panel = element.shadowRoot.querySelector('authorization-panel');
+        panel.selected = 1;
+        await aTimeout();
+        const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+        authPanel.username = 'test-username';
+        authPanel.password = 'test-password';
+        const spy = sinon.spy();
+        element.addEventListener('authmethod-changed', spy);
+        await aTimeout(100);
+        assert.isTrue(spy.called);
+        const { detail } = spy.args[0][0];
+        assert.equal(detail.value, 'Basic Authentication');
+      });
+
+      it('Dispatches authsettings-changed when auth settings change', async () => {
+        const panel = element.shadowRoot.querySelector('authorization-panel');
+        panel.selected = 1;
+        await aTimeout();
+        const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+        authPanel.username = 'test-username';
+        authPanel.password = 'test-password';
+        const spy = sinon.spy();
+        element.addEventListener('authsettings-changed', spy);
+        await aTimeout(100);
+        assert.isTrue(spy.called);
+        const { detail } = spy.args[0][0];
+        assert.equal(detail.value.username, 'test-username');
+      });
+    });
   });
 
   describe('Content headers setup', () => {

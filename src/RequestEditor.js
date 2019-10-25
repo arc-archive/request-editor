@@ -241,6 +241,10 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       // Current authorization panel settings.
       authSettings: { type: Object },
       /**
+       * Enabled authorization method
+       */
+      authMethod: { type: String },
+      /**
        * When set the editor is in read only mode.
        */
       readOnly: { type: Boolean },
@@ -333,8 +337,14 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
    * @param {CustomEvent} e
    */
   _authSettingsChanged(e) {
-    this.authMethod = e.detail.type;
-    this.authSettings = e.detail.settings;
+    const { type, settings } = e.detail;
+    this.authMethod = type;
+    this.authSettings = settings;
+
+    this.notifyRequestChanged();
+    this.notifyChanged('authmethod', type);
+    this.notifyChanged('authsettings', settings);
+
     if (e.detail.valid && this.__requestAuthAwaiting) {
       this.__requestAuthAwaiting = false;
       this.execute();
