@@ -1,7 +1,7 @@
 {
   "name": "@advanced-rest-client/request-editor",
   "description": "A HTTP request editor",
-  "version": "4.0.0-preview.2",
+  "version": "3.1.2",
   "license": "Apache-2.0",
   "main": "request-editor.js",
   "keywords": [
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@advanced-rest-client/arc-icons": "^3.0.3",
-    "@advanced-rest-client/authorization-panel": "^4.0.1",
+    "@advanced-rest-client/authorization-panel": "^3.0.4",
     "@advanced-rest-client/events-target-mixin": "^3.0.0",
     "@advanced-rest-client/http-code-snippets": "^3.0.3",
     "@advanced-rest-client/http-method-selector": "^3.0.4",
@@ -39,8 +39,8 @@
     "@anypoint-web-components/anypoint-menu-button": "^0.1.0",
     "@anypoint-web-components/anypoint-switch": "^0.1.2",
     "@anypoint-web-components/anypoint-tabs": "^0.1.6",
-    "@api-components/api-body-editor": "^4.0.0",
-    "@api-components/api-headers-editor": "^4.0.0",
+    "@api-components/api-body-editor": "^3.0.5",
+    "@api-components/api-headers-editor": "^3.0.4",
     "@polymer/iron-collapse": "^3.0.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2"
