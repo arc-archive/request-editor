@@ -565,3 +565,21 @@
 
 
 
+## [3.1.2](https://github.com/advanced-rest-client/request-editor/compare/0.4.9...3.1.2) (2019-10-28)
+
+
+### Bug Fixes
+
+* adding config change notification ([0b9635e](https://github.com/advanced-rest-client/request-editor/commit/0b9635e236e9f563018b0ac24efb03db6c64a86c))
+* fixing `refreshEditors()` by using selectedTab getter ([a1deaa0](https://github.com/advanced-rest-client/request-editor/commit/a1deaa0a1aeaee78accefdab1b82f18a8bd07582))
+* fixing audit errors ([0423037](https://github.com/advanced-rest-client/request-editor/commit/04230373545381631deab927d63e7d49452fe2b5))
+* fixing panels refreshing ([f2987b3](https://github.com/advanced-rest-client/request-editor/commit/f2987b37f917da28c8ce9a95be2fdf3ecca492a4))
+* fixing post method initalization ([4e4f94f](https://github.com/advanced-rest-client/request-editor/commit/4e4f94f071a255f60109f53240424abe9c399272))
+
+
+### Features
+
+* adding menu items slot ([502c61e](https://github.com/advanced-rest-client/request-editor/commit/502c61e45ba3218a0a4d4e844092539bdb2a5c66))
+
+
+
