@@ -4,9 +4,20 @@
 
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/request-editor)
 
-## &lt;request-editor&gt;
+## request-editor
 
-A HTTP request editor. It allows the user to provide values to build a HTTP request in an accessible UI.
+A custom element that provides an UI to create a request object in Advanced REST Client.
+
+The editor consists of several other editors and puts them together to create a single place of managing request data:
+
+-   `http-method-selector` - allows to specify HTTP method
+-   `url-input-editor` - allows to edit the URL
+-   `api-headers-editor` - AMF powered headers editor
+-   `api-body-editor` - AMF powered payload editor
+-   `authorization-selector` - an UI to provide authorization settings
+-   `request-actions-panel` - ARC's requests actions editor
+-   `request-config` - request configuration editor
+-   `http-code-snippets` - not an editor, code snippets for current request data
 
 ## Usage
 
@@ -19,41 +30,74 @@ npm install --save @advanced-rest-client/request-editor
 
 ```javascript
 import { LitElement, html } from 'lit-element';
-import '@advanced-rest-client/request-actions-panel/request-actions-panel.js';
+import '@advanced-rest-client/request-editor/request-editor.js';
 
 class SampleElement extends LitElement {
   render() {
+    const { requestObject } = this;
     return html`
-    <request-actions-panel
+    <request-editor
       ?compatibility="${this.compatibility}"
-      .outlined="${this.outlined}"
+      ?outlined="${this.outlined}"
       ?readOnly="${this.readOnly}"
-      .url="${this.url}"
-      @url-changed="${this._urlHandler}"
-      .method="${this.method}"
-      @method-changed="${this._methodHandler}"
-      .payload="${this.payload}"
-      @payload-changed="${this._payloadHandler}"
-      .headers="${this.headers}"
-      @headers-changed="${this._headersHandler}"
-      .beforeActions="${this.requestActions}"
-      @beforeactions-changed="${this._requestActionsChanged}"
-      .afterActions="${this.responseActions}"
-      @afteractions-changed="${this._responseActionsChanged}"
-    ></request-actions-panel>
+      ?narrow="${this.narrow}"
+      .oauth2RedirectUri="${this.oauth2RedirectUri}"
+      ?ignorecontentonget="${this.ignoreContentOnGet}"
+      .method="${requestObject.method}"
+      .url="${requestObject.url}"
+      .headers="${requestObject.headers}"
+      .payload="${requestObject.payload}"
+      .auth="${requestObject.auth}"
+      .authType="${requestObject.authType}"
+      .config="${requestObject.config}"
+      .requestActions="${requestObject.requestActions}"
+      .responseActions="${requestObject.responseActions}"
+      @api-request="${this._requestHandler}"
+      @method-changed="${this._requestChanegd}"
+      @url-changed="${this._requestChanegd}"
+      @headers-changed="${this._requestChanegd}"
+      @payload-changed="${this._requestChanegd}"
+      @requestactions-changed="${this._requestChanegd}"
+      @responseactions-changed="${this._requestChanegd}"
+      @auth-changed="${this._requestChanegd}"
+      @config-changed="${this._requestChanegd}"
+    ></request-editor>
     `;
   }
 
-  _requestActionsChanged(e) {
-    this.requestActions = e.detail.value;
+  _requestChanegd(e) {
+    this.requestObject = e.target.serializeRequest();
+    console.log(e.type.split('-')[0], 'property changed');
   }
 
-  _responseActionsChanged(e) {
-    this.responseActions = e.detail.value;
+  _requestHandler(e) {
+    // perform request
   }
 }
 customElements.define('sample-element', SampleElement);
 ```
+
+To configure request data use properties/attributes. The change of the value is notified via DOM event
+which type is the lowercase property name and `-changed` suffix. For example the `url` change is notified
+via `url-changed` event.
+
+You can also use `serializeRequest()` method that puts request parameters into an object.
+
+Note that the `auth-changed` event, unlike others, does not have `detail` object set on the
+event with `value` property. Also, `auth-changed` event is fired once for `auth` and `authType` property change.
+
+### Authorization data
+
+Until version 3 the editor was processing authorization data and inserting authorization header if needed (basic and OAuth authorizations uses `Authorization` header). From version 4 the element just creates the `auth` object
+that should be processed by the transport library.
+
+### api-request and api-response events
+
+When the user press the "Send" button the `api-request` event is dispatched with serialized request configuration on the detail object. The application must handle this event and make the request to the endpoint. Additionally the detail object contains the `id` property that identifies specific request dispatched from this instance of the editor. This `id` has to be reported back with the `api-response` event.
+
+When the response is ready the application should dispatch `api-response` event with response data that are acceptable by the `response-view` component (in ARC) or other component. The detail object must include the `id` provided in the `api-request` event. This way the request panel knows that the response is received and can update state to hide loaders.
+
+Note, the `api-request` event is not send when the URL is reported invalid.
 
 ## Development
 

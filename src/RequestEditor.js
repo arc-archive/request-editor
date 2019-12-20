@@ -447,6 +447,8 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.responseActions = undefined;
     this.requestActions = undefined;
     this.selectedTab = 0;
+    this.auth = undefined;
+    this.authType = undefined;
     this._dispatch('request-clear-state');
     this._sendGaEvent('Clear request');
     setTimeout(() => this._unselectRequestMenu());
@@ -467,7 +469,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     switch (this.selectedTab) {
       case 0: return this.shadowRoot.querySelector('api-headers-editor');
       case 1: return this.shadowRoot.querySelector('api-body-editor');
-      case 2: return null;
+      case 2: return this.shadowRoot.querySelector('authorization-selector');
       case 3: return this.shadowRoot.querySelector('request-actions-panel');
       case 4: return this.shadowRoot.querySelector('request-config');
       case 5: return this.shadowRoot.querySelector('http-code-snippets');
@@ -745,6 +747,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     this.auth = e.target.serialize();
     this.authType = selected;
+    this.notifyRequestChanged();
     this.notifyChanged('auth');
   }
 
@@ -780,16 +783,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   _contentTemplate() {
     const { collapseOpened } = this;
     return html`
-    <div class="content">
-      ${this._urlTemplate()}
-      <section class="params-section">
-        ${this._paramsHeaderTemplate()}
-        <iron-collapse .opened="${collapseOpened}">
-          ${this._editorsTabsTemplate()}
-          ${this._editorsTemplate()}
-        </iron-collapse>
-      </section>
-    </div>
+    ${this._urlTemplate()}
+    ${this._paramsHeaderTemplate()}
+    <iron-collapse .opened="${collapseOpened}">
+      ${this._editorsTabsTemplate()}
+      ${this._editorsTemplate()}
+    </iron-collapse>
     `;
   }
 
@@ -1098,18 +1097,17 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       attrforselected="type"
       @change="${this._authChangeHandler}"
     >
-      <div type="none">Authorization configuration is not set</div>
-      ${this._basicTemplate(authType, auth)}
-      ${this._ntlmTemplate(authType, auth)}
-      ${this._digestTemplate(authType, auth)}
-      ${this._oa1Template(authType, auth)}
-      ${this._oa2Template(authType, auth)}
+      <div type="none" class="empty-auth">Authorization configuration is not set</div>
+      ${this._basicAuthTemplate(authType, auth)}
+      ${this._ntlmAuthTemplate(authType, auth)}
+      ${this._oa1AuthTemplate(authType, auth)}
+      ${this._oa2AuthTemplate(authType, auth)}
       ${this._ccAuthTemplate(authType, auth)}
     </authorization-selector>
     `;
   }
 
-  _basicTemplate(type, config={}) {
+  _basicAuthTemplate(type, config={}) {
     const {
       compatibility,
       outlined,
@@ -1124,7 +1122,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     ></authorization-method>`;
   }
 
-  _ntlmTemplate(type, config={}) {
+  _ntlmAuthTemplate(type, config={}) {
     const {
       compatibility,
       outlined,
@@ -1139,35 +1137,35 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       .domain="${domain}"
     ></authorization-method>`;
   }
+  // Note, digest authentication is not yet supported in ARC.
+  // _digestAuthTemplate(type, config={}) {
+  //   const {
+  //     compatibility,
+  //     outlined,
+  //     url,
+  //   } = this;
+  //   const {
+  //     username, password, realm, nonce, opaque, algorithm,
+  //     qop, nc, cnonce,
+  //   } = (type === 'digest' ? config : {});
+  //   return html`<authorization-method
+  //     ?compatibility="${compatibility}"
+  //     ?outlined="${outlined}"
+  //     type="digest"
+  //     .username="${username}"
+  //     .password="${password}"
+  //     .realm="${realm}"
+  //     .nonce="${nonce}"
+  //     .opaque="${opaque}"
+  //     .algorithm="${algorithm}"
+  //     .requestUrl="${url}"
+  //     .qop="${qop}"
+  //     .cnonce="${cnonce}"
+  //     .nc="${nc}"
+  //   ></authorization-method>`;
+  // }
 
-  _digestTemplate(type, config={}) {
-    const {
-      compatibility,
-      outlined,
-      url,
-    } = this;
-    const {
-      username, password, realm, nonce, opaque, algorithm,
-      qop, nc, cnonce,
-    } = (type === 'digest' ? config : {});
-    return html`<authorization-method
-      ?compatibility="${compatibility}"
-      ?outlined="${outlined}"
-      type="digest"
-      .username="${username}"
-      .password="${password}"
-      .realm="${realm}"
-      .nonce="${nonce}"
-      .opaque="${opaque}"
-      .algorithm="${algorithm}"
-      .requestUrl="${url}"
-      .qop="${qop}"
-      .cnonce="${cnonce}"
-      .nc="${nc}"
-    ></authorization-method>`;
-  }
-
-  _oa1Template(type, config={}) {
+  _oa1AuthTemplate(type, config={}) {
     const {
       compatibility,
       outlined,
@@ -1197,7 +1195,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     ></authorization-method>`;
   }
 
-  _oa2Template(type, config={}) {
+  _oa2AuthTemplate(type, config={}) {
     const {
       compatibility,
       outlined,

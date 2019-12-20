@@ -1,6 +1,6 @@
 import { fixture, assert, html, nextFrame, aTimeout } from '@open-wc/testing';
 import * as MockInteractions from '@polymer/iron-test-helpers/mock-interactions.js';
-import * as sinon from 'sinon/pkg/sinon-esm.js';
+import * as sinon from 'sinon';
 import '../request-editor.js';
 
 describe('<request-editor>', function() {
@@ -244,16 +244,17 @@ describe('<request-editor>', function() {
     });
 
     it('Sets auth', async () => {
-      const panel = element.shadowRoot.querySelector('authorization-panel');
-      panel.selected = 1;
+      const panel = element.shadowRoot.querySelector('authorization-selector');
+      panel.selected = 'basic';
       await aTimeout();
-      const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+      const authPanel = element.shadowRoot.querySelector('authorization-method[type="basic"]');
       authPanel.username = 'test-username';
       authPanel.password = 'test-password';
-      await aTimeout();
+      authPanel.dispatchEvent(new CustomEvent('change'));
+      await nextFrame();
       const result = element.serializeRequest();
       assert.typeOf(result.auth, 'object');
-      assert.equal(result.authType, 'Basic Authentication');
+      assert.equal(result.authType, 'basic');
       assert.equal(result.auth.username, authPanel.username);
       assert.equal(result.auth.password, authPanel.password);
     });
@@ -327,7 +328,7 @@ describe('<request-editor>', function() {
     [
       'api-headers-editor',
       'api-body-editor',
-      'authorization-panel',
+      'authorization-selector',
       'request-actions-panel',
       'request-config',
       'http-code-snippets'
@@ -563,191 +564,196 @@ describe('<request-editor>', function() {
   });
 
   describe('Authorization settings', function() {
-    let element;
     const HEADERS = '';
     const URL = 'https://mulesoft.com';
     const METHOD = 'GET';
-    let panel;
-    let authPanel;
-    async function setupElement() {
-      element = await basicFixture();
-      element.headers = HEADERS;
-      element.method = METHOD;
-      element.url = URL;
-      element.selectedTab = 2;
-      await nextFrame();
-      panel = element.shadowRoot.querySelector('authorization-panel');
-      return element;
+
+    async function authFixture(type, config) {
+      return await fixture(html`<request-editor
+      .headers="${HEADERS}"
+      .method="${METHOD}"
+      .url="${URL}"
+      selectedTab="2"
+      .authType="${type}"
+      .auth="${config}"
+      ></request-editor>`);
     }
 
     describe('Basic auth', function() {
-      let element;
-      before(async () => {
-        element = await setupElement();
-        panel.selected = 1;
-        await nextFrame();
-        authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+      it('Sets auth property', async () => {
+        const element = await authFixture('basic');
+        const authPanel = element.shadowRoot.querySelector('authorization-method[type="basic"]');
         authPanel.username = 'test';
         authPanel.password = 'test';
-        await aTimeout();
-      });
-
-      it('Sets authSettings property', function() {
-        assert.typeOf(element.authSettings, 'object');
-      });
-
-      it('Has headers data', function(done) {
-        element.addEventListener('api-request', function clb(e) {
-          element.removeEventListener('api-request', clb);
-          assert.equal(e.detail.headers, 'Authorization: Basic dGVzdDp0ZXN0');
-          done();
+        authPanel.dispatchEvent(new CustomEvent('change'));
+        assert.deepEqual(element.auth, {
+          username: 'test',
+          password: 'test',
         });
-        element.send();
       });
 
-      it('Accepts settings', function(done) {
-        element.addEventListener('api-request', function clb(e) {
-          element.removeEventListener('api-request', clb);
-          const settings = e.detail.auth;
-          assert.typeOf(settings, 'object');
-          assert.equal(e.detail.authType, 'Basic Authentication');
-          assert.equal(settings.password, 'test');
-          assert.equal(settings.username, 'test');
-          assert.equal(settings.hash, 'dGVzdDp0ZXN0');
-          done();
+      it('restores configuration on the method editor', async () => {
+        const element = await authFixture('basic', {
+          username: 'restored-uname',
+          password: 'restored-pwd',
         });
+        const method = element.shadowRoot.querySelector('authorization-method[type="basic"]');
+        assert.equal(method.username, 'restored-uname', 'username is restored');
+        assert.equal(method.password, 'restored-pwd', 'password is restored');
+      });
+
+      it('api-request has auth settings', async () => {
+        const element = await authFixture('basic', {
+          username: 'uname',
+          password: 'pwd',
+        });
+        const spy = sinon.spy();
+        element.addEventListener('api-request', spy);
         element.send();
+
+        const { auth, authType } = spy.args[0][0].detail;
+        assert.equal(authType, 'basic');
+        assert.equal(auth.username, 'uname');
+        assert.equal(auth.password, 'pwd');
       });
     });
 
     describe('NTLM auth', function() {
-      let element;
-      before(async () => {
-        element = await setupElement();
-        panel.selected = 2;
-        await nextFrame();
-        authPanel = panel.shadowRoot.querySelector('auth-method-ntlm');
-        authPanel.username = 'test';
-        authPanel.password = 'test';
+      it('sets auth property', async () => {
+        const element = await authFixture('ntlm');
+        const authPanel = element.shadowRoot.querySelector('authorization-method[type="ntlm"]');
+        authPanel.username = 'ntlm-uname';
+        authPanel.password = 'ntlm-pwd';
         authPanel.domain = 'mulesoft.com';
-        await aTimeout(100);
+        authPanel.dispatchEvent(new CustomEvent('change'));
+        assert.deepEqual(element.auth, {
+          username: 'ntlm-uname',
+          password: 'ntlm-pwd',
+          domain: 'mulesoft.com',
+        });
       });
 
-      it('Headers are not altered', function(done) {
-        element.addEventListener('api-request', function clb(e) {
-          element.removeEventListener('api-request', clb);
-          assert.equal(e.detail.headers, HEADERS);
-          done();
+      it('restores configuration on the method editor', async () => {
+        const element = await authFixture('ntlm', {
+          username: 'restored-uname',
+          password: 'restored-pwd',
+          domain: 'mulesoft.com'
         });
-        element.send();
+        const method = element.shadowRoot.querySelector('authorization-method[type="ntlm"]');
+        assert.equal(method.username, 'restored-uname', 'username is restored');
+        assert.equal(method.password, 'restored-pwd', 'password is restored');
+        assert.equal(method.domain, 'mulesoft.com', 'domain is restored');
       });
 
-      it('Accepts settings', function(done) {
-        element.addEventListener('api-request', function clb(e) {
-          element.removeEventListener('api-request', clb);
-          const settings = e.detail.auth;
-          assert.typeOf(settings, 'object');
-          assert.equal(e.detail.authType, 'ntlm');
-          assert.equal(settings.password, 'test');
-          assert.equal(settings.username, 'test');
-          assert.equal(settings.domain, 'mulesoft.com');
-          done();
+      it('api-request has auth settings', async () => {
+        const element = await authFixture('ntlm', {
+          username: 'uname',
+          password: 'pwd',
+          domain: 'mulesoft.com',
         });
+        const spy = sinon.spy();
+        element.addEventListener('api-request', spy);
         element.send();
+
+        const { auth, authType } = spy.args[0][0].detail;
+        assert.equal(authType, 'ntlm');
+        assert.equal(auth.username, 'uname');
+        assert.equal(auth.password, 'pwd');
+        assert.equal(auth.domain, 'mulesoft.com', 'domain is restored');
       });
     });
 
     describe('OAuth2 auth', function() {
-      let element;
-      before(async () => {
-        sessionStorage.removeItem('auth.methods.latest.auth_token');
-        sessionStorage.removeItem('auth.methods.latest.auth_uri');
-        sessionStorage.removeItem('auth.methods.latest.client_id');
-        sessionStorage.removeItem('auth.methods.latest.tokenType');
-        element = await setupElement();
-        panel.selected = 4;
-        await nextFrame();
-        authPanel = panel.shadowRoot.querySelector('auth-method-oauth2');
-        authPanel.grantType = 'implicit';
-        authPanel.clientId = 'test-clinet';
-        authPanel.authorizationUri = 'https://domain.com';
-        await aTimeout();
+      let config;
+      beforeEach(() => {
+        config = {
+          grantType: 'implicit',
+          clientId: 'test-client',
+          authorizationUri: 'https://domain.com',
+          scopes: ['a', 'b'],
+        };
       });
 
-      it('Headers are not altered', function(done) {
-        element.addEventListener('api-request', function clb(e) {
-          element.removeEventListener('api-request', clb);
-          assert.equal(e.detail.headers, HEADERS);
-          done();
+      it('sets auth property', async () => {
+        const element = await authFixture('oauth 2');
+        const authPanel = element.shadowRoot.querySelector('authorization-method[type="oauth 2"]');
+        Object.keys(config).forEach((key) => {
+          authPanel[key] = config[key];
         });
-        element.send();
+        authPanel.redirectUri = 'https://rdr.com';
+        authPanel.dispatchEvent(new CustomEvent('change'));
+
+        assert.deepEqual(element.auth, {
+          accessToken: '',
+          authorizationUri: config.authorizationUri,
+          clientId: config.clientId,
+          deliveryMethod: 'header',
+          deliveryName: 'authorization',
+          grantType: config.grantType,
+          type: config.grantType,
+          redirectUri: authPanel.redirectUri,
+          scopes: ['a', 'b'],
+          tokenType: 'Bearer',
+        });
       });
 
-      it('Accepts settings', function(done) {
-        element.addEventListener('api-request', function clb(e) {
-          element.removeEventListener('api-request', clb);
-          const settings = e.detail.auth;
-          assert.typeOf(settings, 'object');
-          assert.equal(e.detail.authType, 'OAuth 2.0');
-          assert.equal(settings.type, 'implicit');
-          assert.equal(settings.clientId, 'test-clinet');
-          assert.equal(settings.authorizationUri, 'https://domain.com');
-          done();
+      it('restores configuration on the method editor', async () => {
+        const element = await authFixture('oauth 2', config);
+        const method = element.shadowRoot.querySelector('authorization-method[type="oauth 2"]');
+        Object.keys(config).forEach((key) => {
+          assert.equal(method[key], config[key], `${key} is restored`);
         });
+      });
+
+      it('api-request has auth settings', async () => {
+        const element = await authFixture('oauth 2', config);
+        element.oauth2RedirectUri = 'https://rdr.com';
+        const spy = sinon.spy();
+        element.addEventListener('api-request', spy);
         element.send();
+
+        const { auth, authType } = spy.args[0][0].detail;
+        assert.equal(authType, 'oauth 2');
+        assert.deepEqual(auth, {
+          authorizationUri: config.authorizationUri,
+          clientId: config.clientId,
+          grantType: config.grantType,
+          scopes: ['a', 'b'],
+        });
       });
     });
 
     describe('Authorization state notification', function() {
       let element;
       beforeEach(async () => {
-        element = await setupElement();
+        element = await authFixture('basic');
       });
 
       it('Dispatches request-data-changed when auth settings change', async () => {
-        const panel = element.shadowRoot.querySelector('authorization-panel');
-        panel.selected = 1;
-        await aTimeout();
-        const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
-        authPanel.username = 'test-username';
-        authPanel.password = 'test-password';
         const spy = sinon.spy();
         element.addEventListener('request-data-changed', spy);
-        await aTimeout(100);
+
+        const authPanel = element.shadowRoot.querySelector('authorization-method[type="basic"]');
+        authPanel.username = 'test-username';
+        authPanel.password = 'test-password';
+        authPanel.dispatchEvent(new CustomEvent('change'));
+
         assert.isTrue(spy.called);
         const { detail } = spy.args[0][0];
-        assert.equal(detail.authType, 'Basic Authentication');
+        assert.equal(detail.authType, 'basic');
         assert.equal(detail.auth.username, 'test-username');
       });
 
-      it('Dispatches authmethod-changed when auth settings change', async () => {
-        const panel = element.shadowRoot.querySelector('authorization-panel');
-        panel.selected = 1;
-        await aTimeout();
-        const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
-        authPanel.username = 'test-username';
-        authPanel.password = 'test-password';
+      it('Dispatches auth-changed when auth settings change', async () => {
         const spy = sinon.spy();
-        element.addEventListener('authmethod-changed', spy);
-        await aTimeout(100);
-        assert.isTrue(spy.called);
-        const { detail } = spy.args[0][0];
-        assert.equal(detail.value, 'Basic Authentication');
-      });
+        element.addEventListener('auth-changed', spy);
 
-      it('Dispatches authsettings-changed when auth settings change', async () => {
-        const panel = element.shadowRoot.querySelector('authorization-panel');
-        panel.selected = 1;
-        await aTimeout();
-        const authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+        const authPanel = element.shadowRoot.querySelector('authorization-method[type="basic"]');
         authPanel.username = 'test-username';
         authPanel.password = 'test-password';
-        const spy = sinon.spy();
-        element.addEventListener('authsettings-changed', spy);
-        await aTimeout(100);
+        authPanel.dispatchEvent(new CustomEvent('change'));
+
         assert.isTrue(spy.called);
-        const { detail } = spy.args[0][0];
-        assert.equal(detail.value.username, 'test-username');
       });
     });
   });
@@ -989,10 +995,10 @@ describe('<request-editor>', function() {
     let authPanel;
     beforeEach(async () => {
       element = await basicFixture();
-      const panel = element.shadowRoot.querySelector('authorization-panel');
-      panel.selected = 1;
+      const panel = element.shadowRoot.querySelector('authorization-selector');
+      panel.selected = 'basic';
       await nextFrame();
-      authPanel = panel.shadowRoot.querySelector('auth-method-basic');
+      authPanel = element.shadowRoot.querySelector('authorization-method[type="basic"]');
     });
 
     it('Fires request-clear-state custom event', function() {
@@ -1035,7 +1041,8 @@ describe('<request-editor>', function() {
       assert.equal(element.payload, '', 'payload is cleared');
       assert.isUndefined(element.requestActions);
       assert.isUndefined(element.responseActions);
-      assert.isUndefined(element.authSettings);
+      assert.isUndefined(element.auth);
+      assert.isUndefined(element.authType);
     });
   });
 
@@ -1087,7 +1094,7 @@ describe('<request-editor>', function() {
     });
 
     it('renders payload tab', () => {
-      const nodes = element.shadowRoot.querySelectorAll('.params-section anypoint-tab');
+      const nodes = element.shadowRoot.querySelectorAll('iron-collapse anypoint-tab');
       assert.isFalse(nodes[1].hasAttribute('hidden'));
     });
   });
@@ -1103,7 +1110,7 @@ describe('<request-editor>', function() {
     });
 
     it('renders payload tab hidden', () => {
-      const nodes = element.shadowRoot.querySelectorAll('.params-section anypoint-tab');
+      const nodes = element.shadowRoot.querySelectorAll('iron-collapse anypoint-tab');
       assert.isTrue(nodes[1].hasAttribute('hidden'));
     });
   });
@@ -1116,7 +1123,7 @@ describe('<request-editor>', function() {
 
     it('calls refreshEditors() when tab changes', () => {
       const spy = sinon.spy(element, 'refreshEditors');
-      const nodes = element.shadowRoot.querySelectorAll('.params-section anypoint-tab');
+      const nodes = element.shadowRoot.querySelectorAll('iron-collapse anypoint-tab');
       MockInteractions.tap(nodes[1]);
       assert.isTrue(spy.called);
     });

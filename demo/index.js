@@ -36,6 +36,7 @@ class DemoPage extends ArcDemoPage {
     this._narrowHandler = this._narrowHandler.bind(this);
     this.generateCertData = this.generateCertData.bind(this);
     this.deleteCertData = this.deleteCertData.bind(this);
+    this._clearHandler = this._clearHandler.bind(this);
 
     this.oauth2RedirectUri = location.href;
 
@@ -48,7 +49,8 @@ class DemoPage extends ArcDemoPage {
       data = JSON.parse(data);
     } else {
       data = {
-        url: location.href
+        url: location.href,
+        method: 'GET'
       };
     }
     this.requestData = data;
@@ -109,6 +111,10 @@ class DemoPage extends ArcDemoPage {
     localStorage[REQUEST_STORE_KEY] = JSON.stringify(request);
   }
 
+  _clearHandler() {
+    localStorage.removeItem(REQUEST_STORE_KEY);
+  }
+
   _demoTemplate() {
     const {
       demoStates,
@@ -162,6 +168,7 @@ class DemoPage extends ArcDemoPage {
             @responseactions-changed="${this._requestChanegd}"
             @auth-changed="${this._requestChanegd}"
             @config-changed="${this._requestChanegd}"
+            @request-clear-state="${this._clearHandler}"
           ></request-editor>
 
           <label slot="options" id="mainOptionsLabel">Options</label>
