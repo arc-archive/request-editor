@@ -136,23 +136,15 @@ describe('<request-editor>', function() {
       element = await basicFixture();
       element.url = 'test-url';
       element.method = 'test-method';
-      element.headers = 'test-headers';
       await nextFrame();
     });
 
-    it('Calls serializeRequest()', () => {
-      const spy = sinon.spy(element, 'serializeRequest');
+    it('dispatches change event', () => {
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
       element.notifyRequestChanged();
-      assert.isTrue(spy.called);
-    });
-
-    it('Calls _dispatch()', () => {
-      const spy = sinon.spy(element, '_dispatch');
-      element.notifyRequestChanged();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0], 'request-data-changed');
-      assert.typeOf(spy.args[0][1], 'object');
-      assert.isUndefined(spy.args[0][2]);
+      assert.isTrue(spy.called, 'Event is dispatched');
+      assert.isFalse(spy.args[0][0].bubbles, 'Event does not bubble');
     });
   });
 
@@ -729,9 +721,9 @@ describe('<request-editor>', function() {
         element = await authFixture('basic');
       });
 
-      it('Dispatches request-data-changed when auth settings change', async () => {
+      it('Dispatches change when auth settings change', async () => {
         const spy = sinon.spy();
-        element.addEventListener('request-data-changed', spy);
+        element.addEventListener('change', spy);
 
         const authPanel = element.shadowRoot.querySelector('authorization-method[type="basic"]');
         authPanel.username = 'test-username';
@@ -739,9 +731,6 @@ describe('<request-editor>', function() {
         authPanel.dispatchEvent(new CustomEvent('change'));
 
         assert.isTrue(spy.called);
-        const { detail } = spy.args[0][0];
-        assert.equal(detail.authType, 'basic');
-        assert.equal(detail.auth.username, 'test-username');
       });
 
       it('Dispatches auth-changed when auth settings change', async () => {
@@ -885,7 +874,7 @@ describe('<request-editor>', function() {
     });
   });
 
-  describe('request-data-changed event', function() {
+  describe('change event', function() {
     let element;
     const HEADERS = 'content-type: test';
     const URL = 'https://mulesoft.com?param=value';
@@ -908,82 +897,80 @@ describe('<request-editor>', function() {
       element = await basicFixture();
     });
 
-    it('Fires event when method changes', function(done) {
-      const callback = function(e) {
-        element.removeEventListener('request-data-changed', callback);
-        assert.equal(e.detail.method, METHOD);
-        done();
-      };
-      element.addEventListener('request-data-changed', callback);
+    it('dispatches event when method changes', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
       element.method = METHOD;
+      await nextFrame();
+      assert.isTrue(spy.called);
     });
 
-    it('Fires event when URL changes', function(done) {
-      const callback = function(e) {
-        element.removeEventListener('request-data-changed', callback);
-        assert.equal(e.detail.url, URL);
-        done();
-      };
-      element.addEventListener('request-data-changed', callback);
+    it('dispatches event when URL changes', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
       element.url = URL;
+      await nextFrame();
+      assert.isTrue(spy.called);
     });
 
-    it('Fires event when headers changes', function(done) {
-      const callback = function(e) {
-        element.removeEventListener('request-data-changed', callback);
-        assert.equal(e.detail.headers, HEADERS);
-        done();
-      };
-      element.addEventListener('request-data-changed', callback);
+    it('dispatches event when headers changes', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
       element.headers = HEADERS;
+      await nextFrame();
+      assert.isTrue(spy.called);
     });
 
-    it('Fires event when payload changes', function(done) {
-      element.method = 'POST';
-      const callback = function(e) {
-        element.removeEventListener('request-data-changed', callback);
-        assert.equal(e.detail.payload, PAYLOAD);
-        done();
-      };
-      element.addEventListener('request-data-changed', callback);
-      element.payload = PAYLOAD;
-    });
-
-    it('Fires event when request pre-actions list changes', function(done) {
-      element.method = 'POST';
-      const callback = function(e) {
-        element.removeEventListener('request-data-changed', callback);
-        assert.deepEqual(e.detail.requestActions, PREACTIONS);
-        done();
-      };
-      element.addEventListener('request-data-changed', callback);
-      element.requestActions = PREACTIONS;
-    });
-
-    it('Fires event when request post-actions list changes', function(done) {
-      element.method = 'POST';
-      const callback = function(e) {
-        element.removeEventListener('request-data-changed', callback);
-        assert.deepEqual(e.detail.responseActions, POSTACTIONS);
-        done();
-      };
-      element.addEventListener('request-data-changed', callback);
-      element.responseActions = POSTACTIONS;
-    });
-
-    it('Fires event when payload as FormData changes', async () => {
+    it('dispatches event when payload changes', async () => {
       element.method = 'POST';
       const spy = sinon.spy();
-      element.addEventListener('request-data-changed', spy);
+      element.addEventListener('change', spy);
+      element.payload = PAYLOAD;
+      await nextFrame();
+      assert.isTrue(spy.called);
+    });
+
+    it('dispatches event when request pre-actions list changes', async () => {
+      element.selectedTab = 3;
+      await nextFrame();
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
+      element.requestActions = PREACTIONS;
+      // the `request-actions-panel` does not notify when actions are set.
+      // Only when something in the UI change.
+      const panel = element.shadowRoot.querySelector('request-actions-panel');
+      panel._notifyRequests();
+      await nextFrame();
+      assert.isTrue(spy.called);
+    });
+
+    it('dispatches event when request post-actions list changes', async () => {
+      element.selectedTab = 3;
+      await nextFrame();
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
+      element.responseActions = POSTACTIONS;
+      // the `request-actions-panel` does not notify when actions are set.
+      // Only when something in the UI change.
+      const panel = element.shadowRoot.querySelector('request-actions-panel');
+      panel._notifyResponses();
+      await nextFrame();
+      assert.isTrue(spy.called);
+    });
+
+    it('dispatches event when payload as FormData changes', async () => {
+      element.method = 'POST';
+      const spy = sinon.spy();
+      element.addEventListener('change', spy);
       element.payload = new FormData();
       await aTimeout();
       assert.isTrue(spy.called);
     });
 
-    it('fires event when payload as Blob changes', async () => {
+    it('dispatches event when payload as Blob changes', async () => {
       element.method = 'POST';
       const spy = sinon.spy();
-      element.addEventListener('request-data-changed', spy);
+      element.addEventListener('change', spy);
       element.payload = new Blob(['']);
       await aTimeout();
       assert.isTrue(spy.called);
@@ -1152,6 +1139,48 @@ describe('<request-editor>', function() {
       element.refreshEditors();
       await aTimeout();
       assert.isTrue(spy.called);
+    });
+  });
+
+  describe('onchange', () => {
+    let element;
+    beforeEach(async () => {
+      element = await basicFixture();
+    });
+
+    it('Getter returns previously registered handler', () => {
+      assert.isUndefined(element.onchange);
+      const f = () => {};
+      element.onchange = f;
+      assert.isTrue(element.onchange === f);
+    });
+
+    it('Calls registered function', () => {
+      let called = false;
+      const f = () => {
+        called = true;
+      };
+      element.onchange = f;
+      element.notifyRequestChanged();
+      element.onchange = null;
+      assert.isTrue(called);
+    });
+
+    it('Unregisters old function', () => {
+      let called1 = false;
+      let called2 = false;
+      const f1 = () => {
+        called1 = true;
+      };
+      const f2 = () => {
+        called2 = true;
+      };
+      element.onchange = f1;
+      element.onchange = f2;
+      element.notifyRequestChanged();
+      element.onchange = null;
+      assert.isFalse(called1);
+      assert.isTrue(called2);
     });
   });
 

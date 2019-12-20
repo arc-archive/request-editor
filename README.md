@@ -53,14 +53,7 @@ class SampleElement extends LitElement {
       .requestActions="${requestObject.requestActions}"
       .responseActions="${requestObject.responseActions}"
       @api-request="${this._requestHandler}"
-      @method-changed="${this._requestChanegd}"
-      @url-changed="${this._requestChanegd}"
-      @headers-changed="${this._requestChanegd}"
-      @payload-changed="${this._requestChanegd}"
-      @requestactions-changed="${this._requestChanegd}"
-      @responseactions-changed="${this._requestChanegd}"
-      @auth-changed="${this._requestChanegd}"
-      @config-changed="${this._requestChanegd}"
+      @change="${this._requestChanegd}"
     ></request-editor>
     `;
   }
@@ -98,6 +91,14 @@ When the user press the "Send" button the `api-request` event is dispatched with
 When the response is ready the application should dispatch `api-response` event with response data that are acceptable by the `response-view` component (in ARC) or other component. The detail object must include the `id` provided in the `api-request` event. This way the request panel knows that the response is received and can update state to hide loaders.
 
 Note, the `api-request` event is not send when the URL is reported invalid.
+
+## Breaking changes
+
+### Version 4.0.0
+
+-   The `request-data-changed` event has been renamed to `change` and does not carry `detail` object. Call `serializeRequest()` in the handler if needed.
+-   The `authorization-panel` has been replaced by `authorization-selector` with combination with `authorization-method`; The auth elements does not process authorization values (does not update headers).
+-   Added `onchange` property to register event handler for `change` event
 
 ## Development
 

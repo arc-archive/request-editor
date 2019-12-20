@@ -87,7 +87,7 @@ import '../request-config.js';
  *
  * You can access request data by either accessing corresponding property of the
  * element, by listening for `property-changed` event or by listening for
- * `request-data-changed` custom event.
+ * `change` custom event.
  *
  * Only the last one bubbles through the DOM.
  *
@@ -102,7 +102,7 @@ import '../request-config.js';
  * or
  *
  * ```javascript
- * document.body.addEventListener('request-data-changed', (e) => {
+ * document.body.addEventListener('change', (e) => {
  *  console.log(e.detail);
  * });
  * ```
@@ -287,6 +287,29 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     this._state = value;
     this._stateChanged(value);
+  }
+
+  /**
+   * @return {any} Previously registered function or undefined.
+   */
+  get onchange() {
+    return this._onChange;
+  }
+  /**
+   * Registers listener for the `change` event
+   * @param {any} value A function to be called when `change` event is
+   * dispatched
+   */
+  set onchange(value) {
+    if (this._onChange) {
+      this.removeEventListener('change', this._onChange);
+    }
+    if (typeof value !== 'function') {
+      this._onChange = null;
+      return;
+    }
+    this._onChange = value;
+    this.addEventListener('change', value);
   }
 
   constructor() {
@@ -589,13 +612,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }, false);
   }
   /**
-   * Called each time if any of `method`, `url`, 'payload' or `headers` filed
-   * change. Fires the `request-data-changed` custom event with current values
-   * of the request.
+   * Caled when a value on one of the editors change.
+   * Dispatches non-bubbling `change` event.
    */
   notifyRequestChanged() {
-    const request = this.serializeRequest();
-    this._dispatch('request-data-changed', request);
+    this.dispatchEvent(new CustomEvent('change'));
   }
 
   notifyChanged(type, value) {
@@ -1328,14 +1349,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   /**
    * Event fired when any part of the request data change.
    *
-   * @event request-data-changed
-   * @param {String} url The request URL. Can be empty string.
-   * @param {String} method HTTP method name. Can be empty.
-   * @param {String} headers HTTP headers string. Can be empty.
-   * @param {String|File|FormData} payload Message body. Can be undefined.
-   * @param {Object} auth Always undefined. For future use.
-   * @param {Array<Object>} responseActions - List of response actions
-   * @param {Array<Object>} requestActions - List of request actions
+   * @event change
    */
   /**
    * Fired when the state of the toggle XHR button change.
