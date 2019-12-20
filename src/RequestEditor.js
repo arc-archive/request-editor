@@ -19,7 +19,9 @@ import '@api-components/api-headers-editor/api-headers-editor.js';
 import '@advanced-rest-client/http-method-selector/http-method-selector.js';
 import '@advanced-rest-client/http-method-selector/http-method-selector-mini.js';
 import '@api-components/api-body-editor/api-body-editor.js';
-import '@advanced-rest-client/authorization-panel/authorization-panel.js';
+import '@advanced-rest-client/authorization-selector/authorization-selector.js';
+import '@advanced-rest-client/authorization-method/authorization-method.js';
+import '@advanced-rest-client/cc-authorization-method/cc-authorization-method.js';
 import '@advanced-rest-client/uuid-generator/uuid-generator.js';
 import '@advanced-rest-client/request-actions-panel/request-actions-panel.js';
 import { moreVert, clearAll, expandMore } from '@advanced-rest-client/arc-icons/ArcIcons.js';
@@ -104,22 +106,6 @@ import '../request-config.js';
  *  console.log(e.detail);
  * });
  * ```
- *
- * ## Authorization panel
- *
- * Authorization panel renders methods to authorize the user.
- * Detailed documentation for authorization is at
- * https://github.com/advanced-rest-client/authorization-panel
- *
- * To make OAuth2 work properly set `oauth2RedirectUri` property to application
- * redirect URI. User should set this value in in provider's settings.
- *
- * ## Request and response actions
- *
- * Request actions allows to (re)set variables before the request is made.
- * Response actions allows to perform a user defined action when the response is ready.
- * More information can be found here:
- * https://github.com/advanced-rest-client/request-actions-panel
  *
  * ### Styling
  *
@@ -238,12 +224,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * in send and abort events
        */
       requestId: String,
-      // Current authorization panel settings.
-      authSettings: { type: Object },
+      // Current authorization settings.
+      auth: { type: Object },
       /**
        * Enabled authorization method
        */
-      authMethod: { type: String },
+      authType: { type: String },
       /**
        * When set the editor is in read only mode.
        */
@@ -308,13 +294,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.selectedTab = 0;
 
     this._sendRequestInner = this._sendRequestInner.bind(this);
-    this._authSettingsChanged = this._authSettingsChanged.bind(this);
     this._responseHandler = this._responseHandler.bind(this);
     this._authRedirectChangedHandler = this._authRedirectChangedHandler.bind(this);
   }
 
   _attachListeners(node) {
-    this.addEventListener('authorization-settings-changed', this._authSettingsChanged);
     window.addEventListener('api-response', this._responseHandler);
     node.addEventListener('oauth2-redirect-uri-changed', this._authRedirectChangedHandler);
     this.addEventListener('api-request', this._sendRequestInner);
@@ -322,34 +306,10 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   }
 
   _detachListeners(node) {
-    this.removeEventListener('authorization-settings-changed', this._authSettingsChanged);
     window.removeEventListener('api-response', this._responseHandler);
     node.removeEventListener('oauth2-redirect-uri-changed', this._authRedirectChangedHandler);
     this.removeEventListener('api-request', this._sendRequestInner);
     this.removeEventListener('send-request', this._sendRequestInner);
-  }
-
-  /**
-   * Handler for the `authorization-settings-changed` dispatched by
-   * authorization panel. Sets auth settings and executes the request if
-   * any pending if valid.
-   *
-   * @param {CustomEvent} e
-   */
-  _authSettingsChanged(e) {
-    const { type, settings } = e.detail;
-    this.authMethod = type;
-    this.authSettings = settings;
-
-    this.notifyRequestChanged();
-    this.notifyChanged('authmethod', type);
-    this.notifyChanged('authsettings', settings);
-
-    if (e.detail.valid && this.__requestAuthAwaiting) {
-      this.__requestAuthAwaiting = false;
-      this.execute();
-    }
-    // this._reValidate();
   }
 
   /**
@@ -486,7 +446,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.method = 'GET';
     this.responseActions = undefined;
     this.requestActions = undefined;
-    this.shadowRoot.querySelector('authorization-panel').clear();
     this.selectedTab = 0;
     this._dispatch('request-clear-state');
     this._sendGaEvent('Clear request');
@@ -508,7 +467,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     switch (this.selectedTab) {
       case 0: return this.shadowRoot.querySelector('api-headers-editor');
       case 1: return this.shadowRoot.querySelector('api-body-editor');
-      case 2: return this.shadowRoot.querySelector('authorization-panel');
+      case 2: return null;
       case 3: return this.shadowRoot.querySelector('request-actions-panel');
       case 4: return this.shadowRoot.querySelector('request-config');
       case 5: return this.shadowRoot.querySelector('http-code-snippets');
@@ -565,7 +524,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       url: this.url || '',
       method,
       headers: this._getHeaders(method),
-      auth: this.authSettings,
       config: this.config
     };
     if (this.responseActions) {
@@ -577,9 +535,10 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     if (['get', 'head'].indexOf(method.toLowerCase()) === -1) {
       result.payload = this.payload;
     }
-    if (this.authMethod && this.authSettings) {
-      result.auth = this.authSettings;
-      result.authType = this.authMethod;
+    const { authType, auth } = this;
+    if (authType && auth) {
+      result.auth = auth;
+      result.authType = authType;
     }
     return result;
   }
@@ -772,8 +731,21 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   _bodyHandler(e) {
     const { value } = e.detail;
     this.payload = value;
+    if (this._isPayload === false || ['GET', 'HEAD'].indexOf(this.method) !== -1) {
+      return;
+    }
     this.notifyRequestChanged();
     this.notifyChanged('payload', value);
+  }
+
+  _authChangeHandler(e) {
+    const { selected } = e.target;
+    if (selected === undefined) {
+      return;
+    }
+    this.auth = e.target.serialize();
+    this.authType = selected;
+    this.notifyChanged('auth');
   }
 
   _requestActionsChanged(e) {
@@ -1114,26 +1086,163 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const {
       compatibility,
       outlined,
-      oauth2RedirectUri,
-      authSettings,
-      method,
-      payload,
-      url,
-      readOnly
+      auth,
+      authType,
     } = this;
     return html`
-    <authorization-panel
+    <authorization-selector
       ?hidden="${hidden}"
-      ?legacy="${compatibility}"
+      ?compatibility="${compatibility}"
       ?outlined="${outlined}"
-      .redirectUri="${oauth2RedirectUri}"
-      .settings="${authSettings}"
-      .httpMethod="${method}"
-      .requestUrl="${url}"
-      .requestBody="${payload}"
-      ?readonly="${readOnly}"
-    ></authorization-panel>
+      .selected="${authType}"
+      attrforselected="type"
+      @change="${this._authChangeHandler}"
+    >
+      <div type="none">Authorization configuration is not set</div>
+      ${this._basicTemplate(authType, auth)}
+      ${this._ntlmTemplate(authType, auth)}
+      ${this._digestTemplate(authType, auth)}
+      ${this._oa1Template(authType, auth)}
+      ${this._oa2Template(authType, auth)}
+      ${this._ccAuthTemplate(authType, auth)}
+    </authorization-selector>
     `;
+  }
+
+  _basicTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const { username, password } = (type === 'basic' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="basic"
+      .username="${username}"
+      .password="${password}"
+    ></authorization-method>`;
+  }
+
+  _ntlmTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const { username, password, domain } = (type === 'ntlm' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="ntlm"
+      .username="${username}"
+      .password="${password}"
+      .domain="${domain}"
+    ></authorization-method>`;
+  }
+
+  _digestTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+      url,
+    } = this;
+    const {
+      username, password, realm, nonce, opaque, algorithm,
+      qop, nc, cnonce,
+    } = (type === 'digest' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="digest"
+      .username="${username}"
+      .password="${password}"
+      .realm="${realm}"
+      .nonce="${nonce}"
+      .opaque="${opaque}"
+      .algorithm="${algorithm}"
+      .requestUrl="${url}"
+      .qop="${qop}"
+      .cnonce="${cnonce}"
+      .nc="${nc}"
+    ></authorization-method>`;
+  }
+
+  _oa1Template(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const {
+      consumerKey, consumerSecret, token, tokenSecret, timestamp,
+      nonce, realm, signatureMethod, authTokenMethod, authParamsLocation,
+      redirectUri,
+    } = (type === 'oauth 1' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="oauth 1"
+      .consumerKey="${consumerKey}"
+      .consumerSecret="${consumerSecret}"
+      .redirectUri="${redirectUri}"
+      .token="${token}"
+      .tokenSecret="${tokenSecret}"
+      .timestamp="${timestamp}"
+      .nonce="${nonce}"
+      .realm="${realm}"
+      .signatureMethod="${signatureMethod}"
+      .authTokenMethod="${authTokenMethod}"
+      .authParamsLocation="${authParamsLocation}"
+      requesttokenuri="http://term.ie/oauth/example/request_token.php"
+      accesstokenuri="http://term.ie/oauth/example/access_token.php"
+    ></authorization-method>`;
+  }
+
+  _oa2Template(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+      oauth2RedirectUri,
+    } = this;
+    const {
+      accessToken, tokenType, scopes, clientId, grantType, deliveryMethod,
+      deliveryName, clientSecret, accessTokenUri, authorizationUri,
+      username, password,
+    } = (type === 'oauth 2' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="oauth 2"
+      .scopes="${scopes}"
+      .accessToken="${accessToken}"
+      .tokenType="${tokenType}"
+      .clientId="${clientId}"
+      .clientSecret="${clientSecret}"
+      .grantType="${grantType}"
+      .deliveryMethod="${deliveryMethod}"
+      .deliveryName="${deliveryName}"
+      .authorizationUri="${authorizationUri}"
+      .accessTokenUri="${accessTokenUri}"
+      .username="${username}"
+      .password="${password}"
+      .redirectUri="${oauth2RedirectUri}"
+    ></authorization-method>`;
+  }
+
+  _ccAuthTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const { id } = (type === 'client certificate' ? config : {});
+
+    return html`
+    <cc-authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      .selected="${id}"
+      type="client certificate"
+    >
+    </cc-authorization-method>`;
   }
 
   _actionsEditorTemplate() {

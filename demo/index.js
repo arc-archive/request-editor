@@ -16,6 +16,8 @@ import { DataGenerator } from '@advanced-rest-client/arc-data-generator/arc-data
 import '@advanced-rest-client/arc-models/client-certificate-model.js';
 import '../request-editor.js';
 
+const REQUEST_STORE_KEY = 'demo.request';
+
 class DemoPage extends ArcDemoPage {
   constructor() {
     super();
@@ -36,6 +38,20 @@ class DemoPage extends ArcDemoPage {
     this.deleteCertData = this.deleteCertData.bind(this);
 
     this.oauth2RedirectUri = location.href;
+
+    this._restoreRequest();
+  }
+
+  _restoreRequest() {
+    let data = localStorage[REQUEST_STORE_KEY];
+    if (data) {
+      data = JSON.parse(data);
+    } else {
+      data = {
+        url: location.href
+      };
+    }
+    this.requestData = data;
   }
 
   _toggleMainOption(e) {
@@ -88,6 +104,9 @@ class DemoPage extends ArcDemoPage {
   _requestChanegd(e) {
     const name = e.type.split('-')[0];
     console.log(name, e.detail.value);
+    const request = e.target.serializeRequest();
+    this.requestData = request;
+    localStorage[REQUEST_STORE_KEY] = JSON.stringify(request);
   }
 
   _demoTemplate() {
@@ -99,8 +118,10 @@ class DemoPage extends ArcDemoPage {
       readOnly,
       narrow,
       oauth2RedirectUri,
-      ignoreContentOnGet
+      ignoreContentOnGet,
+      requestData,
     } = this;
+    const { url, method, headers, payload, auth, authType, config, requestActions, responseActions } = requestData;
     return html`
       <section class="documentation-section">
         <h3>Interactive demo</h3>
@@ -122,8 +143,16 @@ class DemoPage extends ArcDemoPage {
             .oauth2RedirectUri="${oauth2RedirectUri}"
             ?ignorecontentonget="${ignoreContentOnGet}"
             collapseOpened
-            method="GET"
             slot="content"
+            .method="${method}"
+            .url="${url}"
+            .headers="${headers}"
+            .payload="${payload}"
+            .auth="${auth}"
+            .authType="${authType}"
+            .config="${config}"
+            .requestActions="${requestActions}"
+            .responseActions="${responseActions}"
             @api-request="${this._requestHandler}"
             @method-changed="${this._requestChanegd}"
             @url-changed="${this._requestChanegd}"
@@ -131,6 +160,8 @@ class DemoPage extends ArcDemoPage {
             @payload-changed="${this._requestChanegd}"
             @requestactions-changed="${this._requestChanegd}"
             @responseactions-changed="${this._requestChanegd}"
+            @auth-changed="${this._requestChanegd}"
+            @config-changed="${this._requestChanegd}"
           ></request-editor>
 
           <label slot="options" id="mainOptionsLabel">Options</label>
@@ -154,8 +185,8 @@ class DemoPage extends ArcDemoPage {
 
         <div class="data-options">
           <h3>Data options</h3>
-          <anypoint-button @click="${this.generateData}">Generate certificates</anypoint-button>
-          <anypoint-button @click="${this.deleteData}">Clear certificates</anypoint-button>
+          <anypoint-button @click="${this.generateCertData}">Generate certificates</anypoint-button>
+          <anypoint-button @click="${this.deleteCertData}">Clear certificates</anypoint-button>
         </div>
       </section>
     `;
