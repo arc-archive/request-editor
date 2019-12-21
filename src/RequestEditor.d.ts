@@ -70,7 +70,7 @@ declare namespace UiElements {
    *
    * You can access request data by either accessing corresponding property of the
    * element, by listening for `property-changed` event or by listening for
-   * `request-data-changed` custom event.
+   * `change` custom event.
    *
    * Only the last one bubbles through the DOM.
    *
@@ -85,26 +85,10 @@ declare namespace UiElements {
    * or
    *
    * ```javascript
-   * document.body.addEventListener('request-data-changed', (e) => {
+   * document.body.addEventListener('change', (e) => {
    *  console.log(e.detail);
    * });
    * ```
-   *
-   * ## Authorization panel
-   *
-   * Authorization panel renders methods to authorize the user.
-   * Detailed documentation for authorization is at
-   * https://github.com/advanced-rest-client/authorization-panel
-   *
-   * To make OAuth2 work properly set `oauth2RedirectUri` property to application
-   * redirect URI. User should set this value in in provider's settings.
-   *
-   * ## Request and response actions
-   *
-   * Request actions allows to (re)set variables before the request is made.
-   * Response actions allows to perform a user defined action when the response is ready.
-   * More information can be found here:
-   * https://github.com/advanced-rest-client/request-actions-panel
    *
    * ### Styling
    *
@@ -163,6 +147,7 @@ declare namespace UiElements {
      * state of the UI regions.
      */
     state: object|null;
+    onchange: any|null;
     readonly currentEditor: any;
 
     /**
@@ -250,9 +235,14 @@ declare namespace UiElements {
     requestId: string|null|undefined;
 
     /**
-     * Current authorization panel settings.
+     * Current authorization settings.
      */
-    authSettings: object|null|undefined;
+    auth: object|null|undefined;
+
+    /**
+     * Enabled authorization method
+     */
+    authType: string|null|undefined;
 
     /**
      * When set the editor is in read only mode.
@@ -263,6 +253,12 @@ declare namespace UiElements {
      * Set to open URL detailed editor.
      */
     urlOpened: boolean|null|undefined;
+
+    /**
+     * Request configuration options.
+     * This object is passed with the `api-request` event.
+     */
+    config: object|null;
 
     /**
      * When set it will ignore all `content-*` headers when the request method
@@ -282,13 +278,6 @@ declare namespace UiElements {
     outlined: boolean|null|undefined;
     _attachListeners(node: any): void;
     _detachListeners(node: any): void;
-
-    /**
-     * Handler for the `authorization-settings-changed` dispatched by
-     * authorization panel. Sets auth settings and executes the request if
-     * any pending if valid.
-     */
-    _authSettingsChanged(e: CustomEvent|null): void;
 
     /**
      * Handler for the `api-response` custom event.
@@ -313,7 +302,7 @@ declare namespace UiElements {
      *
      * @param state Current state
      */
-    _stateChanged(state: object|null): void;
+    _stateChanged(state: object|null): any;
     validateUrl(): any;
 
     /**
@@ -400,18 +389,17 @@ declare namespace UiElements {
     _sendGaEvent(action: String|null, label: String|null): CustomEvent|null;
 
     /**
-     * Called each time if any of `method`, `url`, 'payload' or `headers` filed
-     * change. Fires the `request-data-changed` custom event with current values
-     * of the request.
+     * Caled when a value on one of the editors change.
+     * Dispatches non-bubbling `change` event.
      */
     notifyRequestChanged(): void;
     notifyChanged(type: any, value: any): void;
 
     /**
-     * Called when the selected tab changes. Refreshes payload and headers editor
+     * Refreshes payload and headers editors
      * state (code mirror) if currently selected.
      */
-    _refreshEditors(selectedTab: Number|null): void;
+    refreshEditors(): void;
 
     /**
      * Validates headers for `Content-*` entries agains current method.
@@ -421,7 +409,7 @@ declare namespace UiElements {
      */
     _validateContentHeaders(request: object|null): Boolean|null;
     _computePanelState(): void;
-    _isPayloadHandler(e: any): void;
+    _isPayloadHandler(e: any): any;
     _methodHandler(e: any): void;
     _urlHandler(e: any): void;
     _urlOpenedHandler(e: any): void;
@@ -430,8 +418,10 @@ declare namespace UiElements {
     _ctHandler(e: any): void;
     _headersHandler(e: any): void;
     _bodyHandler(e: any): void;
+    _authChangeHandler(e: any): void;
     _requestActionsChanged(e: any): void;
     _responseActionsChanged(e: any): void;
+    _configHandler(e: any): void;
     render(): any;
     _contentTemplate(): any;
     _urlTemplate(): any;
@@ -446,6 +436,11 @@ declare namespace UiElements {
     _headerEditorTemplate(hidden: any): any;
     _bodyEditorTemplate(hidden: any): any;
     _authEditorTemplate(hidden: any): any;
+    _basicAuthTemplate(type: any, config?: any): any;
+    _ntlmAuthTemplate(type: any, config?: any): any;
+    _oa1AuthTemplate(type: any, config?: any): any;
+    _oa2AuthTemplate(type: any, config?: any): any;
+    _ccAuthTemplate(type: any, config?: any): any;
     _actionsEditorTemplate(): any;
     _configEditorTemplate(): any;
     _codeTemplate(): any;

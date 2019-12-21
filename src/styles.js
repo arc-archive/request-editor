@@ -31,6 +31,7 @@ h2 {
   flex-direction: row;
   align-items: center;
   user-select: none;
+  margin: 0 8px;
 }
 
 .params-header h2 {
@@ -80,7 +81,12 @@ anypoint-tabs {
 }
 
 .panel {
-  background-color: var(--request-editor-panel-background-color, #F5F5F5);
+  background-color: var(--request-editor-panel-background-color, #fff);
   border: var(--request-editor-panel-border, none);
+  padding-bottom: 12px;
+}
+
+.empty-auth {
+  margin: 8px;
 }
 `;

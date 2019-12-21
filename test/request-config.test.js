@@ -1,6 +1,6 @@
 import { fixture, assert, html, nextFrame } from '@open-wc/testing';
 import * as MockInteractions from '@polymer/iron-test-helpers/mock-interactions.js';
-import * as sinon from 'sinon/pkg/sinon-esm.js';
+import * as sinon from 'sinon';
 import '../request-config.js';
 
 describe('<request-config>', function() {

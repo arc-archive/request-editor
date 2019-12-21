@@ -19,7 +19,9 @@ import '@api-components/api-headers-editor/api-headers-editor.js';
 import '@advanced-rest-client/http-method-selector/http-method-selector.js';
 import '@advanced-rest-client/http-method-selector/http-method-selector-mini.js';
 import '@api-components/api-body-editor/api-body-editor.js';
-import '@advanced-rest-client/authorization-panel/authorization-panel.js';
+import '@advanced-rest-client/authorization-selector/authorization-selector.js';
+import '@advanced-rest-client/authorization-method/authorization-method.js';
+import '@advanced-rest-client/cc-authorization-method/cc-authorization-method.js';
 import '@advanced-rest-client/uuid-generator/uuid-generator.js';
 import '@advanced-rest-client/request-actions-panel/request-actions-panel.js';
 import { moreVert, clearAll, expandMore } from '@advanced-rest-client/arc-icons/ArcIcons.js';
@@ -85,7 +87,7 @@ import '../request-config.js';
  *
  * You can access request data by either accessing corresponding property of the
  * element, by listening for `property-changed` event or by listening for
- * `request-data-changed` custom event.
+ * `change` custom event.
  *
  * Only the last one bubbles through the DOM.
  *
@@ -100,26 +102,10 @@ import '../request-config.js';
  * or
  *
  * ```javascript
- * document.body.addEventListener('request-data-changed', (e) => {
+ * document.body.addEventListener('change', (e) => {
  *  console.log(e.detail);
  * });
  * ```
- *
- * ## Authorization panel
- *
- * Authorization panel renders methods to authorize the user.
- * Detailed documentation for authorization is at
- * https://github.com/advanced-rest-client/authorization-panel
- *
- * To make OAuth2 work properly set `oauth2RedirectUri` property to application
- * redirect URI. User should set this value in in provider's settings.
- *
- * ## Request and response actions
- *
- * Request actions allows to (re)set variables before the request is made.
- * Response actions allows to perform a user defined action when the response is ready.
- * More information can be found here:
- * https://github.com/advanced-rest-client/request-actions-panel
  *
  * ### Styling
  *
@@ -238,12 +224,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * in send and abort events
        */
       requestId: String,
-      // Current authorization panel settings.
-      authSettings: { type: Object },
+      // Current authorization settings.
+      auth: { type: Object },
       /**
        * Enabled authorization method
        */
-      authMethod: { type: String },
+      authType: { type: String },
       /**
        * When set the editor is in read only mode.
        */
@@ -280,6 +266,18 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * Enables material's outlined theme for inputs.
        */
       outlined: { type: Boolean },
+      /**
+       * A value to be passed to the OAuth 2 `authorizationUri` property in case
+       * if current configuration has no value.
+       * This is to be used as a default value.
+       */
+      oauth2AuthorizationUri: { type: String },
+      /**
+       * A value to be passed to the OAuth 2 `accessTokenUri` property in case
+       * if current configuration has no value.
+       * This is to be used as a default value.
+       */
+      oauth2AccessTokenUri: { type: String }
     }
   }
   /**
@@ -303,18 +301,55 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this._stateChanged(value);
   }
 
+  /**
+   * @return {any} Previously registered function or undefined.
+   */
+  get onchange() {
+    return this._onChange;
+  }
+  /**
+   * Registers listener for the `change` event
+   * @param {any} value A function to be called when `change` event is
+   * dispatched
+   */
+  set onchange(value) {
+    if (this._onChange) {
+      this.removeEventListener('change', this._onChange);
+    }
+    if (typeof value !== 'function') {
+      this._onChange = null;
+      return;
+    }
+    this._onChange = value;
+    this.addEventListener('change', value);
+  }
+
+  get currentEditor() {
+    switch (this.selectedTab) {
+      case 0: return this.shadowRoot.querySelector('api-headers-editor');
+      case 1: return this.shadowRoot.querySelector('api-body-editor');
+      case 2: return this.authorizationSelector;
+      case 3: return this.shadowRoot.querySelector('request-actions-panel');
+      case 4: return this.shadowRoot.querySelector('request-config');
+      case 5: return this.shadowRoot.querySelector('http-code-snippets');
+      default: return null;
+    }
+  }
+
+  get authorizationSelector() {
+    return this.shadowRoot.querySelector('authorization-selector');
+  }
+
   constructor() {
     super();
     this.selectedTab = 0;
 
     this._sendRequestInner = this._sendRequestInner.bind(this);
-    this._authSettingsChanged = this._authSettingsChanged.bind(this);
     this._responseHandler = this._responseHandler.bind(this);
     this._authRedirectChangedHandler = this._authRedirectChangedHandler.bind(this);
   }
 
   _attachListeners(node) {
-    this.addEventListener('authorization-settings-changed', this._authSettingsChanged);
     window.addEventListener('api-response', this._responseHandler);
     node.addEventListener('oauth2-redirect-uri-changed', this._authRedirectChangedHandler);
     this.addEventListener('api-request', this._sendRequestInner);
@@ -322,34 +357,10 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   }
 
   _detachListeners(node) {
-    this.removeEventListener('authorization-settings-changed', this._authSettingsChanged);
     window.removeEventListener('api-response', this._responseHandler);
     node.removeEventListener('oauth2-redirect-uri-changed', this._authRedirectChangedHandler);
     this.removeEventListener('api-request', this._sendRequestInner);
     this.removeEventListener('send-request', this._sendRequestInner);
-  }
-
-  /**
-   * Handler for the `authorization-settings-changed` dispatched by
-   * authorization panel. Sets auth settings and executes the request if
-   * any pending if valid.
-   *
-   * @param {CustomEvent} e
-   */
-  _authSettingsChanged(e) {
-    const { type, settings } = e.detail;
-    this.authMethod = type;
-    this.authSettings = settings;
-
-    this.notifyRequestChanged();
-    this.notifyChanged('authmethod', type);
-    this.notifyChanged('authsettings', settings);
-
-    if (e.detail.valid && this.__requestAuthAwaiting) {
-      this.__requestAuthAwaiting = false;
-      this.execute();
-    }
-    // this._reValidate();
   }
 
   /**
@@ -421,7 +432,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     setTimeout(() => this.notifyResize());
   }
-
+  /**
+   * Validates state of the URL.
+   * @return {Boolean} True if the URL has a structure that looks like
+   * an URL which means sheme + something
+   */
   validateUrl() {
     const panel = this.shadowRoot.querySelector('url-input-editor');
     if (!panel) {
@@ -440,6 +455,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     if (!this.validateUrl()) {
       return;
     }
+    if (this.requiresAuthorization()) {
+      this.authorizationSelector.authorize();
+      this._awaitingOAuth2authorization = true;
+      return;
+    }
     opts = opts || {};
     const request = this.serializeRequest();
     if (!opts.ignoreValidation && this._validateContentHeaders(request)) {
@@ -453,6 +473,27 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this._dispatch('api-request', request);
     this._sendGaEvent('Send request');
   }
+  /**
+   * Checks if current request requires calling `authorize()` on current
+   * authorization method.
+   *
+   * @return {Boolean} This returns `true` only for valid OAuth 2 method that has
+   * no access token.
+   */
+  requiresAuthorization() {
+    if (this.authType !== 'oauth 2') {
+      return false;
+    }
+    const { auth, authorizationSelector } = this;
+    if (!auth || !authorizationSelector) {
+      return false;
+    }
+    if (authorizationSelector.validate() && !auth.accessToken) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Handler for the dialog confirmation button click.
    * Resends the request and skips validation.
@@ -486,8 +527,9 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.method = 'GET';
     this.responseActions = undefined;
     this.requestActions = undefined;
-    this.shadowRoot.querySelector('authorization-panel').clear();
     this.selectedTab = 0;
+    this.auth = undefined;
+    this.authType = undefined;
     this._dispatch('request-clear-state');
     this._sendGaEvent('Clear request');
     setTimeout(() => this._unselectRequestMenu());
@@ -502,18 +544,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       return;
     }
     menu.selected = undefined;
-  }
-
-  get currentEditor() {
-    switch (this.selectedTab) {
-      case 0: return this.shadowRoot.querySelector('api-headers-editor');
-      case 1: return this.shadowRoot.querySelector('api-body-editor');
-      case 2: return this.shadowRoot.querySelector('authorization-panel');
-      case 3: return this.shadowRoot.querySelector('request-actions-panel');
-      case 4: return this.shadowRoot.querySelector('request-config');
-      case 5: return this.shadowRoot.querySelector('http-code-snippets');
-      default: return null;
-    }
   }
 
   /**
@@ -565,7 +595,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       url: this.url || '',
       method,
       headers: this._getHeaders(method),
-      auth: this.authSettings,
       config: this.config
     };
     if (this.responseActions) {
@@ -577,9 +606,10 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     if (['get', 'head'].indexOf(method.toLowerCase()) === -1) {
       result.payload = this.payload;
     }
-    if (this.authMethod && this.authSettings) {
-      result.auth = this.authSettings;
-      result.authType = this.authMethod;
+    const { authType, auth } = this;
+    if (authType && auth) {
+      result.auth = auth;
+      result.authType = authType;
     }
     return result;
   }
@@ -628,13 +658,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }, false);
   }
   /**
-   * Called each time if any of `method`, `url`, 'payload' or `headers` filed
-   * change. Fires the `request-data-changed` custom event with current values
-   * of the request.
+   * Caled when a value on one of the editors change.
+   * Dispatches non-bubbling `change` event.
    */
   notifyRequestChanged() {
-    const request = this.serializeRequest();
-    this._dispatch('request-data-changed', request);
+    this.dispatchEvent(new CustomEvent('change'));
   }
 
   notifyChanged(type, value) {
@@ -772,8 +800,28 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   _bodyHandler(e) {
     const { value } = e.detail;
     this.payload = value;
+    if (this._isPayload === false || ['GET', 'HEAD'].indexOf(this.method) !== -1) {
+      return;
+    }
     this.notifyRequestChanged();
     this.notifyChanged('payload', value);
+  }
+
+  _authChangeHandler(e) {
+    const { selected } = e.target;
+    if (selected === undefined) {
+      return;
+    }
+    this.auth = e.target.serialize();
+    this.authType = selected;
+    this.notifyRequestChanged();
+    this.notifyChanged('auth');
+    if (this._awaitingOAuth2authorization) {
+      this._awaitingOAuth2authorization = false;
+      if (selected === 'oauth 2') {
+        this.send();
+      }
+    }
   }
 
   _requestActionsChanged(e) {
@@ -808,16 +856,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   _contentTemplate() {
     const { collapseOpened } = this;
     return html`
-    <div class="content">
-      ${this._urlTemplate()}
-      <section class="params-section">
-        ${this._paramsHeaderTemplate()}
-        <iron-collapse .opened="${collapseOpened}">
-          ${this._editorsTabsTemplate()}
-          ${this._editorsTemplate()}
-        </iron-collapse>
-      </section>
-    </div>
+    ${this._urlTemplate()}
+    ${this._paramsHeaderTemplate()}
+    <iron-collapse .opened="${collapseOpened}">
+      ${this._editorsTabsTemplate()}
+      ${this._editorsTemplate()}
+    </iron-collapse>
     `;
   }
 
@@ -1114,26 +1158,170 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const {
       compatibility,
       outlined,
-      oauth2RedirectUri,
-      authSettings,
-      method,
-      payload,
-      url,
-      readOnly
+      auth,
+      authType,
     } = this;
     return html`
-    <authorization-panel
+    <authorization-selector
       ?hidden="${hidden}"
-      ?legacy="${compatibility}"
+      ?compatibility="${compatibility}"
       ?outlined="${outlined}"
-      .redirectUri="${oauth2RedirectUri}"
-      .settings="${authSettings}"
-      .httpMethod="${method}"
-      .requestUrl="${url}"
-      .requestBody="${payload}"
-      ?readonly="${readOnly}"
-    ></authorization-panel>
+      .selected="${authType}"
+      attrforselected="type"
+      @change="${this._authChangeHandler}"
+    >
+      <div type="none" class="empty-auth">Authorization configuration is not set</div>
+      ${this._basicAuthTemplate(authType, auth)}
+      ${this._ntlmAuthTemplate(authType, auth)}
+      ${this._oa1AuthTemplate(authType, auth)}
+      ${this._oa2AuthTemplate(authType, auth)}
+      ${this._ccAuthTemplate(authType, auth)}
+    </authorization-selector>
     `;
+  }
+
+  _basicAuthTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const { username, password } = (type === 'basic' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="basic"
+      .username="${username}"
+      .password="${password}"
+    ></authorization-method>`;
+  }
+
+  _ntlmAuthTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const { username, password, domain } = (type === 'ntlm' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="ntlm"
+      .username="${username}"
+      .password="${password}"
+      .domain="${domain}"
+    ></authorization-method>`;
+  }
+  // Note, digest authentication is not yet supported in ARC.
+  // _digestAuthTemplate(type, config={}) {
+  //   const {
+  //     compatibility,
+  //     outlined,
+  //     url,
+  //   } = this;
+  //   const {
+  //     username, password, realm, nonce, opaque, algorithm,
+  //     qop, nc, cnonce,
+  //   } = (type === 'digest' ? config : {});
+  //   return html`<authorization-method
+  //     ?compatibility="${compatibility}"
+  //     ?outlined="${outlined}"
+  //     type="digest"
+  //     .username="${username}"
+  //     .password="${password}"
+  //     .realm="${realm}"
+  //     .nonce="${nonce}"
+  //     .opaque="${opaque}"
+  //     .algorithm="${algorithm}"
+  //     .requestUrl="${url}"
+  //     .qop="${qop}"
+  //     .cnonce="${cnonce}"
+  //     .nc="${nc}"
+  //   ></authorization-method>`;
+  // }
+
+  _oa1AuthTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const {
+      consumerKey, consumerSecret, token, tokenSecret, timestamp,
+      nonce, realm, signatureMethod, authTokenMethod, authParamsLocation,
+      redirectUri,
+    } = (type === 'oauth 1' ? config : {});
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="oauth 1"
+      .consumerKey="${consumerKey}"
+      .consumerSecret="${consumerSecret}"
+      .redirectUri="${redirectUri}"
+      .token="${token}"
+      .tokenSecret="${tokenSecret}"
+      .timestamp="${timestamp}"
+      .nonce="${nonce}"
+      .realm="${realm}"
+      .signatureMethod="${signatureMethod}"
+      .authTokenMethod="${authTokenMethod}"
+      .authParamsLocation="${authParamsLocation}"
+      requesttokenuri="http://term.ie/oauth/example/request_token.php"
+      accesstokenuri="http://term.ie/oauth/example/access_token.php"
+    ></authorization-method>`;
+  }
+
+  _oa2AuthTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+      oauth2RedirectUri,
+      oauth2AuthorizationUri,
+      oauth2AccessTokenUri,
+    } = this;
+    let {
+      accessToken, tokenType, scopes, clientId, grantType, deliveryMethod,
+      deliveryName, clientSecret, accessTokenUri, authorizationUri,
+      username, password,
+    } = (type === 'oauth 2' ? config : {});
+    if (!authorizationUri) {
+      authorizationUri = oauth2AuthorizationUri;
+    }
+    if (!accessTokenUri) {
+      accessTokenUri = oauth2AccessTokenUri;
+    }
+    return html`<authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      type="oauth 2"
+      .scopes="${scopes}"
+      .accessToken="${accessToken}"
+      .tokenType="${tokenType}"
+      .clientId="${clientId}"
+      .clientSecret="${clientSecret}"
+      .grantType="${grantType}"
+      .deliveryMethod="${deliveryMethod}"
+      .deliveryName="${deliveryName}"
+      .authorizationUri="${authorizationUri}"
+      .accessTokenUri="${accessTokenUri}"
+      .username="${username}"
+      .password="${password}"
+      .redirectUri="${oauth2RedirectUri}"
+    ></authorization-method>`;
+  }
+
+  _ccAuthTemplate(type, config={}) {
+    const {
+      compatibility,
+      outlined,
+    } = this;
+    const { id } = (type === 'client certificate' ? config : {});
+
+    return html`
+    <cc-authorization-method
+      ?compatibility="${compatibility}"
+      ?outlined="${outlined}"
+      .selected="${id}"
+      type="client certificate"
+    >
+    </cc-authorization-method>`;
   }
 
   _actionsEditorTemplate() {
@@ -1221,14 +1409,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   /**
    * Event fired when any part of the request data change.
    *
-   * @event request-data-changed
-   * @param {String} url The request URL. Can be empty string.
-   * @param {String} method HTTP method name. Can be empty.
-   * @param {String} headers HTTP headers string. Can be empty.
-   * @param {String|File|FormData} payload Message body. Can be undefined.
-   * @param {Object} auth Always undefined. For future use.
-   * @param {Array<Object>} responseActions - List of response actions
-   * @param {Array<Object>} requestActions - List of request actions
+   * @event change
    */
   /**
    * Fired when the state of the toggle XHR button change.
