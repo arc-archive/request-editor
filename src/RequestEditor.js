@@ -266,6 +266,18 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * Enables material's outlined theme for inputs.
        */
       outlined: { type: Boolean },
+      /**
+       * A value to be passed to the OAuth 2 `authorizationUri` property in case
+       * if current configuration has no value.
+       * This is to be used as a default value.
+       */
+      oauth2AuthorizationUri: { type: String },
+      /**
+       * A value to be passed to the OAuth 2 `accessTokenUri` property in case
+       * if current configuration has no value.
+       * This is to be used as a default value.
+       */
+      oauth2AccessTokenUri: { type: String }
     }
   }
   /**
@@ -1221,12 +1233,20 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       compatibility,
       outlined,
       oauth2RedirectUri,
+      oauth2AuthorizationUri,
+      oauth2AccessTokenUri,
     } = this;
-    const {
+    let {
       accessToken, tokenType, scopes, clientId, grantType, deliveryMethod,
       deliveryName, clientSecret, accessTokenUri, authorizationUri,
       username, password,
     } = (type === 'oauth 2' ? config : {});
+    if (!authorizationUri) {
+      authorizationUri = oauth2AuthorizationUri;
+    }
+    if (!accessTokenUri) {
+      accessTokenUri = oauth2AccessTokenUri;
+    }
     return html`<authorization-method
       ?compatibility="${compatibility}"
       ?outlined="${outlined}"

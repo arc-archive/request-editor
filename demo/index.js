@@ -38,7 +38,8 @@ class DemoPage extends ArcDemoPage {
     this.deleteCertData = this.deleteCertData.bind(this);
     this._clearHandler = this._clearHandler.bind(this);
 
-    this.oauth2RedirectUri = location.href;
+    this.oauth2RedirectUri = 'http://auth.advancedrestclient.com/arc.html';
+    this.oauth2AuthorizationUri = `${location.protocol}//${location.host}${location.pathname}oauth-authorize.html`;
 
     this._restoreRequest();
   }
@@ -124,6 +125,7 @@ class DemoPage extends ArcDemoPage {
       readOnly,
       narrow,
       oauth2RedirectUri,
+      oauth2AuthorizationUri,
       ignoreContentOnGet,
       requestData,
     } = this;
@@ -159,6 +161,7 @@ class DemoPage extends ArcDemoPage {
             .config="${config}"
             .requestActions="${requestActions}"
             .responseActions="${responseActions}"
+            .oauth2AuthorizationUri="${oauth2AuthorizationUri}"
             @api-request="${this._requestHandler}"
             @method-changed="${this._requestChanegd}"
             @url-changed="${this._requestChanegd}"
