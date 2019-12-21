@@ -149,6 +149,7 @@ declare namespace UiElements {
     state: object|null;
     onchange: any|null;
     readonly currentEditor: any;
+    readonly authorizationSelector: any;
 
     /**
      * Computes class for the toggle's button icon.
@@ -276,6 +277,20 @@ declare namespace UiElements {
      * Enables material's outlined theme for inputs.
      */
     outlined: boolean|null|undefined;
+
+    /**
+     * A value to be passed to the OAuth 2 `authorizationUri` property in case
+     * if current configuration has no value.
+     * This is to be used as a default value.
+     */
+    oauth2AuthorizationUri: string|null|undefined;
+
+    /**
+     * A value to be passed to the OAuth 2 `accessTokenUri` property in case
+     * if current configuration has no value.
+     * This is to be used as a default value.
+     */
+    oauth2AccessTokenUri: string|null|undefined;
     _attachListeners(node: any): void;
     _detachListeners(node: any): void;
 
@@ -303,7 +318,14 @@ declare namespace UiElements {
      * @param state Current state
      */
     _stateChanged(state: object|null): any;
-    validateUrl(): any;
+
+    /**
+     * Validates state of the URL.
+     *
+     * @returns True if the URL has a structure that looks like
+     * an URL which means sheme + something
+     */
+    validateUrl(): Boolean|null;
 
     /**
      * Dispatches the `api-request` custom event to send the request.
@@ -312,6 +334,15 @@ declare namespace UiElements {
      * - ignoreValidation (Boolean) - Ignores headers validation
      */
     send(opts: object|null): void;
+
+    /**
+     * Checks if current request requires calling `authorize()` on current
+     * authorization method.
+     *
+     * @returns This returns `true` only for valid OAuth 2 method that has
+     * no access token.
+     */
+    requiresAuthorization(): Boolean|null;
 
     /**
      * Handler for the dialog confirmation button click.
