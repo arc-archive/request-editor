@@ -324,6 +324,22 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.addEventListener('change', value);
   }
 
+  get currentEditor() {
+    switch (this.selectedTab) {
+      case 0: return this.shadowRoot.querySelector('api-headers-editor');
+      case 1: return this.shadowRoot.querySelector('api-body-editor');
+      case 2: return this.authorizationSelector;
+      case 3: return this.shadowRoot.querySelector('request-actions-panel');
+      case 4: return this.shadowRoot.querySelector('request-config');
+      case 5: return this.shadowRoot.querySelector('http-code-snippets');
+      default: return null;
+    }
+  }
+
+  get authorizationSelector() {
+    return this.shadowRoot.querySelector('authorization-selector');
+  }
+
   constructor() {
     super();
     this.selectedTab = 0;
@@ -416,7 +432,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     setTimeout(() => this.notifyResize());
   }
-
+  /**
+   * Validates state of the URL.
+   * @return {Boolean} True if the URL has a structure that looks like
+   * an URL which means sheme + something
+   */
   validateUrl() {
     const panel = this.shadowRoot.querySelector('url-input-editor');
     if (!panel) {
@@ -435,6 +455,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     if (!this.validateUrl()) {
       return;
     }
+    if (this.requiresAuthorization()) {
+      this.authorizationSelector.authorize();
+      this._awaitingOAuth2authorization = true;
+      return;
+    }
     opts = opts || {};
     const request = this.serializeRequest();
     if (!opts.ignoreValidation && this._validateContentHeaders(request)) {
@@ -448,6 +473,27 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this._dispatch('api-request', request);
     this._sendGaEvent('Send request');
   }
+  /**
+   * Checks if current request requires calling `authorize()` on current
+   * authorization method.
+   *
+   * @return {Boolean} This returns `true` only for valid OAuth 2 method that has
+   * no access token.
+   */
+  requiresAuthorization() {
+    if (this.authType !== 'oauth 2') {
+      return false;
+    }
+    const { auth, authorizationSelector } = this;
+    if (!auth || !authorizationSelector) {
+      return false;
+    }
+    if (authorizationSelector.validate() && !auth.accessToken) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Handler for the dialog confirmation button click.
    * Resends the request and skips validation.
@@ -498,18 +544,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       return;
     }
     menu.selected = undefined;
-  }
-
-  get currentEditor() {
-    switch (this.selectedTab) {
-      case 0: return this.shadowRoot.querySelector('api-headers-editor');
-      case 1: return this.shadowRoot.querySelector('api-body-editor');
-      case 2: return this.shadowRoot.querySelector('authorization-selector');
-      case 3: return this.shadowRoot.querySelector('request-actions-panel');
-      case 4: return this.shadowRoot.querySelector('request-config');
-      case 5: return this.shadowRoot.querySelector('http-code-snippets');
-      default: return null;
-    }
   }
 
   /**
@@ -782,6 +816,12 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.authType = selected;
     this.notifyRequestChanged();
     this.notifyChanged('auth');
+    if (this._awaitingOAuth2authorization) {
+      this._awaitingOAuth2authorization = false;
+      if (selected === 'oauth 2') {
+        this.send();
+      }
+    }
   }
 
   _requestActionsChanged(e) {

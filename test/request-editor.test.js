@@ -698,6 +698,7 @@ describe('<request-editor>', function() {
       });
 
       it('api-request has auth settings', async () => {
+        config.accessToken = 'test-token';
         const element = await authFixture('oauth 2', config);
         element.oauth2RedirectUri = 'https://rdr.com';
         const spy = sinon.spy();
@@ -711,6 +712,7 @@ describe('<request-editor>', function() {
           clientId: config.clientId,
           grantType: config.grantType,
           scopes: ['a', 'b'],
+          accessToken: config.accessToken,
         });
       });
     });
@@ -1138,6 +1140,135 @@ describe('<request-editor>', function() {
       const spy = sinon.spy(editor, 'refresh');
       element.refreshEditors();
       await aTimeout();
+      assert.isTrue(spy.called);
+    });
+  });
+
+  describe('requiresAuthorization()', () => {
+    async function authFixture(type, config) {
+      return await fixture(html`<request-editor
+      headers="accept: */*"
+      method="GET"
+      url="https://api-domain.com"
+      selectedTab="2"
+      .authType="${type}"
+      .auth="${config}"
+      ></request-editor>`);
+    }
+
+    it('returns false when no authorization', async () => {
+      const element = await basicFixture();
+      const result = element.requiresAuthorization();
+      assert.isFalse(result);
+    });
+
+    it('returns false when no authorization config', async () => {
+      const element = await authFixture('oauth 2');
+      const result = element.requiresAuthorization();
+      assert.isFalse(result);
+    });
+
+    it('returns false when authorization is not oauth 2', async () => {
+      const element = await authFixture('basic');
+      const result = element.requiresAuthorization();
+      assert.isFalse(result);
+    });
+
+    it('returns false when authorization is not valid', async () => {
+      const element = await authFixture('oauth 2', {
+        grantType: 'implicit',
+        clientId: 'test',
+      });
+      const authPanel = element.shadowRoot.querySelector('authorization-method[type="oauth 2"]');
+      authPanel.dispatchEvent(new CustomEvent('change'));
+      const result = element.requiresAuthorization();
+      assert.isFalse(result);
+    });
+
+    it('returns true when authorization is valid without accessToken', async () => {
+      const element = await authFixture('oauth 2', {
+        grantType: 'implicit',
+        clientId: 'test',
+        authorizationUri: 'https://api.domain.com'
+      });
+      const authPanel = element.shadowRoot.querySelector('authorization-method[type="oauth 2"]');
+      authPanel.dispatchEvent(new CustomEvent('change'));
+      const result = element.requiresAuthorization();
+      assert.isTrue(result);
+    });
+
+    it('returns false when authorization is valid with accessToken', async () => {
+      const element = await authFixture('oauth 2', {
+        grantType: 'implicit',
+        clientId: 'test',
+        authorizationUri: 'https://api.domain.com',
+        accessToken: 'test'
+      });
+      const authPanel = element.shadowRoot.querySelector('authorization-method[type="oauth 2"]');
+      authPanel.dispatchEvent(new CustomEvent('change'));
+      const result = element.requiresAuthorization();
+      assert.isFalse(result);
+    });
+  });
+
+  describe('Sending request with OAuth 2 authorization', () => {
+    async function authFixture(type, config) {
+      return await fixture(html`<request-editor
+      headers="accept: */*"
+      method="GET"
+      url="https://api-domain.com"
+      selectedTab="2"
+      .authType="${type}"
+      .auth="${config}"
+      ></request-editor>`);
+    }
+
+    function sendTokenResponse(state) {
+      const e = new CustomEvent('oauth2-token-response', {
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+        detail: {
+          accessToken: 'token-value',
+          tokenType: 'bearer',
+          state
+        }
+      });
+      document.body.dispatchEvent(e);
+    }
+
+    let element;
+    beforeEach(async () => {
+      element = await authFixture('oauth 2', {
+        grantType: 'implicit',
+        clientId: 'test',
+        authorizationUri: 'https://api.domain.com'
+      });
+      const authPanel = element.shadowRoot.querySelector('authorization-method[type="oauth 2"]');
+      authPanel.dispatchEvent(new CustomEvent('change'));
+    });
+
+    it('requests for token when oauth 2 is ready but without token', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('oauth2-token-requested', spy);
+      element.send();
+      assert.isTrue(spy.called);
+    });
+
+    it('does not send request when requesting token', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('api-request', spy);
+      element.send();
+      assert.isFalse(spy.called);
+    });
+
+    it('sends request when token is ready', async () => {
+      const tokenSpy = sinon.spy();
+      element.addEventListener('oauth2-token-requested', tokenSpy);
+      element.send();
+      const spy = sinon.spy();
+      element.addEventListener('api-request', spy);
+      sendTokenResponse(tokenSpy.args[0][0].detail.state);
       assert.isTrue(spy.called);
     });
   });
