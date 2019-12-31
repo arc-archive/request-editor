@@ -22,6 +22,18 @@ describe('<request-editor>', function() {
     `);
   }
 
+  async function ccImportFixture() {
+    return await fixture(html`
+      <request-editor
+        method="GET"
+        url="https://domain.com"
+        clientCertificateImport
+        selectedTab="2"
+        authType="client certificate"
+      ></request-editor>
+    `);
+  }
+
   describe('_dispatch()', () => {
     let element;
     beforeEach(async () => {
@@ -1326,6 +1338,23 @@ describe('<request-editor>', function() {
         // TODO (pawel): figure out what is happening
         ignoredRules: ['aria-hidden-focus'],
       });
+    });
+  });
+
+  describe('#clientCertificateImport', () => {
+    it('sets importButton property on cc panel', async () => {
+      const element = await ccImportFixture();
+      const panel = element.shadowRoot.querySelector('cc-authorization-method');
+      assert.isTrue(panel.importButton);
+    });
+
+    it('does not set importButton property on cc panel by default', async () => {
+      const element = await basicFixture();
+      element.selectedTab = 2;
+      element.authType = 'client certificate';
+      await nextFrame();
+      const panel = element.shadowRoot.querySelector('cc-authorization-method');
+      assert.isUndefined(panel.importButton);
     });
   });
 });

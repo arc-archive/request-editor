@@ -14,6 +14,9 @@ import '@advanced-rest-client/arc-models/variables-model.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import { DataGenerator } from '@advanced-rest-client/arc-data-generator/arc-data-generator.js';
 import '@advanced-rest-client/arc-models/client-certificate-model.js';
+import '@advanced-rest-client/client-certificates-panel/certificate-import.js';
+import '@anypoint-web-components/anypoint-dialog/anypoint-dialog.js';
+import '@anypoint-web-components/anypoint-dialog/anypoint-dialog-scrollable.js';
 import '../request-editor.js';
 
 const REQUEST_STORE_KEY = 'demo.request';
@@ -26,7 +29,9 @@ class DemoPage extends ArcDemoPage {
       'outlined',
       'readOnly',
       'narrow',
-      'ignoreContentOnGet'
+      'ignoreContentOnGet',
+      'clientCertificateImport',
+      'importOpened',
     ]);
     this._componentName = 'request-editor';
     this.demoStates = ['Filled', 'Outlined', 'Anypoint'];
@@ -37,11 +42,15 @@ class DemoPage extends ArcDemoPage {
     this.generateCertData = this.generateCertData.bind(this);
     this.deleteCertData = this.deleteCertData.bind(this);
     this._clearHandler = this._clearHandler.bind(this);
+    this._certImportHandler = this._certImportHandler.bind(this);
+    this._closeImportHandler = this._closeImportHandler.bind(this);
 
     this.oauth2RedirectUri = 'http://auth.advancedrestclient.com/arc.html';
     this.oauth2AuthorizationUri = `${location.protocol}//${location.host}${location.pathname}oauth-authorize.html`;
 
     this._restoreRequest();
+
+    window.addEventListener('client-certificate-import', this._certImportHandler);
   }
 
   _restoreRequest() {
@@ -116,6 +125,14 @@ class DemoPage extends ArcDemoPage {
     localStorage.removeItem(REQUEST_STORE_KEY);
   }
 
+  _certImportHandler() {
+    this.importOpened = true;
+  }
+
+  _closeImportHandler() {
+    this.importOpened = false;
+  }
+
   _demoTemplate() {
     const {
       demoStates,
@@ -128,6 +145,7 @@ class DemoPage extends ArcDemoPage {
       oauth2AuthorizationUri,
       ignoreContentOnGet,
       requestData,
+      clientCertificateImport,
     } = this;
     const { url, method, headers, payload, auth, authType, config, requestActions, responseActions } = requestData;
     return html`
@@ -150,6 +168,7 @@ class DemoPage extends ArcDemoPage {
             ?narrow="${narrow}"
             .oauth2RedirectUri="${oauth2RedirectUri}"
             ?ignorecontentonget="${ignoreContentOnGet}"
+            ?clientCertificateImport="${clientCertificateImport}"
             collapseOpened
             slot="content"
             .method="${method}"
@@ -191,6 +210,14 @@ class DemoPage extends ArcDemoPage {
           >
             Ignore content-* headers on GET
           </anypoint-checkbox>
+          <anypoint-checkbox
+            aria-describedby="mainOptionsLabel"
+            slot="options"
+            name="clientCertificateImport"
+            @change="${this._toggleMainOption}"
+          >
+            Client certificate import
+          </anypoint-checkbox>
         </arc-interactive-demo>
 
         <div class="data-options">
@@ -199,6 +226,20 @@ class DemoPage extends ArcDemoPage {
           <anypoint-button @click="${this.deleteCertData}">Clear certificates</anypoint-button>
         </div>
       </section>
+
+      ${this._importDialog()}
+    `;
+  }
+
+  _importDialog() {
+    const { importOpened } = this;
+    return html`
+    <anypoint-dialog ?opened="${importOpened}">
+      <h2>Import a certificate</h2>
+      <anypoint-dialog-scrollable>
+        <certificate-import @close="${this._closeImportHandler}"></certificate-import>
+      </anypoint-dialog-scrollable>
+    </anypoint-dialog>
     `;
   }
 

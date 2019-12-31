@@ -277,7 +277,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * if current configuration has no value.
        * This is to be used as a default value.
        */
-      oauth2AccessTokenUri: { type: String }
+      oauth2AccessTokenUri: { type: String },
+      /**
+       * Enables "import" button in client certificate authorization panel
+       */
+      clientCertificateImport: { type: Boolean },
     }
   }
   /**
@@ -1311,15 +1315,16 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     const {
       compatibility,
       outlined,
+      clientCertificateImport,
     } = this;
     const { id } = (type === 'client certificate' ? config : {});
-
     return html`
     <cc-authorization-method
       ?compatibility="${compatibility}"
       ?outlined="${outlined}"
       .selected="${id}"
       type="client certificate"
+      ?importButton="${clientCertificateImport}"
     >
     </cc-authorization-method>`;
   }
