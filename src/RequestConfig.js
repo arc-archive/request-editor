@@ -56,6 +56,7 @@ export class RequestConfig extends LitElement {
   _setDefaults() {
     this.config.timeout = 90;
     this.config.followRedirects = true;
+    this.config.ignoreSessionCookies = false;
   }
 
   _inputHandler(e) {
@@ -105,6 +106,7 @@ export class RequestConfig extends LitElement {
       ${this._validateSslTemplate(ok, config, compatibility, readOnly)}
       ${this._nodeClientTemplate(ok, config, compatibility, readOnly)}
       ${this._defaultHeadersTemplate(ok, config, compatibility, readOnly)}
+      ${this._disableCookiesTemplate(ok, config, compatibility, readOnly)}
     `;
   }
 
@@ -210,6 +212,23 @@ export class RequestConfig extends LitElement {
       ?readOnly="${readOnly}"
       tabindex="0"
     >Add default headers (accept and user-agent)</anypoint-switch>
+    </p>
+    `;
+  }
+
+  _disableCookiesTemplate(enabled, config, compatibility, readOnly) {
+    return html`
+    <p>
+    <anypoint-switch
+      name="ignoreSessionCookies"
+      .checked="${config.ignoreSessionCookies}"
+      @checked-changed="${this._checkedHandler}"
+      ?compatibility="${compatibility}"
+      ?disabled="${!enabled}"
+      ?readOnly="${readOnly}"
+      tabindex="0"
+      title="When checked it does not add cookies to this request atuomatically"
+    >Disable auto cookies processing</anypoint-switch>
     </p>
     `;
   }

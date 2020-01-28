@@ -63,7 +63,8 @@ describe('<request-config>', function() {
       assert.deepEqual(element.config, {
         enabled: true,
         timeout: 90,
-        followRedirects: true
+        followRedirects: true,
+        ignoreSessionCookies: false,
       });
     });
   });
@@ -78,14 +79,15 @@ describe('<request-config>', function() {
         followRedirects: true,
         validateCertificates: true,
         nativeTransport: true,
-        defaultHeaders: true
+        defaultHeaders: true,
+        ignoreSessionCookies: true,
       };
       element = await basicFixture(model);
     });
     // switches
     [
       'enabled', 'followRedirects', 'validateCertificates', 'nativeTransport',
-      'defaultHeaders'
+      'defaultHeaders', 'ignoreSessionCookies'
     ]
     .forEach((prop) => {
       it(`checks ${prop} input`, () => {
@@ -145,7 +147,8 @@ describe('<request-config>', function() {
         followRedirects: true,
         validateCertificates: true,
         nativeTransport: true,
-        defaultHeaders: true
+        defaultHeaders: true,
+        ignoreSessionCookies: true,
       };
       const element = await basicFixture(model);
       await assert.isAccessible(element);
