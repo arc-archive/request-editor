@@ -934,3 +934,35 @@
  [6a4730a](https://github.com/advanced-rest-client/request-editor/commit/6a4730a815dd5195adfa77a92c6a157979e90d8f) by Pawel Psztyc
 
 
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/advanced-rest-client/request-editor/compare/4.0.0...5.0.0) (2020-01-28)
+
+## Build
+
+* bumping version [0b84e0d](https://github.com/advanced-rest-client/request-editor/commit/0b84e0d4ea6df938feee10f5d45c1a966a5eeb8a) by Pawel Psztyc
+* bumping version [deb133e](https://github.com/advanced-rest-client/request-editor/commit/deb133e137614e00a2f43078f528fdcfb5e82268) by Pawel Psztyc
+
+
+## Continuous integration
+
+* updating travis configuration [ae86849](https://github.com/advanced-rest-client/request-editor/commit/ae868491e7b22b417848d608f49cfad896cb7f80) by Pawel Psztyc
+
+
+## Update
+
+* adding `ignoreSessionCookies` config option [70d6415](https://github.com/advanced-rest-client/request-editor/commit/70d64156c7e5bbf337b7dcbded91143823feb9fd) by Pawel Psztyc
+* upgrading dependnecies [3f7ecc1](https://github.com/advanced-rest-client/request-editor/commit/3f7ecc12e8d6dec12ad02cb85ff0e8dc46027603) by Pawel Psztyc
+* [ci skip] automated merge master->stage. syncing main branches [032db51](https://github.com/advanced-rest-client/request-editor/commit/032db51cf20a3cae0e1208b8df5d9c69ddfae56d) by Ci agent
+* updating dependencies [228fd5a](https://github.com/advanced-rest-client/request-editor/commit/228fd5aa4660157058590baf60740f500cbbd968) by Pawel Psztyc
+
+
+## Features
+
+* adding `clientCertificateImport` option [2fae5c3](https://github.com/advanced-rest-client/request-editor/commit/2fae5c3e842de46328769320518ef8137d0d86ad) by Pawel Psztyc
+
+
+## Testing
+
+* updating SL config [2d81eb0](https://github.com/advanced-rest-client/request-editor/commit/2d81eb0d1e83ade5217a1b1e2bf9881a2b1521e7) by Pawel Psztyc
+
+
