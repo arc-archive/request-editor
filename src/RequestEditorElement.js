@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /**
 @license
 Copyright 2018 The Advanced REST client authors <arc@mulesoft.com>
@@ -29,7 +30,7 @@ import '@anypoint-web-components/anypoint-tabs/anypoint-tabs.js';
 import '@anypoint-web-components/anypoint-tabs/anypoint-tab.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
-import '@polymer/iron-collapse/iron-collapse.js';
+import '@anypoint-web-components/anypoint-collapse/anypoint-collapse.js';
 import '@anypoint-web-components/anypoint-menu-button/anypoint-menu-button.js';
 import '@anypoint-web-components/anypoint-listbox/anypoint-listbox.js';
 import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
@@ -39,126 +40,8 @@ import styles from './styles.js';
 import '../request-config.js';
 /**
  * An element that renders the UI to create a HTTP request.
- *
- * It produces the following values (as element's properties):
- *
- * - url - the request URL
- * - method - HTTP method
- * - headers - HTTP headers string
- * - payload - Request body. It can be either String,
- * [File](https://developer.mozilla.org/en-US/docs/Web/API/File),
- * ([Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob)), or
- * [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
- * - requestActions - List of request actions as defined in
- * `request-actions-panel` element.
- * - responseActions - List of response actions as defined in
- * `request-actions-panel` element.
- * - headersModel - Model for headers value (not yet implemented)
- *
- * ## Variables
- *
- * Output of abt of this properties can contain a variables in format `${varName}`.
- * Use
- * [variables-evaluator](https://github.com/advanced-rest-client/variables-evaluator)
- * to evaluate variables to the final output.
- *
- * This element works with
- * [variables-manager](https://github.com/advanced-rest-client/variables-manager)
- * that stores variables in the local datastore. It should be placed anywhere
- * in the DOM. The elements uses browser's events system to communicate.
- *
- * Note, as of version 2.0 this component does not include editor for variables.
- * Variables are not part of the request and therefore are included into request
- * editor. The app should place `variables-editor` somewhere.
- *
- * ## Events retargeting
- *
- * The editors listens to varous events related to the request state. By default
- * all of the editors listens on a window object. To limit this, set `eventsTarget`
- * on this element to point an element that will be used as events target.
- * This way it is possible to enclose the request panel in a "tab".
- *
- * The `eventsTarget` property is propagated to the editors.
- *
- * Event fired by this or any of the editors will not stop on the `eventsTarget`
- * element and you are responsible to cancel them if nescesary.
- *
- * ## Accessing request data
- *
- * You can access request data by either accessing corresponding property of the
- * element, by listening for `property-changed` event or by listening for
- * `change` custom event.
- *
- * Only the last one bubbles through the DOM.
- *
- * ### Example
- *
- * ```html
- * <request-editor
- *  url="{{requestUrl}}"
- *  on-headers-changed="_headersChangedEvent"></request-editor>
- * ```
- *
- * or
- *
- * ```javascript
- * document.body.addEventListener('change', (e) => {
- *  console.log(e.detail);
- * });
- * ```
- *
- * ### Styling
- *
- * `<request-editor>` provides the following custom properties and mixins for styling:
- *
- * Custom property | Description | Default
- * ----------------|-------------|----------
- * `--request-editor` | Mixin applied to the element | `{}`
- * `--request-editor-url-editor` | Mixin applied to a line with the URL editor | `{}`
- * `--arc-font-subhead` | Theme mixin, applied to the section name title | `{}`
- * `--action-button` | Theme mixin, applied to the acction buttons | `{}`
- * `--request-editor-context-menu-icon-color` | Color of an icon in the context
- * menu | `--primary-color`
- * `--request-editor-context-menu-icon` | Mixin applied to an icon in the
- * context menu | `{}`
- * `--request-editor-main-action-buttons` | Mixin applied to the action buttons
- * next to the URL editor | `{}`
- * `--request-editor-url-input-editor` | Mixin applied to the URL editor | `{}`
- * `--request-editor-method-selector` | Mixin applied to the methos selector in
- * narrow view | `{}`
- * `--request-editor-method-selector-mini` | Mixin applied to the methos selector
- * in wide view | `{}`
- * `--request-editor-context-menu` | Mixin applied to the main action context
- *  menu dropdown | `{}`
- * `--request-editor-context-menu-dropdown` | Mixin applied to the main action
- * context menu dropdown container | `{}`
- * `--request-editor-main-action-button` | Mixin applied to the send / abort
- * buttons | `{}`
- * `--request-editor-tabs-container` | Mixin applied to the headers and body
- * editors container | `{}`
- * `--request-editor-tab-selected` | Mixin applied to selected tab | `{}`
- * `--request-editor-url-line-color` | Color of the URL section | ``
- * `--request-editor-context-menu-color` | Color of the context menu | ``
- * `--context-menu-item-color` | Color of the context menu item | ``
- * `--context-menu-item-background-color` | Background color of the context menu item | ``
- * `--context-menu-item-color-hover` | Color of the context menu item when hovered | ``
- * `--context-menu-item-background-color-hover` | Background color of the context menu item when hovered | ``
- *
- * To style edtors use variables defined in the following elements:
- * - [url-input-editor](https://github.com/advanced-rest-client/url-input-editor)
- * - [headers-editor](https://github.com/advanced-rest-client/headers-editor)
- * - [http-method-selector](https://github.com/advanced-rest-client/http-method-selector)
- * - [payload-editor](https://github.com/advanced-rest-client/payload-editor)
- * - [variables-editor](https://github.com/advanced-rest-client/variables-editor)
- *
- * Also anypoint elements: `anypoint-button`, `anypoint-tab`, and `anypoint-tabs`
- *
- * @customElement
- * @memberof UiElements
- * @demo demo/index.html
- * @appliesMixin EventsTargetMixin
  */
-export class RequestEditor extends EventsTargetMixin(LitElement) {
+export class RequestEditorElement extends EventsTargetMixin(LitElement) {
   static get styles() {
     return styles;
   }
@@ -223,7 +106,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * Generated request ID when the request is sent. This value is reported
        * in send and abort events
        */
-      requestId: String,
+      requestId: { type: String },
       // Current authorization settings.
       auth: { type: Object },
       /**
@@ -240,9 +123,8 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       urlOpened: { type: Boolean },
       /**
        * Current state of the editor that can be later used to restore
-       * the satte. This does not count for request data. It only shows
+       * the state. This does not count for request data. It only shows
        * state of the UI regions.
-       * @type {Object}
        */
       state: { type: Object, },
       /**
@@ -255,7 +137,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
        * When set it will ignore all `content-*` headers when the request method
        * is either `GET` or `HEAD`.
        * When not set or `false` it renders warning dialog.
-       * @type {Boolean}
        */
       ignoreContentOnGet: { type: Boolean },
       /**
@@ -284,6 +165,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       clientCertificateImport: { type: Boolean },
     }
   }
+
   /**
    * @return {Boolean} True if current request can have payload.
    */
@@ -311,6 +193,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   get onchange() {
     return this._onChange;
   }
+
   /**
    * Registers listener for the `change` event
    * @param {any} value A function to be called when `change` event is
@@ -406,7 +289,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   }
 
   /**
-   * Updates the editor state when `stae` changes.
+   * Updates the editor state when `state` changes.
    * @param {Object} state Current state
    */
   async _stateChanged(state) {
@@ -436,10 +319,11 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     setTimeout(() => this.notifyResize());
   }
+  
   /**
    * Validates state of the URL.
    * @return {Boolean} True if the URL has a structure that looks like
-   * an URL which means sheme + something
+   * an URL which means scheme + something
    */
   validateUrl() {
     const panel = this.shadowRoot.querySelector('url-input-editor');
@@ -452,7 +336,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   /**
    * Dispatches the `api-request` custom event to send the request.
    *
-   * @param {Object} opts Send oiptions:
+   * @param {Object} opts Send options:
    * - ignoreValidation (Boolean) - Ignores headers validation
    */
   send(opts) {
@@ -477,6 +361,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this._dispatch('api-request', request);
     this._sendGaEvent('Send request');
   }
+  
   /**
    * Checks if current request requires calling `authorize()` on current
    * authorization method.
@@ -507,6 +392,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       ignoreValidation: true
     });
   }
+
   /**
    * Sends the `abort-api-request` custom event to cancel the request.
    */
@@ -581,6 +467,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     return headers.trim();
   }
+
   /**
    * Serializes current request data into an object.
    *
@@ -617,6 +504,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     return result;
   }
+
   /**
    * Toggles body panel.
    */
@@ -647,6 +535,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     this.dispatchEvent(e);
     return e;
   }
+
   /**
    * Sends usage google analytics event
    * @param {String} action Action description
@@ -661,8 +550,9 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
       label
     }, false);
   }
+
   /**
-   * Caled when a value on one of the editors change.
+   * Called when a value on one of the editors change.
    * Dispatches non-bubbling `change` event.
    */
   notifyRequestChanged() {
@@ -698,7 +588,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
   }
 
   /**
-   * Validates headers for `Content-*` entries agains current method.
+   * Validates headers for `Content-*` entries against current method.
    * @param {Object} request The request object
    * @return {Boolean} True if headers are invalid.
    */
@@ -725,6 +615,7 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     }
     return klass;
   }
+
   /**
    * Computes title attribute for panel toggle icon.
    * @return {String} Label value
@@ -862,10 +753,10 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
     return html`
     ${this._urlTemplate()}
     ${this._paramsHeaderTemplate()}
-    <iron-collapse .opened="${collapseOpened}">
+    <anypoint-collapse .opened="${collapseOpened}">
       ${this._editorsTabsTemplate()}
       ${this._editorsTemplate()}
-    </iron-collapse>
+    </anypoint-collapse>
     `;
   }
 
@@ -889,8 +780,6 @@ export class RequestEditor extends EventsTargetMixin(LitElement) {
         ?readonly="${readOnly}"
         ?narrow="${narrow}"
         .eventsTarget="${eventsTarget}"
-        autovalidate
-        required
         .value="${url}"
         @value-changed="${this._urlHandler}"
         ?detailsOpened="${urlOpened}"

@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { ArcDemoPage } from '@advanced-rest-client/arc-demo-helper/ArcDemoPage.js';
+import { DemoPage } from '@advanced-rest-client/arc-demo-helper';
 import '@anypoint-web-components/anypoint-checkbox/anypoint-checkbox.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@advanced-rest-client/arc-demo-helper/arc-interactive-demo.js';
@@ -21,7 +21,7 @@ import '../request-editor.js';
 
 const REQUEST_STORE_KEY = 'demo.request';
 
-class DemoPage extends ArcDemoPage {
+class ComponentDemoPage extends DemoPage {
   constructor() {
     super();
     this.initObservableProperties([
@@ -262,6 +262,5 @@ class DemoPage extends ArcDemoPage {
   }
 }
 
-const instance = new DemoPage();
+const instance = new ComponentDemoPage();
 instance.render();
-window._demo = instance;
