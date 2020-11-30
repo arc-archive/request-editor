@@ -11,5 +11,6 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import { RequestEditor } from './src/RequestEditor.js';
-window.customElements.define('request-editor', RequestEditor);
+import { RequestEditorElement } from './src/RequestEditorElement.js';
+
+window.customElements.define('request-editor', RequestEditorElement);
